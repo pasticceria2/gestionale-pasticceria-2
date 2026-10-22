@@ -2359,26 +2359,11 @@ def api_piano_ferie_notifiche():
 # TURNI SETTIMANALI
 # ==============================================================
 
-TURNI_STAFF_COLORS = {
-    'Claudia':  '#3b82f6',
-    'Tiziana':  '#8b5cf6',
-    'Federica': '#10b981',
-    'Cristiana':'#f59e0b',
-    'Barbara':  '#ec4899',
-    'Marisa':   '#0d9488',
-}
-TURNI_NOMI = ['Claudia', 'Tiziana', 'Federica', 'Cristiana', 'Barbara', 'Marisa']
+TURNI_STAFF_COLORS = {}
+TURNI_NOMI = []
 
-TURNI_PALOCCO_STAFF_COLORS = {
-    'Pietro':    '#3b82f6',
-    'Mariapia':  '#ec4899',
-    'Roberto':   '#10b981',
-    'Ivano':     '#f59e0b',
-    'Patrizia':  '#8b5cf6',
-    'Francesca': '#06b6d4',
-    'Marisa':    '#0d9488',
-}
-TURNI_PALOCCO_NOMI = ['Pietro', 'Mariapia', 'Roberto', 'Ivano', 'Patrizia', 'Francesca', 'Marisa']
+TURNI_PALOCCO_STAFF_COLORS = {}
+TURNI_PALOCCO_NOMI = []
 
 TURNI_DEF = {
     'feriale': [
@@ -2453,10 +2438,11 @@ def _is_dipendente_disponibile(name, in_ferie_set):
 def _auto_genera_turni(anno, mese, martedi_aperto, ferie_by_day=None, barbara_inclusa=False):
     from datetime import date
     import calendar as cal_mod
-    rot_pool = ['Claudia', 'Federica']
+    # Usa la lista nomi configurata (vuota = nessun nome auto-assegnato)
+    pool = list(TURNI_NOMI)
+    rot_pool = pool[:2] if len(pool) >= 2 else pool
     result = {}
     num_days = cal_mod.monthrange(anno, mese)[1]
-    rot_idx = 0
     for day_num in range(1, num_days + 1):
         d = date(anno, mese, day_num)
         d_str = d.isoformat()
@@ -2464,222 +2450,18 @@ def _auto_genera_turni(anno, mese, martedi_aperto, ferie_by_day=None, barbara_in
         if dow == 1 and not martedi_aperto:
             result[d_str] = {'tipo': 'chiuso', 'assegnazioni': {}}
             continue
-        
-        in_ferie = ferie_by_day.get(d_str, set()) if ferie_by_day else set()
-        # Usa default arg per catturare correttamente in_ferie nella closure (evita bug Python con loop)
-        def is_available(name, _ferie=in_ferie):
-            return _is_dipendente_disponibile(name, _ferie)
-
-        # Barbara è sempre in turno nei giorni in cui Cristiana è assente (~3 giorni/settimana).
-        # barbara_inclusa=True significa che Barbara viene anche nei giorni in cui Cristiana è presente.
-        p_barbara = 'Barbara' if is_available('Barbara') else ''
-
         tipo = _get_tipo_giorno_turni(dow)
+        # Con lista vuota tutti gli slot restano vuoti; lo staff va assegnato manualmente
         day_ass = {}
-        n_rot = len(rot_pool)
-        
-        cand_presto = rot_pool[rot_idx % n_rot]
-        cand_sera   = rot_pool[(rot_idx + 1) % n_rot]
-        
-        # In the rotating morning 6:30 / evening 14:00-b pool:
-        p_presto = cand_presto if is_available(cand_presto) else (cand_sera if is_available(cand_sera) else '')
-        p_sera = cand_sera if (is_available(cand_sera) and p_presto != cand_sera) else (cand_presto if (is_available(cand_presto) and p_presto != cand_presto) else p_barbara)
-        
-        # Turni Lunedì-Sabato: Cristiana non viene 3 volte a settimana.
-        # Nei 3 giorni in cui Cristiana non viene, subentra Barbara (mattina 7:00) e Tiziana fa il pomeriggio (14:00).
-        # Nei giorni in cui Cristiana è presente, Cristiana fa il pomeriggio e Tiziana fa la mattina (7:00).
-        iso_year, iso_week, _ = d.isocalendar()
-        if martedi_aperto:
-            patterns = [{0, 2, 4}, {1, 3, 5}, {0, 3, 5}, {1, 2, 4}]
-        else:
-            patterns = [{0, 2, 4}, {2, 3, 5}, {0, 3, 5}, {0, 2, 5}]
-        off_days = patterns[iso_week % len(patterns)]
-        cristiana_assente = (dow in off_days) or (not is_available('Cristiana'))
-
-        if cristiana_assente:
-            slot_mattina_7 = p_barbara if p_barbara else ''
-            slot_pom = 'Tiziana' if is_available('Tiziana') else (p_barbara if slot_mattina_7 != p_barbara else '')
-        else:
-            slot_mattina_7 = 'Tiziana' if is_available('Tiziana') else (p_barbara if p_barbara else '')
-            slot_pom = 'Cristiana' if is_available('Cristiana') else (p_barbara if slot_mattina_7 != p_barbara else '')
-
-        # Se cristiana è presente E barbara_inclusa=True, forza Barbara nello slot disponibile
-        # anche nei giorni "normali" (quando Cristiana c'è, aggiunge Barbara al posto di p_sera se libero)
-        if not cristiana_assente and barbara_inclusa and p_barbara and p_barbara not in (slot_mattina_7, slot_pom, p_presto):
-            # Barbara prende slot p_sera (14-20:30-b per feriale / 14-20:30 per sabato)
-            pass  # p_barbara già impostato, verrà usato nel fill-up
-
-        if p_sera in (slot_mattina_7, slot_pom):
-            p_sera = p_barbara if p_barbara and p_barbara not in (slot_mattina_7, slot_pom) else ''
-
         if tipo == 'feriale':
-            day_ass['6:30-14'] = p_presto
-            day_ass['7-14'] = slot_mattina_7
-            day_ass['14-20:30-a'] = slot_pom
-            day_ass['14-20:30-b'] = p_sera
-            rot_idx += 1
-
-            # Deduplicazione: se la stessa persona compare in 2 slot, svuota il secondo
-            # (il fill-up ricoprirà il buco con il prossimo sostituto disponibile)
-            _dup_fer = {}
-            for _dup_s in ['6:30-14', '7-14', '14-20:30-a', '14-20:30-b']:
-                _dn = day_ass.get(_dup_s, '')
-                if _dn:
-                    if _dn in _dup_fer:
-                        day_ass[_dup_s] = ''  # rimuovi il duplicato
-                    else:
-                        _dup_fer[_dn] = _dup_s
-
-            # Feriale: SEMPRE almeno 4 persone del team core.
-            # Ordine priorità sostituti team core: Barbara → Cristiana → Tiziana → Claudia → Federica.
-            _sostituti_fer = ['Barbara', 'Cristiana', 'Tiziana', 'Claudia', 'Federica']
-            _staff_unici = set(v for v in day_ass.values() if v)
-            for _sub in _sostituti_fer:
-                if len(_staff_unici) >= 4:
-                    break
-                if _sub in _staff_unici or not is_available(_sub):
-                    continue
-                # Barbara preferisce mattina (7-14), tutti gli altri riempiono il primo slot vuoto
-                _pref = ['7-14', '14-20:30-b', '14-20:30-a', '6:30-14'] if _sub == 'Barbara' else ['14-20:30-b', '14-20:30-a', '7-14', '6:30-14']
-                for _slot in _pref:
-                    if not day_ass.get(_slot):
-                        day_ass[_slot] = _sub
-                        _staff_unici.add(_sub)
-                        break
-
-            # Se mancano ancora persone (< 4), Marisa entra come riserva di emergenza (2+ assenti)
-            # Marisa SEMPRE di mattina (7-14), mai di pomeriggio o apertura!
-            if len(_staff_unici) < 4 and 'Marisa' not in _staff_unici and is_available('Marisa'):
-                if not day_ass.get('7-14'):
-                    day_ass['7-14'] = 'Marisa'
-                    _staff_unici.add('Marisa')
-                elif not day_ass.get('14-20:30-b'):
-                    day_ass['14-20:30-b'] = day_ass['7-14']
-                    day_ass['7-14'] = 'Marisa'
-                    _staff_unici.add('Marisa')
-                elif not day_ass.get('14-20:30-a'):
-                    day_ass['14-20:30-a'] = day_ass['7-14']
-                    day_ass['7-14'] = 'Marisa'
-                    _staff_unici.add('Marisa')
-                elif not day_ass.get('6:30-14'):
-                    day_ass['6:30-14'] = day_ass['7-14']
-                    day_ass['7-14'] = 'Marisa'
-                    _staff_unici.add('Marisa')
-
+            for slot in ['6:30-14', '7-14', '14-20:30-a', '14-20:30-b']:
+                day_ass[slot] = ''
         elif tipo == 'sabato':
-            # Spezzato (8-13/16-20:30) ruota tra Claudia, Federica, Tiziana ogni settimana
-            spezzato_pool = ['Claudia', 'Federica', 'Tiziana']
-            p_spezzato = spezzato_pool[iso_week % len(spezzato_pool)]
-            # Se chi tocca lo spezzato non è disponibile, usa il successivo disponibile
-            if not is_available(p_spezzato):
-                for cand in spezzato_pool:
-                    if is_available(cand):
-                        p_spezzato = cand
-                        break
-                else:
-                    p_spezzato = ''
-            if p_spezzato == 'Tiziana':
-                # Tiziana fa lo spezzato: Claudia e Federica coprono 6:30 e 14:00
-                day_ass['6:30-14'] = p_presto
-                day_ass['8-13/16-20:30'] = 'Tiziana'
-                if cristiana_assente:
-                    # Barbara in 7:00, Federica/Claudia (l'altra dal presto) in 14:00
-                    day_ass['7-14'] = p_barbara if p_barbara else ''
-                    day_ass['14-20:30'] = p_sera if p_sera not in ('Tiziana',) else ''
-                else:
-                    # Cristiana al pomeriggio, l'altra Claudia/Federica in 7:00
-                    day_ass['7-14'] = p_sera
-                    day_ass['14-20:30'] = 'Cristiana'
-            else:
-                # Claudia o Federica fa lo spezzato
-                # Chi fa lo spezzato NON può fare anche 6:30: l'altra copre 6:30
-                other_rot = 'Federica' if p_spezzato == 'Claudia' else 'Claudia'
-                p_6_30 = other_rot if is_available(other_rot) else (p_barbara if p_barbara else '')
-                day_ass['6:30-14'] = p_6_30
-                day_ass['8-13/16-20:30'] = p_spezzato
-                day_ass['7-14'] = slot_mattina_7
-                day_ass['14-20:30'] = slot_pom
-            rot_idx += 1
-
-            # Deduplicazione sabato: se la stessa persona compare in 2 slot, svuota il secondo
-            _dup_sab = {}
-            for _dup_s in ['6:30-14', '7-14', '8-13/16-20:30', '14-20:30']:
-                _dn = day_ass.get(_dup_s, '')
-                if _dn:
-                    if _dn in _dup_sab:
-                        day_ass[_dup_s] = ''  # rimuovi il duplicato
-                    else:
-                        _dup_sab[_dn] = _dup_s
-
-            # Sabato: SEMPRE almeno 4 persone del team core.
-            # Stesso ordine priorità: Barbara → Cristiana → Tiziana → Claudia → Federica.
-            _sostituti_sab = ['Barbara', 'Cristiana', 'Tiziana', 'Claudia', 'Federica']
-            _staff_sab_unici = set(v for v in day_ass.values() if v)
-            for _sub in _sostituti_sab:
-                if len(_staff_sab_unici) >= 4:
-                    break
-                if _sub in _staff_sab_unici or not is_available(_sub):
-                    continue
-                _pref_sab = ['7-14', '14-20:30', '6:30-14', '8-13/16-20:30'] if _sub == 'Barbara' else ['14-20:30', '7-14', '6:30-14', '8-13/16-20:30']
-                for _slot in _pref_sab:
-                    if not day_ass.get(_slot):
-                        day_ass[_slot] = _sub
-                        _staff_sab_unici.add(_sub)
-                        break
-
-            # Se mancano ancora persone (< 4), Marisa entra come riserva di emergenza
-            # Sabato: Marisa SEMPRE di mattina (7-14), mai di pomeriggio o spezzato!
-            if len(_staff_sab_unici) < 4 and 'Marisa' not in _staff_sab_unici and is_available('Marisa'):
-                if not day_ass.get('7-14'):
-                    day_ass['7-14'] = 'Marisa'
-                    _staff_sab_unici.add('Marisa')
-                elif not day_ass.get('14-20:30'):
-                    day_ass['14-20:30'] = day_ass['7-14']
-                    day_ass['7-14'] = 'Marisa'
-                    _staff_sab_unici.add('Marisa')
-                elif not day_ass.get('6:30-14'):
-                    day_ass['6:30-14'] = day_ass['7-14']
-                    day_ass['7-14'] = 'Marisa'
-                    _staff_sab_unici.add('Marisa')
-
+            for slot in ['6:30-14', '7-14', '8-13/16-20:30', '14-20:30']:
+                day_ass[slot] = ''
         elif tipo == 'domenica':
-            if not p_presto:
-                for c in ['Claudia', 'Federica', 'Barbara', 'Tiziana', 'Cristiana']:
-                    if is_available(c):
-                        p_presto = c
-                        break
-            day_ass['6:30-14'] = p_presto
-            seen = {p_presto} if p_presto else set()
-            chosen_dom = []
-            # Domenica: p_sera (altra rotante), poi Barbara, Tiziana, Cristiana. Marisa solo emergenza.
-            for c in [p_sera, 'Barbara', 'Tiziana', 'Cristiana', 'Claudia', 'Federica']:
-                if c and c not in seen and is_available(c):
-                    chosen_dom.append(c)
-                    seen.add(c)
-                if len(chosen_dom) == 3:
-                    break
-            # Marisa solo se davvero non si riesce a coprire con il team core (sempre di mattina 7-14)
-            if len(chosen_dom) < 3 and is_available('Marisa') and 'Marisa' not in seen:
-                chosen_dom.append('Marisa')
-                seen.add('Marisa')
-            while len(chosen_dom) < 3:
-                chosen_dom.append('')
-            day_ass['7-14-a'] = chosen_dom[0]
-            day_ass['7-14-b'] = chosen_dom[1]
-            day_ass['7-14-c'] = chosen_dom[2]
-            rot_idx += 1
-
-        # Deduplicazione di sicurezza: nessun dipendente può ripetersi nello stesso giorno
-        _seen_day = set()
-        for _k in list(day_ass.keys()):
-            _v = (day_ass.get(_k) or '').strip()
-            if _v:
-                _vk = _v.lower().split()[0]
-                if _vk in _seen_day:
-                    day_ass[_k] = ''
-                else:
-                    _seen_day.add(_vk)
-
+            for slot in ['6:30-14', '7-14-a', '7-14-b', '7-14-c']:
+                day_ass[slot] = ''
         result[d_str] = {'tipo': tipo, 'assegnazioni': day_ass}
     return result
 
@@ -2738,10 +2520,7 @@ def _auto_genera_turni_palocco(anno, mese, martedi_aperto, ferie_by_day=None, ma
     if marisa_ostia_days is None:
         marisa_ostia_days = set()
 
-    # Pool rotante ordinario di Palocco: 5 persone per i restanti 3 slot
-    rot_pool = ['Pietro', 'Mariapia', 'Ivano', 'Patrizia', 'Francesca']
-    spezzato_pool = ['Pietro', 'Mariapia', 'Ivano', 'Patrizia', 'Francesca']
-
+    # Usa la lista nomi configurata (vuota = nessun nome auto-assegnato)
     result = {}
     num_days = cal_mod.monthrange(anno, mese)[1]
 
@@ -2752,175 +2531,21 @@ def _auto_genera_turni_palocco(anno, mese, martedi_aperto, ferie_by_day=None, ma
         if dow == 1 and not martedi_aperto:
             result[d_str] = {'tipo': 'chiuso', 'assegnazioni': {}}
             continue
-
-        in_ferie = ferie_by_day.get(d_str, set()) if ferie_by_day else set()
-        # Usa default arg per catturare correttamente in_ferie nella closure (evita bug Python con loop)
-        def is_available(name, _ferie=in_ferie):
-            return _is_dipendente_disponibile(name, _ferie)
-
-        # Regola Marisa:
-        # Se Marisa si trova ad Ostia in questa data, NON può essere in turno a Palocco!
-        marisa_disponibile_palocco = is_available('Marisa') and (d_str not in marisa_ostia_days)
-
         tipo = _get_tipo_giorno_turni(dow)
+        # Con lista vuota tutti gli slot restano vuoti; lo staff va assegnato manualmente
         day_ass = {}
-
-        # 1. Roberto fa SEMPRE 6:30-14
-        roberto_ok = is_available('Roberto')
-
-        # Ordine a rotazione ciclica dei 5 dipendenti di Palocco
-        cand_order = [rot_pool[(day_num - 1 + i) % len(rot_pool)] for i in range(len(rot_pool))]
-        assigned_rot = [p for p in cand_order if is_available(p)]
-
-        if roberto_ok:
-            day_ass['6:30-14'] = 'Roberto'
-            pool_disponibili = assigned_rot
-        else:
-            # Se Roberto è assente, il primo disponibile copre il 6:30-14
-            day_ass['6:30-14'] = assigned_rot[0] if assigned_rot else ''
-            pool_disponibili = assigned_rot[1:] if len(assigned_rot) > 1 else []
-
-        iso_year, iso_week, _ = d.isocalendar()
-
         if tipo == 'feriale':
-            # Slot: 6:30-14, 7-14, 14-20:30-a, 14-20:30-b
-            day_ass['7-14'] = pool_disponibili[0] if len(pool_disponibili) > 0 else ''
-            day_ass['14-20:30-a'] = pool_disponibili[1] if len(pool_disponibili) > 1 else ''
-            day_ass['14-20:30-b'] = pool_disponibili[2] if len(pool_disponibili) > 2 else ''
-
-            # Feriale: SEMPRE almeno 4 persone del team di Palocco.
-            # Se manca qualcuno, dai prima priorità a chi del team è libero (Francesca, Patrizia, Ivano, Mariapia, Pietro)
-            _sostituti_palocco = ['Francesca', 'Patrizia', 'Ivano', 'Mariapia', 'Pietro', 'Roberto']
-            staff_unici = set(v for v in day_ass.values() if v)
-            for _sub in _sostituti_palocco:
-                if len(staff_unici) >= 4:
-                    break
-                if _sub in staff_unici or not is_available(_sub):
-                    continue
-                for _slot in ['7-14', '14-20:30-b', '14-20:30-a', '6:30-14']:
-                    if not day_ass.get(_slot):
-                        day_ass[_slot] = _sub
-                        staff_unici.add(_sub)
-                        break
-
-            # SOLO emergenza estrema (riserva extra grave): Marisa entra solo se TUTTO il team è occupato o indisponibile
-            # SEMPRE di mattina (7-14), mai di pomeriggio.
-            if len(staff_unici) < 4 and 'Marisa' not in staff_unici and marisa_disponibile_palocco:
-                if not day_ass.get('7-14'):
-                    day_ass['7-14'] = 'Marisa'
-                elif not day_ass.get('14-20:30-b'):
-                    day_ass['14-20:30-b'] = day_ass['7-14']
-                    day_ass['7-14'] = 'Marisa'
-                elif not day_ass.get('14-20:30-a'):
-                    day_ass['14-20:30-a'] = day_ass['7-14']
-                    day_ass['7-14'] = 'Marisa'
-
+            for slot in ['6:30-14', '7-14', '14-20:30-a', '14-20:30-b']:
+                day_ass[slot] = ''
         elif tipo == 'sabato':
-            # Sabato a Palocco: tutti e 6 i dipendenti in turno!
-            # 6:30-14: Roberto (o sostituto se assente)
-            # 8-13/16-20:30: 1 dipendente a rotazione dello spezzato
-            # 7:00-14: 2 dipendenti di mattina (7-14-a, 7-14-b)
-            # 14:00-20:30: 2 dipendenti di pomeriggio (14-20:30-a, 14-20:30-b)
-            cand_spezzato = spezzato_pool[iso_week % len(spezzato_pool)]
-            p_spezzato = cand_spezzato if cand_spezzato in pool_disponibili else (pool_disponibili[0] if pool_disponibili else '')
-            day_ass['8-13/16-20:30'] = p_spezzato
-
-            restanti = [p for p in pool_disponibili if p != p_spezzato]
-            day_ass['7-14-a'] = restanti[0] if len(restanti) > 0 else ''
-            day_ass['7-14-b'] = restanti[1] if len(restanti) > 1 else ''
-            day_ass['14-20:30-a'] = restanti[2] if len(restanti) > 2 else ''
-            day_ass['14-20:30-b'] = restanti[3] if len(restanti) > 3 else ''
-
-            # Prima di tutto: se c'è un posto libero e qualcuno del team di Palocco è libero/disponibile (es. Francesca),
-            # inserisci SEMPRE prima il dipendente del team e MAI Marisa!
-            _sostituti_palocco = ['Francesca', 'Patrizia', 'Ivano', 'Mariapia', 'Pietro', 'Roberto']
-            staff_unici = set(v for v in day_ass.values() if v)
-            for _sub in _sostituti_palocco:
-                if len(staff_unici) >= 6:
-                    break
-                if _sub in staff_unici or not is_available(_sub):
-                    continue
-                for _slot in ['7-14-a', '7-14-b', '14-20:30-a', '14-20:30-b', '8-13/16-20:30', '6:30-14']:
-                    if not day_ass.get(_slot):
-                        day_ass[_slot] = _sub
-                        staff_unici.add(_sub)
-                        break
-
-            # SOLO se NESSUN membro del team di Palocco è disponibile (tutti malati/ferie/già in turno),
-            # Marisa può subentrare come riserva extra grave SOLO di mattina (7-14) e se NON è già ad Ostia.
-            if len(staff_unici) < 6 and 'Marisa' not in staff_unici and marisa_disponibile_palocco:
-                slot_m_vuoto = None
-                for s_id in ['7-14-a', '7-14-b']:
-                    if not day_ass.get(s_id):
-                        slot_m_vuoto = s_id
-                        break
-                if slot_m_vuoto:
-                    day_ass[slot_m_vuoto] = 'Marisa'
-                elif not day_ass.get('14-20:30-b'):
-                    day_ass['14-20:30-b'] = day_ass['7-14-b']
-                    day_ass['7-14-b'] = 'Marisa'
-                elif not day_ass.get('14-20:30-a'):
-                    day_ass['14-20:30-a'] = day_ass['7-14-b']
-                    day_ass['7-14-b'] = 'Marisa'
-                elif not day_ass.get('8-13/16-20:30'):
-                    day_ass['8-13/16-20:30'] = day_ass['7-14-b']
-                    day_ass['7-14-b'] = 'Marisa'
-
+            for slot in ['6:30-14', '8-13/16-20:30', '7-14-a', '7-14-b', '14-20:30-a', '14-20:30-b']:
+                day_ass[slot] = ''
         elif tipo == 'domenica':
-            # Palocco è aperto tutto il giorno come un normale feriale (mattina e pomeriggio).
-            # A parte Marisa (che è riserva), tutti e 6 i dipendenti di Palocco sono in turno!
-            # 6:30-14: Roberto (o sostituto se assente)
-            # 7:00-14: 3 dipendenti di mattina (7-14-a, 7-14-b, 7-14-c)
-            # 14:00-20:30: 2 dipendenti di pomeriggio (14-20:30-a, 14-20:30-b)
-            day_ass['7-14-a'] = pool_disponibili[0] if len(pool_disponibili) > 0 else ''
-            day_ass['7-14-b'] = pool_disponibili[1] if len(pool_disponibili) > 1 else ''
-            day_ass['7-14-c'] = pool_disponibili[2] if len(pool_disponibili) > 2 else ''
-            day_ass['14-20:30-a'] = pool_disponibili[3] if len(pool_disponibili) > 3 else ''
-            day_ass['14-20:30-b'] = pool_disponibili[4] if len(pool_disponibili) > 4 else ''
-
-            # Prima di tutto: se manca qualcuno, cerca prima tra i membri del team di Palocco
-            _sostituti_palocco = ['Francesca', 'Patrizia', 'Ivano', 'Mariapia', 'Pietro', 'Roberto']
-            staff_unici = set(v for v in day_ass.values() if v)
-            for _sub in _sostituti_palocco:
-                if len(staff_unici) >= 6:
-                    break
-                if _sub in staff_unici or not is_available(_sub):
-                    continue
-                for _slot in ['7-14-a', '7-14-b', '7-14-c', '14-20:30-a', '14-20:30-b', '6:30-14']:
-                    if not day_ass.get(_slot):
-                        day_ass[_slot] = _sub
-                        staff_unici.add(_sub)
-                        break
-
-            # SOLO se nessun altro del team è disponibile, Marisa riserva extra grave solo di mattina (7-14)
-            if len(staff_unici) < 6 and 'Marisa' not in staff_unici and marisa_disponibile_palocco:
-                slot_m_vuoto = None
-                for s_id in ['7-14-a', '7-14-b', '7-14-c']:
-                    if not day_ass.get(s_id):
-                        slot_m_vuoto = s_id
-                        break
-                if slot_m_vuoto:
-                    day_ass[slot_m_vuoto] = 'Marisa'
-                elif not day_ass.get('14-20:30-b'):
-                    day_ass['14-20:30-b'] = day_ass['7-14-c']
-                    day_ass['7-14-c'] = 'Marisa'
-                elif not day_ass.get('14-20:30-a'):
-                    day_ass['14-20:30-a'] = day_ass['7-14-c']
-                    day_ass['7-14-c'] = 'Marisa'
-
-        # Deduplicazione di sicurezza: nessun dipendente può ripetersi nello stesso giorno
-        _seen_p_day = set()
-        for _k in list(day_ass.keys()):
-            _v = (day_ass.get(_k) or '').strip()
-            if _v:
-                _vk = _v.lower().split()[0]
-                if _vk in _seen_p_day:
-                    day_ass[_k] = ''
-                else:
-                    _seen_p_day.add(_vk)
-
+            for slot in ['6:30-14', '7-14-a', '7-14-b', '7-14-c', '14-20:30-a', '14-20:30-b']:
+                day_ass[slot] = ''
         result[d_str] = {'tipo': tipo, 'assegnazioni': day_ass}
     return result
+
 
 
 def _sincronizza_turni_da_piano_ferie(cur, data_inizio, data_fine):
