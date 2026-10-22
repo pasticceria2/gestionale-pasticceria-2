@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario Schiavoni</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#1e293b"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        @media (min-width: 1025px) {
+            html, body {
+                height: 100vh;
+                overflow: hidden;
+            }
+            body {
+                display: flex;
+                flex-direction: column;
+                min-height: unset;
+            }
+        }
+        
+        .top-header { 
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 60%, #075985 100%);
+            color: white; 
+            padding: 1.5rem 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.3),
+                0 6px 0 #0c4a6e,
+                0 14px 25px -4px rgba(2, 132, 199, 0.4);
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            flex-shrink: 0;
+        }
+
+        /* Banner animato SOLO su Desktop: gradiente fluido da blu chiaro (sx) a blu scuro (dx) */
+        @media (min-width: 769px) {
+            .top-header {
+                background: linear-gradient(
+                    90deg,
+                    #38bdf8 0%,
+                    #0ea5e9 18%,
+                    #0284c7 40%,
+                    #0369a1 65%,
+                    #075985 85%,
+                    #0c4a6e 100%
+                );
+                background-size: 160% 100%;
+                animation: desktopBannerGradientFlow 7s ease-in-out infinite alternate;
+            }
+        }
+
+        @keyframes desktopBannerGradientFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .top-header .header-title { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            font-size: 2rem; 
+            flex-shrink: 0;
+        }
+
+        .month-nav { display: flex; align-items: center; gap: 15px; }
+        .month-nav h2 { 
+            font-family: 'Inter', sans-serif; 
+            font-weight: 700;
+            font-size: 1.6rem; 
+            margin: 0; 
+            text-align: center;
+            color: white;
+            min-width: 180px;
+        }
+        .nav-arrow { 
+            text-decoration: none; 
+            font-size: 1.2rem; 
+            color: white; 
+            background: rgba(255,255,255,0.1); 
+            padding: 5px 15px; 
+            border-radius: 8px; 
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 0 rgba(0,0,0,0.3);
+        }
+        .nav-arrow:hover { 
+            background: rgba(255,255,255,0.2); 
+            transform: translateY(-2px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 6px 0 rgba(0,0,0,0.3);
+        }
+        .nav-arrow:active {
+            transform: translateY(4px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 0px 0 rgba(0,0,0,0.3);
+        }
+
+        .user-menu { position: relative; }
+        .user-menu-btn {
+            background: rgba(255,255,255,0.1); color: white; padding: 10px 15px; border-radius: 10px; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; font-weight: 600; user-select: none;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 0 rgba(0,0,0,0.3);
+        }
+        .user-menu-btn:hover { 
+            background: rgba(255,255,255,0.2); 
+            transform: translateY(-2px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 6px 0 rgba(0,0,0,0.3);
+        }
+        .user-menu-btn:active {
+            transform: translateY(4px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 0px 0 rgba(0,0,0,0.3);
+        }
+        .user-menu-dropdown {
+            display: none; position: absolute; right: 0; top: calc(100% + 4px); background: #0369a1; 
+            border-radius: 12px; list-style: none; padding: 5px 0; margin: 0; width: 180px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 100; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .user-menu-dropdown::before {
+            content: ""; position: absolute; top: -10px; left: 0; right: 0; height: 10px;
+        }
+        .user-menu-dropdown a { 
+            display: block; padding: 10px 15px; color: white; text-decoration: none; font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+        .user-menu-dropdown a:hover { background: #0284c7; border-radius: 4px; }
+        .user-menu:hover .user-menu-dropdown,
+        .user-menu-dropdown.show { display: block; }
+
+        .top-controls { max-width: 98%; width: 98%; margin: 0.5rem auto; padding: 0 10px; box-sizing: border-box; flex-shrink: 0; }
+        .container { max-width: 98%; width: 98%; margin: 0.5rem auto; padding: 0 10px; box-sizing: border-box; }
+        .mobile-header-spacer { display: none; }
+
+        .action-buttons { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .button-group-left { flex: 1; display: flex; align-items: center; }
+
+        .desktop-brand {
+            display: none;
+            background: linear-gradient(160deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid rgba(255,255,255,0.9);
+            border-radius: 14px;
+            padding: 6px 16px 6px 10px;
+            align-items: center;
+            gap: 12px;
+            box-shadow:
+                inset 0 2px 0 rgba(255,255,255,1),
+                inset 0 -3px 0 rgba(0,0,0,0.04),
+                0 4px 0 #cbd5e1,
+                0 6px 14px rgba(15,23,42,0.1);
+        }
+        .desktop-brand-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            border: 2px solid rgba(2, 132, 199, 0.25);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.4);
+            display: block;
+        }
+        .desktop-brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        .desktop-brand-past {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+        .desktop-brand-schiav {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #0284c7;
+            letter-spacing: -0.01em;
+            text-shadow: 0 1px 2px rgba(2,132,199,0.15);
+        }
+
+        .desktop-right-top { display: none; }
+        .desktop-right-bottom { display: flex; gap: 8px; align-items: center; }
+
+        .digital-clock {
+            background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+            border: 1px solid rgba(255,255,255,0.9);
+            border-radius: 12px;
+            padding: 10px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            box-shadow: 
+                inset 0 2px 0 rgba(255,255,255,1),
+                inset 0 -3px 0 rgba(0,0,0,0.06),
+                0 4px 0 #cbd5e1,
+                0 6px 12px rgba(15,23,42,0.12);
+        }
+        .digital-clock .clock-date {
+            font-family: 'Inter', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .digital-clock .clock-time {
+            font-family: 'Courier New', monospace;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #059669;
+            letter-spacing: 0.04em;
+            line-height: 1;
+            text-shadow: 0 1px 2px rgba(5,150,105,0.15);
+        }
+        .button-group-center { display: flex; gap: 10px; justify-content: center; flex: 1; }
+        .button-group-right { display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex: 1; }
+        
+        .btn-main {
+            padding: 15px 32px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.08rem;
+            text-align: center;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.02em;
+            user-select: none;
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.12s ease;
+        }
+        @keyframes softBlinkGreen {
+            0%, 100% {
+                box-shadow:
+                    inset 0 1.5px 1px rgba(255,255,255,0.45),
+                    inset 0 -2px 2px rgba(0,0,0,0.12),
+                    0 5px 0 #047857,
+                    0 6px 14px rgba(16,185,129,0.25);
+            }
+            50% {
+                box-shadow:
+                    inset 0 1.5px 1px rgba(255,255,255,0.55),
+                    inset 0 -2px 2px rgba(0,0,0,0.12),
+                    0 5px 0 #047857,
+                    0 12px 30px 6px rgba(16,185,129,0.7);
+            }
+        }
+
+        @keyframes softBlinkPurple {
+            0%, 100% {
+                box-shadow:
+                    inset 0 1.5px 1px rgba(255,255,255,0.45),
+                    inset 0 -2px 2px rgba(0,0,0,0.12),
+                    0 5px 0 #5b21b6,
+                    0 6px 14px rgba(139,92,246,0.25);
+            }
+            50% {
+                box-shadow:
+                    inset 0 1.5px 1px rgba(255,255,255,0.55),
+                    inset 0 -2px 2px rgba(0,0,0,0.12),
+                    0 5px 0 #5b21b6,
+                    0 12px 30px 6px rgba(139,92,246,0.7);
+            }
+        }
+
+        .btn-main.green {
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.45),
+                inset 0 -2px 2px rgba(0,0,0,0.12),
+                0 5px 0 #047857,
+                0 6px 14px rgba(16,185,129,0.3);
+            animation: softBlinkGreen 2.4s ease-in-out infinite;
+        }
+        .btn-main.green:hover {
+            transform: translateY(-2px);
+            animation: none;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.5),
+                inset 0 -2px 2px rgba(0,0,0,0.12),
+                0 7px 0 #047857,
+                0 14px 28px rgba(16,185,129,0.55);
+        }
+        .btn-main.green:active {
+            transform: translateY(4px);
+            animation: none;
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.25),
+                0 1px 0 #047857,
+                0 3px 8px rgba(16,185,129,0.2);
+        }
+        .btn-main.purple {
+            background: linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.45),
+                inset 0 -2px 2px rgba(0,0,0,0.12),
+                0 5px 0 #5b21b6,
+                0 6px 14px rgba(139,92,246,0.3);
+            animation: softBlinkPurple 2.4s ease-in-out infinite;
+        }
+        .btn-main.purple:hover {
+            transform: translateY(-2px);
+            animation: none;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.5),
+                inset 0 -2px 2px rgba(0,0,0,0.12),
+                0 7px 0 #5b21b6,
+                0 14px 28px rgba(139,92,246,0.55);
+        }
+        .btn-main.purple:active {
+            transform: translateY(4px);
+            animation: none;
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.25),
+                0 1px 0 #5b21b6,
+                0 3px 8px rgba(139,92,246,0.2);
+        }
+        .btn-secondary {
+            padding: 6px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-align: center;
+            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.9),
+                0 3px 0 #cbd5e1,
+                0 4px 6px rgba(15,23,42,0.06);
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            position: relative;
+        }
+        .btn-secondary:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.9),
+                0 4px 0 #cbd5e1,
+                0 6px 10px rgba(15,23,42,0.09);
+        }
+        .btn-secondary:active {
+            transform: translateY(2px);
+            box-shadow:
+                inset 0 1px 2px rgba(0,0,0,0.1),
+                0 1px 0 #cbd5e1;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            min-width: 19px;
+            height: 19px;
+            padding: 0 5px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #ffffff;
+            font-size: 0.68rem;
+            font-weight: 900;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 5px rgba(239, 68, 68, 0.45), 0 0 0 1px #dc2626;
+            animation: pulseNotification 2s infinite ease-in-out;
+            z-index: 10;
+            pointer-events: none;
+            line-height: 1;
+            box-sizing: border-box;
+        }
+
+        @keyframes pulseNotification {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 7px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .order-counter { 
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); 
+            border: 1px solid rgba(255,255,255,0.8); 
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -3px 0 rgba(56, 189, 248, 0.2), 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .order-counter .label { color: #0c4a6e; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; line-height: 1; margin-bottom: 4px; }
+        .order-counter .count { color: #0369a1; font-size: 1.6rem; font-weight: bold; line-height: 1; text-shadow: 0 1px 2px rgba(255,255,255,0.5); }
+
+
+
+        .calendar-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; width: 100%; min-width: 700px; }
+        
+        .day-name { text-align: center; font-weight: bold; color: #64748b; font-size: 0.9rem; text-transform: uppercase; padding: 8px 0; border-bottom: 2px solid #e2e8f0; }
+        
+        .day-card { 
+            background: #ffffff; 
+            border: 1.5px solid rgba(2, 132, 199, 0.28);
+            border-radius: 16px; 
+            padding: 14px; 
+            min-height: 120px; 
+            text-decoration: none; 
+            color: inherit; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 10px 15px -5px rgba(15, 23, 42, 0.1), inset 0 2px 0 rgba(255, 255, 255, 0.95), inset 0 -4px 0 rgba(0, 0, 0, 0.05);
+        }
+        .day-card:hover { 
+            border-color: #0284c7; 
+            transform: translateY(-4px) scale(1.02); 
+            box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.2), 0 25px 40px -10px rgba(2, 132, 199, 0.15), inset 0 2px 0 rgba(255, 255, 255, 0.95), inset 0 -6px 0 rgba(2, 132, 199, 0.1);
+        }
+        .day-card:active {
+            transform: translateY(2px) scale(0.99);
+            box-shadow: 0 2px 4px -1px rgba(15, 23, 42, 0.07), inset 0 2px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .day-card.other { opacity: 0.3; background: #f1f5f9; }
+        
+        .is-today { border: 3px solid #0284c7 !important; background: #f0f9ff !important; }
+        .is-today::after { content: "OGGI"; position: absolute; top: 8px; right: 8px; font-size: 0.65rem; background: #0284c7; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        
+        .badge { background: #e0f2fe; color: #0369a1; font-size: 0.85rem; padding: 6px; border-radius: 6px; margin-top: auto; text-align: center; font-weight: bold; border: 1px solid #bae6fd; }
+
+        @media (min-width: 1025px) {
+            .header-title { display: flex; flex-direction: column; line-height: 1; }
+            .header-title .t-past { font-size: 1.2rem; font-weight: normal; }
+            .header-title .t-schiav { font-size: 1.9rem; font-weight: bold; }
+            
+            .header-brand-banner { display: none !important; }
+            .top-header { position: relative; padding: 0.65rem 2rem; margin-bottom: 8px; justify-content: flex-end; }
+            .month-nav { position: absolute; left: 50%; transform: translateX(-50%); }
+            
+            .action-buttons {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                position: relative;
+            }
+            .button-group-left {
+                flex: 1 1 0;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                min-width: 0;
+            }
+            .desktop-brand {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 55%, #e0f2fe 100%);
+                border: 2px solid rgba(2, 132, 199, 0.28);
+                border-radius: 18px;
+                padding: 8px 24px;
+                box-shadow:
+                    inset 0 2.5px 0 rgba(255,255,255,1),
+                    inset 0 -3px 0 rgba(2, 132, 199, 0.08),
+                    0 5px 0 #cbd5e1,
+                    0 10px 22px rgba(2, 132, 199, 0.14);
+                flex: 0 0 auto;
+                min-width: 325px;
+                height: 82px;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+            .brand-slide {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                padding: 8px 20px;
+                box-sizing: border-box;
+                transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .brand-slide-1 {
+                gap: 18px;
+                animation: brandCrossfade1 10s infinite;
+            }
+            .brand-slide-2 {
+                animation: brandCrossfade2 10s infinite;
+            }
+            @keyframes brandCrossfade1 {
+                0%, 42% {
+                    opacity: 1;
+                    visibility: visible;
+                    pointer-events: auto;
+                    transform: scale(1);
+                }
+                48%, 94% {
+                    opacity: 0;
+                    visibility: hidden;
+                    pointer-events: none;
+                    transform: scale(0.97);
+                }
+                100% {
+                    opacity: 1;
+                    visibility: visible;
+                    pointer-events: auto;
+                    transform: scale(1);
+                }
+            }
+            @keyframes brandCrossfade2 {
+                0%, 42% {
+                    opacity: 0;
+                    visibility: hidden;
+                    pointer-events: none;
+                    transform: scale(0.97);
+                }
+                48%, 94% {
+                    opacity: 1;
+                    visibility: visible;
+                    pointer-events: auto;
+                    transform: scale(1);
+                }
+                100% {
+                    opacity: 0;
+                    visibility: hidden;
+                    pointer-events: none;
+                    transform: scale(0.97);
+                }
+            }
+            .desktop-brand-logo {
+                width: 64px;
+                height: 64px;
+                border-radius: 16px;
+                border: 2.5px solid rgba(2, 132, 199, 0.3);
+                box-shadow: 0 6px 14px rgba(2, 132, 199, 0.2), inset 0 1px 1px rgba(255,255,255,0.5);
+                display: block;
+                flex-shrink: 0;
+            }
+            .desktop-brand-text {
+                display: flex;
+                flex-direction: column;
+                line-height: 1.1;
+                white-space: nowrap;
+            }
+            .desktop-brand-past {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: #0284c7;
+                letter-spacing: 0.22em;
+                text-transform: uppercase;
+                margin-bottom: 1px;
+            }
+            .desktop-brand-schiav {
+                font-size: 2.5rem;
+                font-weight: 900;
+                color: #0369a1;
+                letter-spacing: -0.01em;
+                line-height: 1;
+                text-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+            }
+            .desktop-brand-slogan-wrap {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                line-height: 1.15;
+                white-space: nowrap;
+            }
+            .desktop-brand-slogan-sub {
+                font-size: 0.92rem;
+                font-weight: 700;
+                color: #0284c7;
+                letter-spacing: 0.20em;
+                text-transform: uppercase;
+                margin-bottom: 2px;
+            }
+            .desktop-brand-slogan-main {
+                font-size: 2.35rem;
+                font-weight: 900;
+                color: #0369a1;
+                letter-spacing: 0.02em;
+                line-height: 1;
+                text-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+            }
+
+            .button-group-center {
+                flex: 0 0 450px;
+                width: 450px;
+                max-width: 450px;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                justify-content: center;
+                position: static;
+                transform: none;
+            }
+            .button-group-center .btn-main {
+                flex: 1;
+                justify-content: center;
+                padding: 14px 16px;
+                font-size: 1.02rem;
+                white-space: nowrap;
+            }
+
+            .button-group-right {
+                flex: 1 1 0;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                min-width: 0;
+            }
+            .desktop-right-wrapper {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 6px;
+                width: fit-content;
+            }
+            .desktop-right-top {
+                display: flex;
+                gap: 8px;
+                align-items: stretch;
+                justify-content: flex-end;
+                width: 100%;
+            }
+            .desktop-col-utility {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                justify-content: stretch;
+                min-width: 105px;
+            }
+            .desktop-col-utility .btn-secondary {
+                flex: 1;
+                padding: 2px 8px;
+                font-size: 0.70rem;
+                font-weight: 700;
+                line-height: 1;
+                border-radius: 8px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                white-space: nowrap;
+            }
+            .desktop-right-top .digital-clock {
+                padding: 4px 10px;
+                min-width: 120px;
+                border-radius: 10px;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+            .desktop-right-top .digital-clock .clock-date {
+                font-size: 0.62rem;
+            }
+            .desktop-right-top .digital-clock .clock-time {
+                font-size: 1.22rem;
+            }
+            .desktop-right-top .order-counter {
+                padding: 4px 10px;
+                min-width: 115px;
+                border-radius: 10px;
+                justify-content: center;
+            }
+            .desktop-right-top .order-counter .label {
+                font-size: 0.58rem;
+                margin-bottom: 2px;
+            }
+            .desktop-right-top .order-counter .count {
+                font-size: 1.22rem;
+            }
+
+            .desktop-right-bottom {
+                display: flex;
+                gap: 8px;
+                width: 100%;
+                justify-content: stretch;
+            }
+            .desktop-right-bottom .btn-secondary {
+                flex: 1;
+                padding: 6px 6px;
+                font-size: 0.72rem;
+                white-space: nowrap;
+                height: 34px;
+            }
+            .btn-ferie-text {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                white-space: nowrap;
+            }
+            .btn-ferie-top, .btn-ferie-bottom {
+                font-size: inherit;
+                font-weight: inherit;
+            }
+
+            .counter-row { display: none !important; }
+            .mobile-secondary-buttons { display: none !important; }
+
+            /* Calendario schermo intero */
+            .container {
+                flex: 1 1 0;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+            .calendar-wrapper {
+                flex: 1 1 0;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                padding-bottom: 0;
+            }
+            .calendar-grid {
+                flex: 1 1 0;
+                overflow: hidden;
+                grid-template-rows: auto;
+                grid-auto-rows: 1fr;
+                gap: 6px;
+            }
+            .day-card {
+                min-height: unset;
+                padding: 8px 10px;
+            }
+            .day-name { padding: 5px 0; font-size: 0.8rem; }
+            .top-controls { margin-bottom: 5px; }
+            .badge { font-size: 0.78rem; padding: 4px; }
+        }
+
+        @media (max-width: 1024px) {
+            .header-brand-banner { display: flex !important; }
+            .desktop-brand { display: none !important; }
+            .desktop-right-wrapper { display: none !important; }
+            .mobile-secondary-buttons {
+                display: flex !important;
+                flex-direction: column;
+                gap: 8px;
+                width: 100%;
+            }
+            .mobile-sec-row {
+                display: flex;
+                gap: 8px;
+                width: 100%;
+            }
+            .mobile-sec-row .btn-secondary {
+                flex: 1 1 50%;
+                min-height: 46px;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                font-size: 0.78rem;
+                padding: 6px 8px;
+                box-sizing: border-box;
+            }
+            .btn-ferie-mobile {
+                width: 100%;
+                min-height: 48px;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                box-sizing: border-box;
+            }
+            .top-header { justify-content: center; text-align: center; }
+            .action-buttons { flex-direction: column; align-items: stretch; }
+            .button-group-left { display: none; }
+            .button-group-center { justify-content: stretch; flex-wrap: wrap; }
+            .button-group-center .btn-main { flex: 1; }
+            .button-group-right { justify-content: stretch; flex-wrap: wrap; }
+            .counter-row {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 10px;
+                align-items: stretch;
+                justify-content: center;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .counter-row .order-counter {
+                flex: 1 1 0;
+                min-width: 0;
+                padding: 6px 10px;
+                box-sizing: border-box;
+            }
+            .counter-row .order-counter .label {
+                font-size: 0.62rem;
+                line-height: 1.1;
+                white-space: nowrap;
+            }
+            .counter-row .order-counter .count {
+                font-size: 1.2rem;
+                line-height: 1.1;
+            }
+            .digital-clock-mobile {
+                display: flex !important;
+                flex: 1 1 0;
+                min-width: 0;
+                padding: 6px 10px;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                box-sizing: border-box;
+            }
+            .digital-clock-mobile .clock-date-m {
+                font-size: 0.60rem;
+                line-height: 1.1;
+                white-space: nowrap;
+            }
+            .digital-clock-mobile .clock-time-m {
+                font-size: 1.18rem;
+                line-height: 1.1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-header { 
+                padding: 0.75rem 1rem; 
+                flex-direction: column; 
+                gap: 10px; 
+                border-bottom-left-radius: 15px; 
+                border-bottom-right-radius: 15px; 
+                margin-bottom: 0; 
+                position: fixed; 
+                top: 0; 
+                left: 0; 
+                right: 0; 
+                z-index: 100;
+                background: linear-gradient(135deg, #0284c7 0%, #0369a1 60%, #075985 100%) !important;
+                background-size: auto !important;
+                animation: none !important;
+            }
+            .top-header > div:first-child { flex-direction: row; justify-content: center; align-items: center; gap: 12px; width: 100%; }
+            .top-header .header-title { font-size: 1.4rem; text-align: left; display: flex; flex-direction: column; line-height: 1; }
+            .header-title .t-past { font-size: 0.9rem; font-weight: normal; }
+            .header-title .t-schiav { font-size: 1.5rem; font-weight: bold; }
+            .top-header img { 
+                width: 44px !important; 
+                height: 44px !important; 
+                background: #ffffff !important; 
+                object-fit: contain !important; 
+                padding: 2px !important; 
+                border-radius: 10px !important; 
+            }
+            .month-nav { width: 100%; justify-content: space-between; }
+            .month-nav h2 { font-size: 1.25rem; min-width: auto; flex: 1; margin: 0; }
+            .nav-arrow { padding: 4px 14px; font-size: 1rem; }
+            .user-menu { width: 100%; }
+            .user-menu-btn { width: 100%; justify-content: center; padding: 8px; font-size: 0.95rem; }
+            .user-menu-dropdown { width: 100%; left: 0; top: calc(100% + 5px); }
+            
+            .button-group-center { display: none !important; }
+            .button-group-right { flex-direction: column; width: 100%; gap: 10px; }
+            .mobile-secondary-buttons { flex-direction: column; width: 100%; gap: 8px; }
+            .mobile-sec-row .btn-secondary { 
+                flex: 1 1 calc(50% - 4px); 
+                min-width: 0; 
+                min-height: 48px;
+                justify-content: center; 
+                align-items: center;
+                margin-bottom: 0; 
+                box-sizing: border-box; 
+                padding: 6px 8px; 
+                font-size: 0.78rem; 
+                text-align: center; 
+                white-space: normal;
+                line-height: 1.25;
+            }
+            .btn-ferie-text {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                line-height: 1.2;
+                gap: 1px;
+            }
+            .btn-ferie-top {
+                font-size: 0.74rem;
+                font-weight: 800;
+                letter-spacing: 0.2px;
+                white-space: nowrap;
+            }
+            .btn-ferie-bottom {
+                font-size: 0.68rem;
+                font-weight: 700;
+                opacity: 0.85;
+                letter-spacing: 0.5px;
+            }
+            .mobile-btn-row {
+                display: flex !important;
+                flex-direction: row;
+                gap: 10px;
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 8px;
+            }
+            .mobile-btn-row .btn-main {
+                flex: 1;
+                justify-content: center;
+                padding: 14px 8px;
+                font-size: 1rem;
+                font-weight: 700;
+                border-radius: 14px;
+                text-align: center;
+                box-sizing: border-box;
+                animation: none !important;
+            }
+            .btn-main.green,
+            .mobile-btn-row .btn-main.green {
+                animation: none !important;
+                box-shadow:
+                    inset 0 1.5px 1px rgba(255,255,255,0.45),
+                    inset 0 -2px 2px rgba(0,0,0,0.12),
+                    0 5px 0 #047857,
+                    0 10px 20px rgba(16,185,129,0.38) !important;
+            }
+            .btn-main.purple,
+            .mobile-btn-row .btn-main.purple {
+                animation: none !important;
+                box-shadow:
+                    inset 0 1.5px 1px rgba(255,255,255,0.45),
+                    inset 0 -2px 2px rgba(0,0,0,0.12),
+                    0 5px 0 #5b21b6,
+                    0 10px 20px rgba(139,92,246,0.38) !important;
+            }
+            .counter-row {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                width: 100% !important;
+                gap: 10px;
+                box-sizing: border-box;
+            }
+            .digital-clock-mobile, .counter-row .order-counter {
+                flex: 1 1 0 !important;
+                min-width: 0 !important;
+                width: 50% !important;
+                box-sizing: border-box;
+                padding: 6px 8px !important;
+            }
+            .digital-clock-mobile .clock-date-m { font-size: 0.58rem !important; }
+            .digital-clock-mobile .clock-time-m { font-size: 1.12rem !important; }
+            .counter-row .order-counter .label { font-size: 0.58rem !important; }
+            .counter-row .order-counter .count { font-size: 1.12rem !important; }
+            
+            .day-card { min-height: 100px; padding: 8px; }
+            .day-card strong { font-size: 0.95rem; }
+            .badge { font-size: 0.75rem; padding: 4px; }
+        }
+
+        .digital-clock-mobile {
+            display: none;
+            background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+            border: 1px solid rgba(255,255,255,0.9);
+            border-radius: 8px;
+            padding: 8px 12px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            box-shadow:
+                inset 0 2px 0 rgba(255,255,255,1),
+                inset 0 -3px 0 rgba(0,0,0,0.05),
+                0 4px 0 #cbd5e1,
+                0 6px 12px rgba(15,23,42,0.12);
+        }
+        .digital-clock-mobile .clock-date-m {
+            font-family: 'Inter', monospace;
+            font-size: 0.60rem;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .digital-clock-mobile .clock-time-m {
+            font-family: 'Courier New', monospace;
+            font-size: 1.18rem;
+            font-weight: 700;
+            color: #059669;
+            letter-spacing: 0.04em;
+            line-height: 1;
+            text-shadow: 0 1px 2px rgba(5,150,105,0.15);
+        }
+    </style>
+</head>
+<body>
+    <header class="top-header">
+        <div class="header-brand-banner" style="display: flex; align-items: center; gap: 15px;">
+            {% if is_schiavoni %}
+            <img src="{{ url_for('static', filename='images/icon.png') }}" alt="Logo Pasticceria Schiavoni" style="width: 50px; height: 50px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.3); background: #ffffff; object-fit: contain; padding: 2px;">
+            <h1 class="header-title">
+                <span class="t-past">Pasticceria</span> <span class="t-schiav">Schiavoni</span>
+            </h1>
+            {% else %}
+            <h1 class="header-title">📋 Gestionale Ordini</h1>
+            {% endif %}
+        </div>
+        <div class="month-nav">
+            <a href="?mese={{ prev_mese }}&anno={{ prev_anno }}" class="nav-arrow">❮</a>
+            <h2>{{ mese_nome }} {{ anno }}</h2>
+            <a href="?mese={{ next_mese }}&anno={{ next_anno }}" class="nav-arrow">❯</a>
+        </div>
+        <div class="user-menu">
+            <div class="user-menu-btn" onclick="toggleUserMenu(event)"><span>{{ session.username }}</span> ▼</div>
+            <ul class="user-menu-dropdown" id="userMenuDropdown">
+                <li><a href="{{ url_for('conferma_admin') }}">Gestione Utenti</a></li>
+                <li><a href="{{ url_for('logout') }}" style="color: #fca5a5;">Logout</a></li>
+            </ul>
+        </div>
+    </header>
+    <div id="mobileHeaderSpacer" class="mobile-header-spacer"></div>
+    
+    <div class="top-controls">
+        <div class="action-buttons">
+            <div class="button-group-left">
+                <div class="desktop-brand">
+                    {% if is_schiavoni %}
+                    <div class="brand-slide brand-slide-1">
+                        <img src="{{ url_for('static', filename='images/icon.png') }}" alt="Logo Pasticceria Schiavoni" class="desktop-brand-logo">
+                        <div class="desktop-brand-text">
+                            <span class="desktop-brand-past">Pasticceria</span>
+                            <span class="desktop-brand-schiav">Schiavoni</span>
+                        </div>
+                    </div>
+                    <div class="brand-slide brand-slide-2">
+                        <div class="desktop-brand-slogan-wrap">
+                            <span class="desktop-brand-slogan-sub">La tua pasticceria</span>
+                            <span class="desktop-brand-slogan-main">dal 1969</span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="desktop-brand-text">
+                        <span class="desktop-brand-past" style="font-size:1.1rem; font-weight:800;">📋 Gestionale Ordini</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="button-group-center">
+                {% if session.get('permissions', {}).get('can_edit', True) %}
+                <a href="{{ url_for('nuovo_ordine_form') }}" class="btn-main green">+ Nuovo Ordine</a>
+                <a href="{{ url_for('nuovo_rinfresco') }}" class="btn-main purple">+ Nuovo Rinfresco</a>
+                {% endif %}
+            </div>
+            <div class="button-group-right">
+                <div class="counter-row">
+                    <div class="digital-clock-mobile">
+                        <span class="clock-date-m" id="clockDateM"></span>
+                        <span class="clock-time-m" id="clockTimeM"></span>
+                    </div>
+                    <div class="order-counter">
+                        <span class="label">Totale Ordini Mese</span>
+                        <div class="count">{{ conteggio_ordini }}</div>
+                    </div>
+                </div>
+                <div class="desktop-right-wrapper">
+                    <div class="desktop-right-top">
+                        <div class="desktop-col-utility">
+                            {% if session.get('permissions', {}).get('can_view_anagrafica', True) %}
+                            <a href="{{ url_for('anagrafica') }}" class="btn-secondary">ANAGRAFICA</a>
+                            {% endif %}
+                            <a href="{{ url_for('supporto') }}" class="btn-secondary">SUPPORTO</a>
+                        </div>
+                        <div class="digital-clock">
+                            <span class="clock-date" id="clockDate"></span>
+                            <span class="clock-time" id="clockTime"></span>
+                        </div>
+                        <div class="order-counter">
+                            <span class="label">Totale Ordini Mese</span>
+                            <div class="count">{{ conteggio_ordini }}</div>
+                        </div>
+                    </div>
+                    <div class="desktop-right-bottom">
+                        <a href="{{ url_for('turni_settimanali') }}" class="btn-secondary">TURNI MESE OSTIA</a>
+                        <a href="{{ url_for('turni_palocco') }}" class="btn-secondary">TURNI MESE PALOCCO</a>
+                        <a href="{{ url_for('piano_ferie') }}" class="btn-secondary" id="pianFerieBtnDesktop" style="position:relative;">
+                            <span class="btn-ferie-text">
+                                <span class="btn-ferie-top">FERIE • CAMBI TURNO</span>
+                                <span class="btn-ferie-bottom">MALATTIA</span>
+                            </span>
+                            {% if ferie_in_attesa_count and ferie_in_attesa_count > 0 %}
+                            <span class="notification-dot ferie-notif-dot" id="ferieNotifDot" title="{{ ferie_in_attesa_count }} richieste in attesa di conferma">{{ ferie_in_attesa_count }}</span>
+                            {% else %}
+                            <span class="notification-dot ferie-notif-dot" id="ferieNotifDot" style="display:none;">0</span>
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+                <div class="mobile-secondary-buttons">
+                    <a href="{{ url_for('piano_ferie') }}" class="btn-secondary btn-ferie-mobile" style="position:relative;">
+                        <span class="btn-ferie-text">
+                            <span class="btn-ferie-top">FERIE • CAMBI TURNO</span>
+                            <span class="btn-ferie-bottom">MALATTIA</span>
+                        </span>
+                        {% if ferie_in_attesa_count and ferie_in_attesa_count > 0 %}
+                        <span class="notification-dot ferie-notif-dot" title="{{ ferie_in_attesa_count }} richieste in attesa di conferma">{{ ferie_in_attesa_count }}</span>
+                        {% else %}
+                        <span class="notification-dot ferie-notif-dot" style="display:none;">0</span>
+                        {% endif %}
+                    </a>
+                    <div class="mobile-sec-row">
+                        <a href="{{ url_for('turni_settimanali') }}" class="btn-secondary">TURNI MESE OSTIA</a>
+                        <a href="{{ url_for('turni_palocco') }}" class="btn-secondary">TURNI MESE PALOCCO</a>
+                    </div>
+                    <div class="mobile-sec-row">
+                        {% if session.get('permissions', {}).get('can_view_anagrafica', True) %}
+                        <a href="{{ url_for('anagrafica') }}" class="btn-secondary">ANAGRAFICA</a>
+                        {% endif %}
+                        <a href="{{ url_for('supporto') }}" class="btn-secondary">SUPPORTO</a>
+                    </div>
+                </div>
+            </div>
+            <div class="mobile-btn-row" style="display:none;">
+                {% if session.get('permissions', {}).get('can_edit', True) %}
+                <a href="{{ url_for('nuovo_ordine_form') }}" class="btn-main green">+ Nuovo Ordine</a>
+                <a href="{{ url_for('nuovo_rinfresco') }}" class="btn-main purple">+ Nuovo Rinfresco</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="container">
+        <div class="calendar-wrapper">
+            <div class="calendar-grid">
+                <div class="day-name">LUN</div> <div class="day-name">MAR</div> <div class="day-name">MER</div>
+                <div class="day-name">GIO</div> <div class="day-name">VEN</div> <div class="day-name">SAB</div> <div class="day-name">DOM</div>
+
+                {% for settimana in tabellone %}
+                    {% for d in settimana %}
+                    <a href="/giorno/{{ d.data }}" 
+                       class="day-card {% if d.fuori_mese %}other{% endif %} {% if d.data == oggi %}is-today{% endif %}"
+                       data-ordini='[{% for o in d.ordini %}"{{ o.cliente|lower }} {{ o.tipo_dolce|lower }}"{% if not loop.last %},{% endif %}{% endfor %}]'>
+                        <strong>{{ d.data.day }}</strong>
+                        {% if d.ordini|length > 0 %}
+                            <span class="badge">{{ d.ordini|length }} Ordini</span>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleUserMenu(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('userMenuDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('userMenuDropdown');
+            const menu = document.querySelector('.user-menu');
+            if (dropdown && menu && !menu.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+
+
+
+        const GIORNI = ['DOM','LUN','MAR','MER','GIO','VEN','SAB'];
+        function updateClock() {
+            const now = new Date();
+            const gg = String(now.getDate()).padStart(2,'0');
+            const mm = String(now.getMonth()+1).padStart(2,'0');
+            const aaaa = now.getFullYear();
+            const giorno = GIORNI[now.getDay()];
+            const hh = String(now.getHours()).padStart(2,'0');
+            const mi = String(now.getMinutes()).padStart(2,'0');
+            const ss = String(now.getSeconds()).padStart(2,'0');
+            const dateStr = giorno + ' ' + gg + '/' + mm + '/' + aaaa;
+            const timeStr = hh + ':' + mi + ':' + ss;
+            // Desktop clock
+            const dateEl = document.getElementById('clockDate');
+            const timeEl = document.getElementById('clockTime');
+            if (dateEl) dateEl.textContent = dateStr;
+            if (timeEl) timeEl.textContent = timeStr;
+            // Mobile clock
+            const dateMEl = document.getElementById('clockDateM');
+            const timeMEl = document.getElementById('clockTimeM');
+            if (dateMEl) dateMEl.textContent = dateStr;
+            if (timeMEl) timeMEl.textContent = timeStr;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // --- Polling notifiche ferie in attesa ---
+        (function() {
+            var lastCount = {{ ferie_in_attesa_count|default(0) }};
+
+            function updateFerieNotifDot(count) {
+                var dots = document.querySelectorAll('.ferie-notif-dot');
+                dots.forEach(function(dot) {
+                    if (count > 0) {
+                        dot.textContent = count;
+                        dot.title = count + ' richieste in attesa di conferma';
+                        dot.style.display = '';
+                    } else {
+                        dot.style.display = 'none';
+                    }
+                });
+            }
+
+            function pollFerieNotifiche() {
+                fetch('/api/piano-ferie/notifiche', { credentials: 'same-origin' })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (data.status === 'unauthorized') return;
+                        var newCount = parseInt(data.count) || 0;
+                        // Se il conteggio è cambiato rispetto all'ultima volta
+                        if (newCount !== lastCount) {
+                            // Aggiorno il dot
+                            updateFerieNotifDot(newCount);
+                            // Se il conteggio è sceso (conferme avvenute), ricarico la pagina
+                            // così il calendario si aggiorna
+                            if (newCount < lastCount) {
+                                location.reload();
+                            }
+                            lastCount = newCount;
+                        }
+                    })
+                    .catch(function() { /* ignora errori di rete */ });
+            }
+
+            // Polling ogni 30 secondi
+            setInterval(pollFerieNotifiche, 30000);
+        })();
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js')
+            .then(function(registration) {
+                console.log('Service Worker registered with scope:', registration.scope);
+            }).catch(function(error) {
+                console.log('Service Worker registration failed:', error);
+            });
+        }
+        // Spacer dinamico per header fisso su mobile
+        function adjustMobileHeaderSpacer() {
+            if (window.innerWidth <= 768) {
+                const header = document.querySelector('.top-header');
+                const spacer = document.getElementById('mobileHeaderSpacer');
+                if (header && spacer) {
+                    const h = header.offsetHeight;
+                    spacer.style.display = 'block';
+                    spacer.style.height = h + 'px';
+                }
+            } else {
+                const spacer = document.getElementById('mobileHeaderSpacer');
+                if (spacer) {
+                    spacer.style.display = 'none';
+                    spacer.style.height = '0';
+                }
+            }
+        }
+        adjustMobileHeaderSpacer();
+        window.addEventListener('resize', adjustMobileHeaderSpacer);
+    </script>
+</body>
+</html>

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Turni Mese Palocco – Pasticceria Schiavoni</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+        html,body{overflow-x:hidden;width:100%;margin:0;padding:0;}
+        body{font-family:'Outfit',-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh;padding:14px;}
+        .container{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:14px;}
+
+        /* HEADER */
+        .top-header{background:linear-gradient(135deg,#0284c7 0%,#0369a1 60%,#075985 100%);color:#fff;padding:1rem 1.4rem;display:flex;align-items:center;flex-wrap:wrap;gap:12px;box-shadow:inset 0 1.5px 1px rgba(255,255,255,.3),0 6px 0 #0c4a6e,0 14px 25px -4px rgba(2,132,199,.4);border-radius:20px;}
+        .header-brand{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+        .header-brand img{width:44px;height:44px;border-radius:10px;box-shadow:0 3px 8px rgba(0,0,0,.25);border:2px solid rgba(255,255,255,.3);background:#ffffff;object-fit:contain;padding:2px;}
+        .header-brand-title{font-size:1.3rem;font-weight:800;line-height:1.1;text-shadow:0 2px 4px rgba(0,0,0,.2);}
+        .header-brand-title small{font-size:0.72rem;font-weight:600;opacity:.8;display:block;}
+        .month-nav{display:flex;align-items:center;gap:10px;}
+        .nav-arrow{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.3);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;text-decoration:none;transition:all .15s;}
+        .nav-arrow:hover{background:rgba(255,255,255,.35);transform:scale(1.08);}
+        .month-nav h2{font-size:1.1rem;font-weight:800;margin:0;white-space:nowrap;}
+        .header-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-left:auto;}
+
+        /* TOGGLE */
+        .toggle-wrap{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.15);padding:6px 12px;border-radius:12px;}
+        .toggle-label{font-size:0.78rem;font-weight:700;color:#fff;white-space:nowrap;}
+        .toggle{position:relative;display:inline-block;width:40px;height:22px;}
+        .toggle input{opacity:0;width:0;height:0;}
+        .toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.3);border-radius:22px;transition:.3s;}
+        .toggle-slider::before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+        input:checked+.toggle-slider{background:#22c55e;}
+        input:checked+.toggle-slider::before{transform:translateX(18px);}
+
+        .btn-genera{background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:#fff;border:none;border-radius:12px;padding:9px 16px;font-size:0.82rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:7px;box-shadow:0 4px 0 #b45309,0 6px 14px rgba(245,158,11,.35);transition:all .15s;white-space:nowrap;font-family:inherit;}
+        .btn-genera:hover{transform:translateY(-2px);box-shadow:0 6px 0 #b45309,0 8px 18px rgba(245,158,11,.4);}
+        .btn-genera:active{transform:translateY(2px);box-shadow:0 2px 0 #b45309;}
+        .btn-genera:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+        .btn-reset{background:linear-gradient(135deg,#ef4444 0%,#dc2626 100%);color:#fff;border:none;border-radius:12px;padding:9px 15px;font-size:0.82rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:7px;box-shadow:0 4px 0 #991b1b,0 6px 14px rgba(239,68,68,.3);transition:all .15s;white-space:nowrap;font-family:inherit;}
+        .btn-reset:hover{transform:translateY(-2px);box-shadow:0 6px 0 #991b1b,0 8px 18px rgba(239,68,68,.35);}
+        .btn-reset:active{transform:translateY(2px);box-shadow:0 2px 0 #991b1b;}
+        .btn-reset:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+        .btn-back{background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:12px;padding:8px 14px;font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;transition:all .15s;}
+        .btn-back:hover{background:rgba(255,255,255,.3);}
+
+        /* LEGEND */
+        .legend-card{background:#fff;border-radius:16px;padding:14px 18px;border:1px solid #e2e8f0;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 4px 0 #cbd5e1,0 8px 20px rgba(0,0,0,.05);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+        .legend-title{font-size:0.7rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-right:4px;}
+        .legend-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:0.78rem;font-weight:800;border:1.5px solid;cursor:default;}
+        .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+        
+        /* Palocco Staff Colors */
+        .chip-Pietro{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd;} .dot-Pietro{background:#3b82f6;}
+        .chip-Mariapia{background:#fce7f3;color:#9d174d;border-color:#f9a8d4;} .dot-Mariapia{background:#ec4899;}
+        .chip-Roberto{background:#d1fae5;color:#065f46;border-color:#6ee7b7;} .dot-Roberto{background:#10b981;}
+        .chip-Ivano{background:#fef3c7;color:#92400e;border-color:#fcd34d;} .dot-Ivano{background:#f59e0b;}
+        .chip-Patrizia{background:#ede9fe;color:#6d28d9;border-color:#c4b5fd;} .dot-Patrizia{background:#8b5cf6;}
+        .chip-Francesca{background:#cffafe;color:#0e7490;border-color:#67e8f9;} .dot-Francesca{background:#06b6d4;}
+        .chip-Marisa{background:#ccfbf1;color:#0f766e;border-color:#5eead4;} .dot-Marisa{background:#0d9488;}
+        .chip-empty{background:#f8fafc;color:#94a3b8;border-color:#e2e8f0;}
+
+        /* CALENDAR */
+        .calendar-card{background:#fff;border-radius:20px;padding:16px;border:1px solid #e2e8f0;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 0 #cbd5e1,0 14px 30px rgba(0,0,0,.06);}
+        .day-headers{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:8px;}
+        .day-hdr{text-align:center;font-size:0.7rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;padding:4px 2px;}
+        .day-hdr.weekend{color:#0284c7;}
+        .turni-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+
+        /* DAY CELL */
+        .day-cell{background:#f8fafc;border-radius:14px;border:1.5px solid #e2e8f0;padding:8px 6px;min-height:165px;display:flex;flex-direction:column;gap:4px;transition:border-color .15s;position:relative;}
+        .day-cell:not(.cell-empty):not(.cell-chiuso):hover{border-color:#93c5fd;}
+        .day-cell.cell-today{border-color:#3b82f6;background:#eff6ff;}
+        .day-cell.cell-chiuso{background:#f1f5f9;opacity:.6;}
+        .day-cell.cell-empty{background:transparent;border:none;min-height:0;}
+        .day-num{font-size:0.8rem;font-weight:800;color:#64748b;margin-bottom:2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+        .today-badge{background:#3b82f6;color:#fff;font-size:0.55rem;padding:1px 5px;border-radius:999px;font-weight:900;}
+        .day-type-lbl{font-size:0.55rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.04em;}
+        .riposo-badge{margin-top:6px;background:#e2e8f0;color:#94a3b8;text-align:center;border-radius:10px;padding:8px 4px;font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
+
+        /* SLOT */
+        .slot-row{background:#fff;border-radius:9px;border:1px solid #e2e8f0;padding:5px 7px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:2px;}
+        .slot-row:hover{border-color:#93c5fd;box-shadow:0 2px 6px rgba(59,130,246,.12);transform:translateY(-1px);}
+        .slot-ora{font-size:0.58rem;font-weight:700;color:#94a3b8;line-height:1;}
+        .slot-chip{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;font-size:0.68rem;font-weight:800;border:1px solid;line-height:1.3;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        .slot-chip.chip-Pietro{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd;}
+        .slot-chip.chip-Mariapia{background:#fce7f3;color:#9d174d;border-color:#f9a8d4;}
+        .slot-chip.chip-Roberto{background:#d1fae5;color:#065f46;border-color:#6ee7b7;}
+        .slot-chip.chip-Ivano{background:#fef3c7;color:#92400e;border-color:#fcd34d;}
+        .slot-chip.chip-Patrizia{background:#ede9fe;color:#6d28d9;border-color:#c4b5fd;}
+        .slot-chip.chip-Francesca{background:#cffafe;color:#0e7490;border-color:#67e8f9;}
+        .slot-chip.chip-Marisa{background:#ccfbf1;color:#0f766e;border-color:#5eead4;}
+        .slot-chip.chip-empty{background:#f8fafc;color:#cbd5e1;border-color:#e2e8f0;}
+        .slot-extra-badge{font-size:0.5rem;font-weight:900;background:#fef08a;color:#854d0e;padding:1px 4px;border-radius:4px;margin-left:4px;vertical-align:middle;}
+        .btn-add-persona{width:100%;background:#f0fdf4;border:1.5px dashed #86efac;border-radius:8px;padding:4px 6px;font-size:0.65rem;font-weight:800;color:#15803d;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .15s;font-family:inherit;margin-top:auto;}
+        .btn-add-persona:hover{background:#dcfce7;border-color:#22c55e;transform:translateY(-1px);}
+
+        /* MODAL */
+        .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.65);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px;}
+        .modal-overlay.active{display:flex;}
+        .modal-card{background:#fff;border-radius:22px;padding:24px 22px;width:100%;max-width:420px;box-shadow:0 8px 0 #cbd5e1,0 20px 40px rgba(0,0,0,.18);animation:slideUp .25s cubic-bezier(.16,1,.3,1);}
+        @keyframes slideUp{from{opacity:0;transform:translateY(28px) scale(.97);}to{opacity:1;transform:none;}}
+        .modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+        .modal-title{font-size:1.1rem;font-weight:800;color:#0f172a;margin:0;display:flex;align-items:center;gap:8px;}
+        .btn-close{background:#f1f5f9;border:none;border-radius:10px;width:32px;height:32px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+        .btn-close:hover{background:#e2e8f0;}
+        .modal-info{background:#f8fafc;border-radius:10px;padding:10px 12px;margin-bottom:16px;font-size:0.85rem;color:#475569;}
+        .modal-info strong{color:#0f172a;display:block;font-size:0.95rem;margin-bottom:2px;}
+        .form-label{font-size:0.75rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:block;}
+        .persona-select{width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid #cbd5e1;font-family:inherit;font-size:0.9rem;font-weight:600;color:#1e293b;background:#fff;outline:none;cursor:pointer;box-shadow:inset 0 2px 4px rgba(0,0,0,.04);margin-bottom:10px;}
+        .persona-select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.15);}
+        .orario-select{width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid #cbd5e1;font-family:inherit;font-size:0.9rem;font-weight:600;color:#1e293b;background:#fff;outline:none;cursor:pointer;box-shadow:inset 0 2px 4px rgba(0,0,0,.04);margin-bottom:10px;}
+        .orario-select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.15);}
+        .custom-orario-input{width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid #cbd5e1;font-family:inherit;font-size:0.9rem;font-weight:600;color:#1e293b;background:#fff;outline:none;box-shadow:inset 0 2px 4px rgba(0,0,0,.04);margin-bottom:10px;display:none;}
+        .custom-orario-input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.15);}
+        .modal-footer{display:flex;gap:10px;margin-top:18px;}
+        .btn-cancel-m{flex:1;padding:11px;border-radius:12px;border:none;background:#e2e8f0;color:#475569;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:inherit;}
+        .btn-cancel-m:hover{background:#cbd5e1;}
+        .btn-delete-m{padding:11px 14px;border-radius:12px;border:1px solid #fca5a5;background:#fee2e2;color:#b91c1c;font-size:0.85rem;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;}
+        .btn-delete-m:hover{background:#fecaca;}
+        .btn-save-m{flex:2;padding:11px;border-radius:12px;border:none;background:linear-gradient(135deg,#0284c7 0%,#0369a1 100%);color:#fff;font-size:0.88rem;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #075985;font-family:inherit;}
+        .btn-save-m:hover{transform:translateY(-1px);box-shadow:0 5px 0 #075985;}
+        .btn-save-m:active{transform:translateY(1px);box-shadow:0 1px 0 #075985;}
+
+        /* VIEW SWITCHER */
+        .view-switcher-bar{display:flex;align-items:center;justify-content:center;gap:8px;background:#e2e8f0;padding:5px;border-radius:14px;margin-bottom:14px;box-shadow:inset 0 2px 4px rgba(0,0,0,.06);}
+        .view-btn{flex:1;max-width:260px;border:none;background:transparent;color:#64748b;padding:9px 14px;font-size:0.84rem;font-weight:800;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;font-family:inherit;}
+        .view-btn.active{background:#fff;color:#0284c7;box-shadow:0 3px 8px rgba(0,0,0,.1);}
+
+        /* SCROLL CONTAINER GRIGLIA MESE */
+        .mobile-scroll-hint{display:none;background:linear-gradient(135deg,#eff6ff 0%,#e0f2fe 100%);color:#0284c7;padding:8px 12px;border-radius:10px;font-size:0.75rem;font-weight:800;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;border:1px dashed #93c5fd;}
+        .calendar-scroll-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;padding-bottom:6px;}
+        .calendar-scroll-wrap::-webkit-scrollbar{height:6px;}
+        .calendar-scroll-wrap::-webkit-scrollbar-track{background:#f1f5f9;border-radius:999px;}
+        .calendar-scroll-wrap::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px;}
+        .calendar-scroll-wrap::-webkit-scrollbar-thumb:hover{background:#94a3b8;}
+        .calendar-inner-table{width:100%;}
+        .day-dow-tag{display:none;font-size:0.65rem;font-weight:800;color:#0284c7;text-transform:uppercase;margin-right:2px;}
+
+        /* VISTA SETTIMANA VERTICALE (MOBILE DEDICATA) */
+        .week-nav-bar{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#f8fafc 0%,#eff6ff 100%);padding:8px 12px;border-radius:14px;border:1px solid #dbeafe;margin-bottom:10px;}
+        .week-nav-btn{background:#fff;border:1px solid #cbd5e1;color:#0284c7;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.9rem;box-shadow:0 2px 4px rgba(0,0,0,.06);transition:all .15s;}
+        .week-nav-btn:hover{background:#0284c7;color:#fff;border-color:#0284c7;}
+        .week-title-wrap{text-align:center;}
+        .week-title{font-size:0.95rem;font-weight:900;color:#0f172a;display:block;}
+        .week-dates-sub{font-size:0.75rem;font-weight:700;color:#64748b;}
+        .week-pills-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;margin-bottom:12px;}
+        .week-pills-row::-webkit-scrollbar{height:4px;}
+        .week-pills-row::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px;}
+        .week-pill{background:#fff;border:1px solid #cbd5e1;padding:6px 12px;border-radius:999px;font-size:0.74rem;font-weight:800;color:#64748b;white-space:nowrap;cursor:pointer;transition:all .15s;font-family:inherit;}
+        .week-pill.active{background:#0284c7;color:#fff;border-color:#0284c7;box-shadow:0 2px 6px rgba(2,132,199,.3);}
+
+        .week-vertical-list{display:flex;flex-direction:column;gap:10px;}
+        .mobile-day-card{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 8px rgba(0,0,0,.03);transition:all .15s;}
+        .mobile-day-card.card-today{border-color:#3b82f6;background:#f0f9ff;box-shadow:0 4px 12px rgba(59,130,246,.12);}
+        .mobile-day-card.card-chiuso{background:#f1f5f9;opacity:.85;}
+        .mobile-day-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+        .mobile-day-date{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+        .m-dow{font-size:1rem;font-weight:900;color:#0f172a;text-transform:capitalize;}
+        .m-num{font-size:0.86rem;font-weight:700;color:#64748b;}
+        .m-badge-chiuso{background:#e2e8f0;color:#64748b;font-size:0.72rem;font-weight:800;padding:3px 9px;border-radius:999px;text-transform:uppercase;display:inline-flex;align-items:center;gap:5px;}
+        .m-type-badge{font-size:0.7rem;font-weight:800;color:#0284c7;background:#e0f2fe;padding:2px 8px;border-radius:999px;}
+        .mobile-day-slots{display:flex;flex-direction:column;gap:6px;}
+        .mobile-slot-item{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .15s;gap:8px;}
+        .mobile-slot-item:hover{border-color:#93c5fd;box-shadow:0 3px 8px rgba(59,130,246,.12);}
+        .mobile-slot-left{display:flex;flex-direction:column;gap:2px;}
+        .mobile-slot-time{font-size:0.76rem;font-weight:800;color:#64748b;display:flex;align-items:center;gap:6px;}
+        .mobile-slot-right{display:flex;align-items:center;gap:8px;}
+        .btn-add-persona-mobile{background:#f0fdf4;border:1.5px dashed #86efac;border-radius:10px;padding:9px 12px;font-size:0.8rem;font-weight:800;color:#15803d;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;transition:all .15s;margin-top:2px;}
+        .btn-add-persona-mobile:hover{background:#dcfce7;border-color:#22c55e;}
+
+        /* MOBILE */
+        @media(max-width:768px){
+            body{padding:8px 6px;}
+            .top-header{flex-direction:column;align-items:stretch;gap:10px;padding:12px 14px;}
+            .header-controls{margin-left:0;justify-content:flex-start;}
+            .month-nav{justify-content:center;}
+            .calendar-card{padding:12px 10px;border-radius:18px;}
+            .mobile-scroll-hint{display:flex;}
+            .day-dow-tag{display:inline-block;}
+            
+            .calendar-inner-table{min-width:740px;}
+            .day-headers,.turni-grid{grid-template-columns:repeat(7,1fr);gap:4px;}
+            .day-cell{min-height:120px;padding:6px 5px;gap:3px;border-radius:10px;}
+            .day-num{font-size:0.75rem;}
+            .slot-row{padding:4px 5px;gap:1px;border-radius:7px;}
+            .slot-ora{font-size:0.55rem;}
+            .slot-chip{font-size:0.62rem;padding:2px 6px;max-width:100%;}
+            .riposo-badge{font-size:0.62rem;padding:6px 3px;}
+            .day-hdr{font-size:0.68rem;padding:6px 2px;}
+            .btn-genera{font-size:0.75rem;padding:8px 12px;}
+            .toggle-label{font-size:0.7rem;}
+            .legend-card{gap:6px;padding:10px 12px;}
+            .legend-chip{font-size:0.7rem;padding:4px 9px;}
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- HEADER -->
+    <header class="top-header">
+        <div class="header-brand">
+            <img src="/static/images/icon.png" alt="Logo">
+            <div>
+                <div class="header-brand-title">Turni Mese Palocco</div>
+                <div class="header-brand-title"><small>Pasticceria Schiavoni – Sede Palocco</small></div>
+            </div>
+        </div>
+
+        <div class="month-nav">
+            <a href="?anno={{ prev_anno }}&mese={{ prev_mese }}" class="nav-arrow">&#10094;</a>
+            <h2>{{ mese_nome }} {{ anno }}</h2>
+            <a href="?anno={{ next_anno }}&mese={{ next_mese }}" class="nav-arrow">&#10095;</a>
+        </div>
+
+        <div class="header-controls">
+            <div class="toggle-wrap">
+                <span class="toggle-label"><i class="fa-solid fa-calendar-day"></i> Martedi aperto</span>
+                <label class="toggle">
+                    <input type="checkbox" id="toggleMartedi" {% if martedi_aperto %}checked{% endif %} {% if can_reset_turni %}onchange="aggiornaConfig()"{% else %}disabled title="Modificabile solo da Roberto ed Emanuele"{% endif %}>
+                    <span class="toggle-slider" {% if not can_reset_turni %}style="cursor:not-allowed; opacity:0.6;"{% endif %}></span>
+                </label>
+            </div>
+            {% if not ha_turni_generati %}
+                {% if can_reset_turni %}
+                <button class="btn-genera" id="btnGenera" onclick="autoGenera()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-genera
+                </button>
+                {% else %}
+                <span style="font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.15);padding:7px 12px;border-radius:12px;display:inline-flex;align-items:center;gap:6px;">
+                    <i class="fa-solid fa-clock"></i> In attesa di generazione
+                </span>
+                {% endif %}
+            {% else %}
+            <span style="font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.95);background:rgba(255,255,255,0.18);padding:7px 12px;border-radius:12px;display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.25);">
+                <i class="fa-solid fa-circle-check" style="color:#4ade80;"></i> Turni Generati
+            </span>
+            {% if can_reset_turni %}
+            <button class="btn-reset" id="btnReset" onclick="resetMese()" title="Resetta per poter rigenerare i turni (Solo Roberto ed Emanuele)">
+                <i class="fa-solid fa-arrow-rotate-left"></i> Reset
+            </button>
+            {% endif %}
+            {% endif %}
+            <a href="{{ url_for('produzione') }}" class="btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Calendario
+            </a>
+        </div>
+    </header>
+
+    <!-- LEGENDA -->
+    <div class="legend-card">
+        <span class="legend-title">Dipendenti Palocco</span>
+        {% for nome in staff_nomi %}
+        <span class="legend-chip chip-{{ nome }}">
+            <span class="dot dot-{{ nome }}"></span>{{ nome }}
+        </span>
+        {% endfor %}
+        <span class="legend-chip chip-empty" style="margin-left:auto;">
+            <i class="fa-solid fa-pen-to-square" style="font-size:.7rem;"></i>&nbsp;Clicca un turno per modificare
+        </span>
+    </div>
+
+    <!-- CALENDARIO -->
+    {% set dow_nomi = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'] %}
+    {% set dow_nomi_completi = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'] %}
+    <div class="calendar-card">
+        <!-- SELETTORE VISTA MOBILE/DESKTOP -->
+        <div class="view-switcher-bar">
+            <button type="button" class="view-btn active" id="btnViewSettimana" onclick="setVisualizzazione('settimana')">
+                <i class="fa-solid fa-calendar-week"></i> Vista Settimana (Verticale)
+            </button>
+            <button type="button" class="view-btn" id="btnViewMese" onclick="setVisualizzazione('mese')">
+                <i class="fa-solid fa-table-cells"></i> Vista Mese (Griglia)
+            </button>
+        </div>
+
+        <!-- SEZIONE 1: VISTA SETTIMANA VERTICALE -->
+        <div id="sectionSettimana" style="display:block;">
+            <div class="week-nav-bar">
+                <button type="button" class="week-nav-btn" onclick="prevWeek()" title="Settimana precedente"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="week-title-wrap">
+                    <span class="week-title" id="lblWeekTitle">Settimana 1</span>
+                    <span class="week-dates-sub" id="lblWeekDates"></span>
+                </div>
+                <button type="button" class="week-nav-btn" onclick="nextWeek()" title="Settimana successiva"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <div class="week-pills-row" id="pillsRow"></div>
+
+            {% for settimana in cal_grid %}
+            <div class="week-card-group" id="weekGroup_{{ loop.index0 }}" data-week-idx="{{ loop.index0 }}" style="display:none;">
+                <div class="week-vertical-list">
+                    {% for giorno in settimana %}
+                        {% if giorno is not none %}
+                            {% if giorno.tipo == 'chiuso' %}
+                                <div class="mobile-day-card card-chiuso">
+                                    <div class="mobile-day-hdr">
+                                        <div class="mobile-day-date">
+                                            <span class="m-dow">{{ dow_nomi_completi[giorno.dow] }}</span>
+                                            <span class="m-num">{{ giorno.numero }} {{ mese_nome }}</span>
+                                        </div>
+                                        <span class="m-badge-chiuso"><i class="fa-solid fa-mug-hot"></i> Riposo</span>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="mobile-day-card {% if giorno.is_today %}card-today{% endif %}">
+                                    <div class="mobile-day-hdr">
+                                        <div class="mobile-day-date">
+                                            <span class="m-dow">{{ dow_nomi_completi[giorno.dow] }}</span>
+                                            <span class="m-num">{{ giorno.numero }} {{ mese_nome }}</span>
+                                            {% if giorno.is_today %}<span class="today-badge">OGGI</span>{% endif %}
+                                        </div>
+                                        {% if giorno.tipo == 'sabato' %}<span class="m-type-badge">Sabato</span>
+                                        {% elif giorno.tipo == 'domenica' %}<span class="m-type-badge">Domenica</span>{% endif %}
+                                    </div>
+                                    <div class="mobile-day-slots">
+                                        {% for turno in giorno.turni %}
+                                        {% if turno.nome %}
+                                        <div class="mobile-slot-item"
+                                             data-data="{{ giorno.data }}"
+                                             data-tid="{{ turno.id }}"
+                                             data-label="{{ turno.label }}"
+                                             data-nome="{{ turno.nome }}"
+                                             data-daystr="{{ giorno.numero }} {{ mese_nome }}"
+                                             data-isextra="{{ '1' if turno.is_extra else '0' }}"
+                                             onclick="openModal(this)">
+                                            <div class="mobile-slot-left">
+                                                <span class="mobile-slot-time">
+                                                    <i class="fa-regular fa-clock"></i> {{ turno.label }}
+                                                    {% if turno.is_extra %}<span class="slot-extra-badge">EXTRA</span>{% endif %}
+                                                </span>
+                                            </div>
+                                            <div class="mobile-slot-right">
+                                                <span class="slot-chip chip-{{ turno.nome }}">
+                                                    <span class="dot dot-{{ turno.nome }}"></span>
+                                                    {{ turno.nome }}
+                                                </span>
+                                                <i class="fa-solid fa-chevron-right" style="color:#cbd5e1;font-size:.7rem;"></i>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <button type="button" class="btn-add-persona-mobile" onclick="openAddPersonaModal('{{ giorno.data }}', '{{ giorno.numero }} {{ mese_nome }}')">
+                                        <i class="fa-solid fa-plus"></i> Aggiungi persona a {{ dow_nomi_completi[giorno.dow] }} {{ giorno.numero }}
+                                    </button>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- SEZIONE 2: VISTA MESE COMPLETA SCORREVOLE -->
+        <div id="sectionMese" style="display:none;">
+            <div class="mobile-scroll-hint">
+                <i class="fa-solid fa-arrows-left-right"></i> Scorri orizzontalmente per vedere tutti i giorni (Lun - Dom)
+            </div>
+            <div class="calendar-scroll-wrap">
+                <div class="calendar-inner-table">
+                    <div class="day-headers">
+                        <div class="day-hdr">LUN</div>
+                        <div class="day-hdr">MAR</div>
+                        <div class="day-hdr">MER</div>
+                        <div class="day-hdr">GIO</div>
+                        <div class="day-hdr">VEN</div>
+                        <div class="day-hdr weekend">SAB</div>
+                        <div class="day-hdr weekend">DOM</div>
+                    </div>
+                    <div class="turni-grid">
+                        {% for settimana in cal_grid %}
+                            {% for giorno in settimana %}
+                                {% if giorno is none %}
+                                    <div class="day-cell cell-empty"></div>
+                                {% elif giorno.tipo == 'chiuso' %}
+                                    <div class="day-cell cell-chiuso">
+                                        <div class="day-num">
+                                            <span class="day-dow-tag">{{ dow_nomi[giorno.dow] }}</span>
+                                            <span>{{ giorno.numero }}</span>
+                                        </div>
+                                        <div class="riposo-badge">
+                                            <i class="fa-solid fa-mug-hot"></i>
+                                            Riposo
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="day-cell {% if giorno.is_today %}cell-today{% endif %}">
+                                        <div class="day-num">
+                                            <span class="day-dow-tag">{{ dow_nomi[giorno.dow] }}</span>
+                                            <span>{{ giorno.numero }}</span>
+                                            {% if giorno.is_today %}<span class="today-badge">OGGI</span>{% endif %}
+                                        </div>
+                                        {% if giorno.tipo == 'sabato' %}<div class="day-type-lbl">Sabato</div>
+                                        {% elif giorno.tipo == 'domenica' %}<div class="day-type-lbl">Domenica</div>{% endif %}
+                                        {% for turno in giorno.turni %}
+                                        {% if turno.nome %}
+                                        <div class="slot-row"
+                                             data-data="{{ giorno.data }}"
+                                             data-tid="{{ turno.id }}"
+                                             data-label="{{ turno.label }}"
+                                             data-nome="{{ turno.nome }}"
+                                             data-daystr="{{ giorno.numero }} {{ mese_nome }}"
+                                             data-isextra="{{ '1' if turno.is_extra else '0' }}"
+                                             onclick="openModal(this)">
+                                            <span class="slot-ora">
+                                                {{ turno.label }}
+                                                {% if turno.is_extra %}<span class="slot-extra-badge">EXTRA</span>{% endif %}
+                                            </span>
+                                            <span class="slot-chip chip-{{ turno.nome }}">
+                                                {{ turno.nome }}
+                                            </span>
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                        <button type="button" class="btn-add-persona" onclick="openAddPersonaModal('{{ giorno.data }}', '{{ giorno.numero }} {{ mese_nome }}')">
+                                            <i class="fa-solid fa-plus"></i> Aggiungi persona
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL MODIFICA -->
+<div class="modal-overlay" id="slotOverlay" onclick="handleOverlay(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa-solid fa-pen-to-square" style="color:#0284c7;"></i> Modifica Turno</h3>
+            <button class="btn-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-info">
+            <strong id="modalDay"></strong>
+            <span id="modalOra" style="font-size:0.82rem;"></span>
+        </div>
+        <label class="form-label">Assegna dipendente</label>
+        <select class="persona-select" id="personaSelect">
+            <option value="">— Non assegnato —</option>
+            {% for nome in staff_nomi %}
+            <option value="{{ nome }}">{{ nome }}</option>
+            {% endfor %}
+        </select>
+        <div class="modal-footer">
+            <button class="btn-delete-m" type="button" onclick="eliminaSlot()"><i class="fa-solid fa-trash-can"></i> Elimina</button>
+            <button class="btn-cancel-m" type="button" onclick="closeModal()">Annulla</button>
+            <button class="btn-save-m" type="button" onclick="salvaSlot()"><i class="fa-solid fa-floppy-disk"></i> Salva</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL AGGIUNGI PERSONA EXTRA -->
+<div class="modal-overlay" id="addPersonaOverlay" onclick="handleAddPersonaOverlay(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa-solid fa-user-plus" style="color:#0284c7;"></i> Aggiungi Persona</h3>
+            <button class="btn-close" onclick="closeAddPersonaModal()">&times;</button>
+        </div>
+        <div class="modal-info">
+            <strong id="addModalDay"></strong>
+            <span style="font-size:0.82rem;color:#64748b;">Aggiungi una persona / turno aggiuntivo per questo giorno (Palocco)</span>
+        </div>
+        
+        <label class="form-label">Orario / Fascia Turno</label>
+        <select class="orario-select" id="addOrarioSelect" onchange="toggleCustomOrario()">
+            <option value="6:30 – 14:00">6:30 – 14:00</option>
+            <option value="7:00 – 14:00">7:00 – 14:00</option>
+            <option value="8:00 – 15:00">8:00 – 15:00</option>
+            <option value="14:00 – 20:30">14:00 – 20:30</option>
+            <option value="8:00–13:00 / 16:00–20:30">8:00–13:00 / 16:00–20:30 (Spezzato)</option>
+            <option value="__custom__">Altro / Personalizzato...</option>
+        </select>
+        <input type="text" class="custom-orario-input" id="customOrarioInput" placeholder="Es. 9:00 – 16:00">
+
+        <label class="form-label">Dipendente</label>
+        <select class="persona-select" id="addPersonaSelect">
+            <option value="">— Seleziona dipendente —</option>
+            {% for nome in staff_nomi %}
+            <option value="{{ nome }}">{{ nome }}</option>
+            {% endfor %}
+        </select>
+        <div class="modal-footer">
+            <button class="btn-cancel-m" type="button" onclick="closeAddPersonaModal()">Annulla</button>
+            <button class="btn-save-m" type="button" onclick="confermaAggiungiPersona()"><i class="fa-solid fa-check"></i> Inserisci</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ANNO = {{ anno }};
+    const MESE = {{ mese }};
+    let _el = null;
+    let _addDataDate = null;
+    let currentWeekIdx = 0;
+    const totalWeeks = {{ cal_grid|length }};
+
+    function setVisualizzazione(tipo){
+        const secSett = document.getElementById('sectionSettimana');
+        const secMese = document.getElementById('sectionMese');
+        const btnSett = document.getElementById('btnViewSettimana');
+        const btnMese = document.getElementById('btnViewMese');
+        if(tipo === 'mese'){
+            if(secSett) secSett.style.display = 'none';
+            if(secMese) secMese.style.display = 'block';
+            if(btnSett) btnSett.classList.remove('active');
+            if(btnMese) btnMese.classList.add('active');
+            localStorage.setItem('turni_palocco_view_pref', 'mese');
+        } else {
+            if(secSett) secSett.style.display = 'block';
+            if(secMese) secMese.style.display = 'none';
+            if(btnSett) btnSett.classList.add('active');
+            if(btnMese) btnMese.classList.remove('active');
+            localStorage.setItem('turni_palocco_view_pref', 'settimana');
+        }
+    }
+
+    function selectWeek(idx){
+        if(idx < 0) idx = 0;
+        if(idx >= totalWeeks) idx = totalWeeks - 1;
+        currentWeekIdx = idx;
+
+        for(let i = 0; i < totalWeeks; i++){
+            const grp = document.getElementById('weekGroup_' + i);
+            if(grp) grp.style.display = (i === idx) ? 'block' : 'none';
+        }
+
+        const pills = document.querySelectorAll('.week-pill');
+        pills.forEach((p, i) => {
+            if(i === idx) p.classList.add('active');
+            else p.classList.remove('active');
+        });
+
+        const activeGrp = document.getElementById('weekGroup_' + idx);
+        const lblTitle = document.getElementById('lblWeekTitle');
+        const lblDates = document.getElementById('lblWeekDates');
+        if(lblTitle) lblTitle.textContent = 'Settimana ' + (idx + 1);
+
+        if(activeGrp && lblDates){
+            const cards = activeGrp.querySelectorAll('.mobile-day-card');
+            const dates = [];
+            cards.forEach(c => {
+                const num = c.querySelector('.m-num');
+                if(num) dates.push(num.textContent.trim());
+            });
+            if(dates.length > 0){
+                lblDates.textContent = dates[0] + (dates.length > 1 ? ' — ' + dates[dates.length - 1] : '');
+            } else {
+                lblDates.textContent = '';
+            }
+        }
+    }
+
+    function prevWeek(){
+        if(currentWeekIdx > 0) selectWeek(currentWeekIdx - 1);
+    }
+
+    function nextWeek(){
+        if(currentWeekIdx < totalWeeks - 1) selectWeek(currentWeekIdx + 1);
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+        const pillsRow = document.getElementById('pillsRow');
+        let initialWeek = 0;
+
+        const weekGroups = document.querySelectorAll('.week-card-group');
+        weekGroups.forEach((grp, idx) => {
+            const hasToday = grp.querySelector('.card-today') !== null;
+            if(hasToday){
+                initialWeek = idx;
+            }
+
+            const cards = grp.querySelectorAll('.mobile-day-card');
+            let dateRangeStr = '';
+            if(cards.length > 0){
+                const fst = cards[0].querySelector('.m-num');
+                const lst = cards[cards.length - 1].querySelector('.m-num');
+                if(fst && lst){
+                    const d1 = fst.textContent.split(' ')[0];
+                    const d2 = lst.textContent.split(' ')[0];
+                    dateRangeStr = (d1 === d2) ? d1 : (d1 + '-' + d2);
+                }
+            }
+
+            if(pillsRow){
+                const pill = document.createElement('button');
+                pill.type = 'button';
+                pill.className = 'week-pill' + (hasToday ? ' has-today' : '');
+                pill.textContent = 'Sett. ' + (idx + 1) + (dateRangeStr ? ' (' + dateRangeStr + ')' : '');
+                pill.onclick = function(){ selectWeek(idx); };
+                pillsRow.appendChild(pill);
+            }
+        });
+
+        if(totalWeeks > 0) {
+            selectWeek(initialWeek);
+        }
+
+        const savedPref = localStorage.getItem('turni_palocco_view_pref');
+        if(savedPref){
+            setVisualizzazione(savedPref);
+        } else {
+            if(window.innerWidth <= 768){
+                setVisualizzazione('settimana');
+            } else {
+                setVisualizzazione('mese');
+            }
+        }
+    });
+
+    function openModal(el){
+        _el=el;
+        document.getElementById('modalDay').textContent=el.dataset.daystr;
+        document.getElementById('modalOra').textContent=el.dataset.label;
+        document.getElementById('personaSelect').value=el.dataset.nome||'';
+        document.getElementById('slotOverlay').classList.add('active');
+    }
+    function closeModal(){
+        document.getElementById('slotOverlay').classList.remove('active');
+        _el=null;
+    }
+    function handleOverlay(e){ if(e.target===document.getElementById('slotOverlay')) closeModal(); }
+
+    function salvaSlot(){
+        if(!_el) return;
+        const nome=document.getElementById('personaSelect').value;
+        fetch('/turni-palocco/aggiorna-slot',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({data:_el.dataset.data,turno_id:_el.dataset.tid,nome:nome})
+        }).then(r=>r.json()).then(d=>{
+            if(d.ok){
+                location.reload();
+            } else {
+                alert(d.error || 'Errore nel salvataggio.');
+            }
+        }).catch(()=>alert('Errore nel salvataggio.'));
+    }
+
+    function eliminaSlot(){
+        if(!_el) return;
+        if(!confirm('Vuoi eliminare questa persona dal turno?')) return;
+        fetch('/turni-palocco/elimina-slot',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({data:_el.dataset.data,turno_id:_el.dataset.tid})
+        }).then(r=>r.json()).then(d=>{
+            if(d.ok){
+                location.reload();
+            }
+        }).catch(()=>alert('Errore nell\'eliminazione.'));
+    }
+
+    function openAddPersonaModal(dataStr, dayStr){
+        _addDataDate=dataStr;
+        document.getElementById('addModalDay').textContent=dayStr;
+        document.getElementById('addOrarioSelect').value='7:00 – 14:00';
+        document.getElementById('customOrarioInput').style.display='none';
+        document.getElementById('customOrarioInput').value='';
+        document.getElementById('addPersonaSelect').value='';
+        document.getElementById('addPersonaOverlay').classList.add('active');
+    }
+    function closeAddPersonaModal(){
+        document.getElementById('addPersonaOverlay').classList.remove('active');
+        _addDataDate=null;
+    }
+    function handleAddPersonaOverlay(e){ if(e.target===document.getElementById('addPersonaOverlay')) closeAddPersonaModal(); }
+
+    function toggleCustomOrario(){
+        const sel=document.getElementById('addOrarioSelect').value;
+        const inp=document.getElementById('customOrarioInput');
+        if(sel==='__custom__'){
+            inp.style.display='block';
+            inp.focus();
+        } else {
+            inp.style.display='none';
+        }
+    }
+
+    function confermaAggiungiPersona(){
+        if(!_addDataDate) return;
+        const selOrario=document.getElementById('addOrarioSelect').value;
+        let label=selOrario;
+        if(selOrario==='__custom__'){
+            label=document.getElementById('customOrarioInput').value.trim()||'Turno Extra';
+        }
+        const nome=document.getElementById('addPersonaSelect').value;
+        if(!nome){
+            alert('Seleziona un dipendente.');
+            return;
+        }
+        fetch('/turni-palocco/aggiungi-slot',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({data:_addDataDate,label:label,nome:nome})
+        }).then(r=>r.json()).then(d=>{
+            if(d.ok){
+                location.reload();
+            } else {
+                alert(d.error||'Errore durante l\'inserimento.');
+            }
+        }).catch(()=>alert('Errore durante l\'inserimento.'));
+    }
+
+    function autoGenera(){
+        const ma=document.getElementById('toggleMartedi').checked;
+        if(!confirm('Auto-genera i turni Palocco per {{ mese_nome }} {{ anno }}?\nLe modifiche manuali esistenti saranno sovrascritte.')) return;
+        const btn=document.getElementById('btnGenera');
+        btn.disabled=true;
+        btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Generazione...';
+        fetch('/turni-palocco/genera',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({anno:ANNO,mese:MESE,martedi_aperto:ma})
+        }).then(r=>r.json()).then(d=>{
+            if(d.ok) location.reload();
+            else{ alert(d.error || 'Errore durante la generazione.'); btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-wand-magic-sparkles"></i> Auto-genera'; }
+        }).catch(()=>{ btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-wand-magic-sparkles"></i> Auto-genera'; });
+    }
+
+    function resetMese(){
+        if(!confirm('Sei sicuro di voler resettare tutti i turni Palocco per {{ mese_nome }} {{ anno }}?\nTutti i turni assegnati per questo mese verranno cancellati.')) return;
+        const btn=document.getElementById('btnReset');
+        btn.disabled=true;
+        btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Reset...';
+        fetch('/turni-palocco/reset',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({anno:ANNO,mese:MESE})
+        }).then(r=>r.json()).then(d=>{
+            if(d.ok) location.reload();
+            else{
+                alert(d.error||'Errore durante il reset.');
+                btn.disabled=false;
+                btn.innerHTML='<i class="fa-solid fa-arrow-rotate-left"></i> Reset';
+            }
+        }).catch(()=>{
+            alert('Errore durante il reset.');
+            btn.disabled=false;
+            btn.innerHTML='<i class="fa-solid fa-arrow-rotate-left"></i> Reset';
+        });
+    }
+
+    function aggiornaConfig(){
+        const ma=document.getElementById('toggleMartedi').checked;
+        fetch('/turni-palocco/config',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({anno:ANNO,mese:MESE,martedi_aperto:ma})
+        }).then(r=>r.json()).then(d=>{ if(d.ok) location.reload(); });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota Salato - {{ data_it }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --card-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 20px 35px -10px rgba(15, 23, 42, 0.18), 0 40px 70px -20px rgba(15, 23, 42, 0.12);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f8fafc;
+            margin: 0;
+            padding: 24px 20px 50px;
+            color: #0f172a;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ---- BARRA COMANDI 3D ---- */
+        .no-print {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .btn-3d {
+            padding: 13px 24px;
+            border-radius: 14px;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.4),
+                inset 0 -2px 0 rgba(0,0,0,0.2),
+                0 4px 0 #047857,
+                0 8px 16px rgba(16,185,129,0.35);
+        }
+        .btn-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.5),
+                inset 0 -2px 0 rgba(0,0,0,0.2),
+                0 6px 0 #047857,
+                0 12px 20px rgba(16,185,129,0.45);
+            filter: brightness(1.05);
+        }
+        .btn-print:active { 
+            transform: translateY(3px); 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 1px 0 #047857; 
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+            color: #1e293b;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,1),
+                inset 0 -2px 0 rgba(0,0,0,0.1),
+                0 4px 0 #94a3b8,
+                0 8px 16px rgba(0,0,0,0.1);
+        }
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,1),
+                inset 0 -2px 0 rgba(0,0,0,0.1),
+                0 6px 0 #94a3b8,
+                0 12px 20px rgba(0,0,0,0.15);
+            filter: brightness(1.02);
+        }
+        .btn-back:active { 
+            transform: translateY(3px); 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 0 #94a3b8; 
+        }
+
+        /* ---- BANNER DI TESTATA 3D ---- */
+        .page-header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 60%, #0369a1 100%);
+            color: white;
+            padding: 22px 28px;
+            border-radius: 22px;
+            margin-bottom: 24px;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.4),
+                inset 0 -2px 4px rgba(0,0,0,0.15),
+                0 6px 0 #0369a1,
+                0 16px 28px -4px rgba(2,132,199,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.65rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+        }
+
+        .page-header .data-badge {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* ---- TABELLA 3D ---- */
+        .table-wrap {
+            background: #ffffff;
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -3px 0 rgba(0,0,0,0.03);
+            border: 1px solid rgba(255,255,255,0.9);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead tr {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        }
+
+        thead th {
+            color: white;
+            padding: 16px 18px;
+            text-align: left;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.15s ease;
+        }
+
+        tbody tr:last-child { 
+            border-bottom: none; 
+        }
+
+        tbody tr:hover { 
+            background: #f8fafc; 
+        }
+
+        tbody td {
+            padding: 16px 18px;
+            vertical-align: middle;
+        }
+
+        .td-ora {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: #0284c7;
+            white-space: nowrap;
+        }
+
+        .td-cliente {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #0f172a;
+        }
+
+        .td-prodotto {
+            font-weight: 800;
+            font-size: 1.08rem;
+            text-transform: uppercase;
+            color: #000000;
+            line-height: 1.3;
+        }
+
+        .td-qta {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #dc2626;
+            white-space: nowrap;
+        }
+
+        .badge-negozio-3d {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .neg-palocco {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 0 #991b1b;
+        }
+
+        .neg-ostia {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 0 #075985;
+        }
+
+        /* ---- EMPTY STATE ---- */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 22px;
+            box-shadow: var(--card-shadow);
+            color: #64748b;
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        /* ===== MOBILE CARDS ===== */
+        .mobile-cards-container { display: none; }
+
+        .mobile-count {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: white;
+            border-radius: 14px;
+            padding: 12px 18px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 0 #075985, 0 8px 16px rgba(2,132,199,0.25);
+        }
+
+        .mobile-salato-card {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.07);
+            border: 1px solid #e2e8f0;
+        }
+
+        .mobile-card-header {
+            padding: 14px 18px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mobile-card-prodotto {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #0f172a;
+            line-height: 1.2;
+            flex: 1;
+        }
+
+        .mobile-card-ora {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #0284c7;
+            white-space: nowrap;
+            background: #eff6ff;
+            padding: 5px 12px;
+            border-radius: 10px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .mobile-card-body {
+            padding: 12px 18px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .mobile-card-field {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .mobile-card-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #94a3b8;
+        }
+
+        .mobile-card-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .mobile-card-qta {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #dc2626;
+            background: #fff1f2;
+            border-radius: 8px;
+            padding: 4px 10px;
+            display: inline-block;
+            border: 1px solid #fecaca;
+        }
+
+        .mobile-badge-neg {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 9px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .mobile-badge-palocco {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 2px 0 #991b1b;
+        }
+        .mobile-badge-ostia {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: white;
+            box-shadow: 0 2px 0 #075985;
+        }
+
+        @media screen and (max-width: 768px) {
+            body { padding: 12px 12px 40px; }
+            .table-wrap { display: none; }
+            .mobile-cards-container { display: block; }
+            .page-header h1 { font-size: 1.2rem; }
+            .no-print { gap: 8px; }
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { 
+                padding: 0 !important; 
+                background: white !important; 
+                max-width: 100% !important;
+                font-size: 9pt !important;
+            }
+            .page-header {
+                background: #0284c7 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border-radius: 8px !important;
+                box-shadow: none !important;
+                padding: 12px 18px !important;
+            }
+            .table-wrap { 
+                display: block !important;
+                box-shadow: none !important; 
+                border: 1px solid #cbd5e1 !important; 
+                border-radius: 8px !important;
+                overflow: visible !important;
+            }
+            table {
+                display: table !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            thead { display: table-header-group !important; }
+            tbody { display: table-row-group !important; }
+            thead tr {
+                background: #1e293b !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            tr { display: table-row !important; page-break-inside: avoid !important; }
+            td, th { display: table-cell !important; }
+            tbody td {
+                padding: 8px 10px !important;
+            }
+            .mobile-cards-container { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        function tornaIndietro(fallbackUrl) {
+            window.close();
+            setTimeout(function() {
+                if (!window.closed) {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else if (fallbackUrl) {
+                        window.location.href = fallbackUrl;
+                    }
+                }
+            }, 150);
+        }
+    </script>
+
+    <div class="no-print">
+        <button onclick="window.print()" class="btn-3d btn-print">STAMPA NOTA</button>
+        <button onclick="tornaIndietro('/giorno/{{ data_raw }}')" class="btn-3d btn-back">TORNA INDIETRO</button>
+    </div>
+
+    <div class="page-header">
+        <h1>NOTA PRODUZIONE SALATO</h1>
+        <span class="data-badge">Consegne del {{ data_it }}</span>
+    </div>
+
+    {% if ordini %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;">Ora</th>
+                    <th style="width: 20%;">Cliente</th>
+                    <th style="width: 42%;">Prodotto</th>
+                    <th style="width: 12%;">Quantità</th>
+                    <th style="width: 16%;">Punto Vendita</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in ordini %}
+                <tr>
+                    <td class="td-ora">{{ (o.orario | string | truncate(5, True, '')) if o.orario else '--:--' }}</td>
+                    <td class="td-cliente">{{ o.cliente }}</td>
+                    <td class="td-prodotto">{{ o.tipo_dolce }}</td>
+                    <td class="td-qta">{{ o.kg if o.kg else '—' }}</td>
+                    <td>
+                        <span class="badge-negozio-3d {% if o.negozio|lower == 'palocco' %}neg-palocco{% else %}neg-ostia{% endif %}">
+                            {{ o.negozio }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        Nessun ordine di tipo Salato per questa data.
+    </div>
+    {% endif %}
+
+    <!-- VERSIONE MOBILE - CARDS -->
+    {% if ordini %}
+    <div class="mobile-cards-container">
+        <div class="mobile-count">
+            <span>🥐 NOTA SALATO</span>
+            <span>{{ ordini|length }} ordini</span>
+        </div>
+        {% for o in ordini %}
+        <div class="mobile-salato-card">
+            <div class="mobile-card-header">
+                <span class="mobile-card-prodotto">{{ o.tipo_dolce }}</span>
+                <span class="mobile-card-ora">🕒 {{ (o.orario | string | truncate(5, True, '')) if o.orario else '--:--' }}</span>
+            </div>
+            <div class="mobile-card-body">
+                <div class="mobile-card-field">
+                    <span class="mobile-card-label">👤 Cliente</span>
+                    <span class="mobile-card-value">{{ o.cliente }}</span>
+                </div>
+                <div class="mobile-card-field">
+                    <span class="mobile-card-label">📦 Quantità</span>
+                    <span class="mobile-card-qta">{{ o.kg if o.kg else '—' }}</span>
+                </div>
+                <div class="mobile-card-field" style="grid-column: 1 / -1;">
+                    <span class="mobile-card-label">📍 Punto Vendita</span>
+                    <span class="mobile-badge-neg {% if o.negozio|lower == 'palocco' %}mobile-badge-palocco{% else %}mobile-badge-ostia{% endif %}">
+                        {{ o.negozio }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</body>
+</html>

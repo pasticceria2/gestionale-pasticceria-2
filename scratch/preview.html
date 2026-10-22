@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario Schiavoni</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#1e293b"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        @media (min-width: 1025px) {
+            html, body {
+                height: 100vh;
+                overflow: hidden;
+            }
+            body {
+                display: flex;
+                flex-direction: column;
+                min-height: unset;
+            }
+        }
+        
+        .top-header { 
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 60%, #075985 100%);
+            color: white; 
+            padding: 1.5rem 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.3),
+                0 6px 0 #0c4a6e,
+                0 14px 25px -4px rgba(2, 132, 199, 0.4);
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            flex-shrink: 0;
+        }
+
+        .top-header .header-title { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            font-size: 2rem; 
+            flex-shrink: 0;
+        }
+
+        .month-nav { display: flex; align-items: center; gap: 15px; }
+        .month-nav h2 { 
+            font-family: 'Inter', sans-serif; 
+            font-weight: 700;
+            font-size: 1.6rem; 
+            margin: 0; 
+            text-align: center;
+            color: white;
+            min-width: 180px;
+        }
+        .nav-arrow { 
+            text-decoration: none; 
+            font-size: 1.2rem; 
+            color: white; 
+            background: rgba(255,255,255,0.1); 
+            padding: 5px 15px; 
+            border-radius: 8px; 
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 0 rgba(0,0,0,0.3);
+        }
+        .nav-arrow:hover { 
+            background: rgba(255,255,255,0.2); 
+            transform: translateY(-2px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 6px 0 rgba(0,0,0,0.3);
+        }
+        .nav-arrow:active {
+            transform: translateY(4px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 0px 0 rgba(0,0,0,0.3);
+        }
+
+        .user-menu { position: relative; }
+        .user-menu-btn {
+            background: rgba(255,255,255,0.1); color: white; padding: 10px 15px; border-radius: 10px; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; font-weight: 600; user-select: none;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 0 rgba(0,0,0,0.3);
+        }
+        .user-menu-btn:hover { 
+            background: rgba(255,255,255,0.2); 
+            transform: translateY(-2px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 6px 0 rgba(0,0,0,0.3);
+        }
+        .user-menu-btn:active {
+            transform: translateY(4px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 0px 0 rgba(0,0,0,0.3);
+        }
+        .user-menu-dropdown {
+            display: none; position: absolute; right: 0; top: calc(100% + 4px); background: #0369a1; 
+            border-radius: 12px; list-style: none; padding: 5px 0; margin: 0; width: 180px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 100; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .user-menu-dropdown::before {
+            content: ""; position: absolute; top: -10px; left: 0; right: 0; height: 10px;
+        }
+        .user-menu-dropdown a { 
+            display: block; padding: 10px 15px; color: white; text-decoration: none; font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+        .user-menu-dropdown a:hover { background: #0284c7; border-radius: 4px; }
+        .user-menu:hover .user-menu-dropdown,
+        .user-menu-dropdown.show { display: block; }
+
+        .top-controls, .search-box { max-width: 98%; width: 98%; margin: 0.5rem auto; padding: 0 10px; box-sizing: border-box; flex-shrink: 0; }
+        .container { max-width: 98%; width: 98%; margin: 0.5rem auto; padding: 0 10px; box-sizing: border-box; }
+        .mobile-header-spacer { display: none; }
+
+        .action-buttons { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .button-group-left { flex: 1; display: flex; align-items: center; }
+
+        .desktop-brand {
+            display: none;
+            background: linear-gradient(160deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid rgba(255,255,255,0.9);
+            border-radius: 14px;
+            padding: 6px 16px 6px 10px;
+            align-items: center;
+            gap: 12px;
+            box-shadow:
+                inset 0 2px 0 rgba(255,255,255,1),
+                inset 0 -3px 0 rgba(0,0,0,0.04),
+                0 4px 0 #cbd5e1,
+                0 6px 14px rgba(15,23,42,0.1);
+        }
+        .desktop-brand-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            border: 2px solid rgba(2, 132, 199, 0.25);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.4);
+            display: block;
+        }
+        .desktop-brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        .desktop-brand-past {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+        .desktop-brand-schiav {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #0284c7;
+            letter-spacing: -0.01em;
+            text-shadow: 0 1px 2px rgba(2,132,199,0.15);
+        }
+
+        .desktop-right-top { display: none; }
+        .desktop-right-bottom { display: flex; gap: 8px; align-items: center; }
+
+        .digital-clock {
+            background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+            border: 1px solid rgba(255,255,255,0.9);
+            border-radius: 12px;
+            padding: 10px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            box-shadow: 
+                inset 0 2px 0 rgba(255,255,255,1),
+                inset 0 -3px 0 rgba(0,0,0,0.06),
+                0 4px 0 #cbd5e1,
+                0 6px 12px rgba(15,23,42,0.12);
+        }
+        .digital-clock .clock-date {
+            font-family: 'Inter', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .digital-clock .clock-time {
+            font-family: 'Courier New', monospace;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #059669;
+            letter-spacing: 0.04em;
+            line-height: 1;
+            text-shadow: 0 1px 2px rgba(5,150,105,0.15);
+        }
+        .button-group-center { display: flex; gap: 10px; justify-content: center; flex: 1; }
+        .button-group-right { display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex: 1; }
+        
+        .btn-main {
+            padding: 15px 32px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.08rem;
+            text-align: center;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.02em;
+            user-select: none;
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.12s ease;
+        }
+        .btn-main.green {
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.45),
+                inset 0 -2px 2px rgba(0,0,0,0.12),
+                0 5px 0 #047857,
+                0 10px 20px rgba(16,185,129,0.38);
+        }
+        .btn-main.green:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.5),
+                inset 0 -2px 2px rgba(0,0,0,0.12),
+                0 7px 0 #047857,
+                0 14px 28px rgba(16,185,129,0.48);
+        }
+        .btn-main.green:active {
+            transform: translateY(4px);
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.25),
+                0 1px 0 #047857,
+                0 3px 8px rgba(16,185,129,0.2);
+        }
+        .btn-main.purple {
+            background: linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.45),
+                inset 0 -2px 2px rgba(0,0,0,0.12),
+                0 5px 0 #5b21b6,
+                0 10px 20px rgba(139,92,246,0.38);
+        }
+        .btn-main.purple:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.5),
+                inset 0 -2px 2px rgba(0,0,0,0.12),
+                0 7px 0 #5b21b6,
+                0 14px 28px rgba(139,92,246,0.48);
+        }
+        .btn-main.purple:active {
+            transform: translateY(4px);
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.25),
+                0 1px 0 #5b21b6,
+                0 3px 8px rgba(139,92,246,0.2);
+        }
+        .btn-secondary {
+            padding: 6px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-align: center;
+            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.9),
+                0 3px 0 #cbd5e1,
+                0 4px 6px rgba(15,23,42,0.06);
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        .btn-secondary:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.9),
+                0 4px 0 #cbd5e1,
+                0 6px 10px rgba(15,23,42,0.09);
+        }
+        .btn-secondary:active {
+            transform: translateY(2px);
+            box-shadow:
+                inset 0 1px 2px rgba(0,0,0,0.1),
+                0 1px 0 #cbd5e1;
+        }
+
+        .order-counter { 
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); 
+            border: 1px solid rgba(255,255,255,0.8); 
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -3px 0 rgba(56, 189, 248, 0.2), 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .order-counter .label { color: #0c4a6e; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; line-height: 1; margin-bottom: 4px; }
+        .order-counter .count { color: #0369a1; font-size: 1.6rem; font-weight: bold; line-height: 1; text-shadow: 0 1px 2px rgba(255,255,255,0.5); }
+
+        #calSearch { 
+            width: 100%; 
+            max-width: 450px; /* Circa 3 caselle su 7 */
+            margin: 0 auto;
+            display: block;
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            border: 2px solid transparent; 
+            font-size: 1rem; 
+            outline: none; 
+            box-sizing: border-box; 
+            background: #ffffff;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.06), 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+        #calSearch:focus { 
+            border-color: #0284c7; 
+            box-shadow: inset 0 3px 6px rgba(2, 132, 199, 0.1), 0 4px 15px rgba(2, 132, 199, 0.15);
+        }
+
+        .calendar-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; width: 100%; min-width: 700px; }
+        
+        .day-name { text-align: center; font-weight: bold; color: #64748b; font-size: 0.9rem; text-transform: uppercase; padding: 8px 0; border-bottom: 2px solid #e2e8f0; }
+        
+        .day-card { 
+            background: #ffffff; 
+            border: 1.5px solid rgba(2, 132, 199, 0.28);
+            border-radius: 16px; 
+            padding: 14px; 
+            min-height: 120px; 
+            text-decoration: none; 
+            color: inherit; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 10px 15px -5px rgba(15, 23, 42, 0.1), inset 0 2px 0 rgba(255, 255, 255, 0.95), inset 0 -4px 0 rgba(0, 0, 0, 0.05);
+        }
+        .day-card:hover { 
+            border-color: #0284c7; 
+            transform: translateY(-4px) scale(1.02); 
+            box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.2), 0 25px 40px -10px rgba(2, 132, 199, 0.15), inset 0 2px 0 rgba(255, 255, 255, 0.95), inset 0 -6px 0 rgba(2, 132, 199, 0.1);
+        }
+        .day-card:active {
+            transform: translateY(2px) scale(0.99);
+            box-shadow: 0 2px 4px -1px rgba(15, 23, 42, 0.07), inset 0 2px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .day-card.other { opacity: 0.3; background: #f1f5f9; }
+        .day-card.search-hidden { display: none; }
+        
+        .is-today { border: 3px solid #0284c7 !important; background: #f0f9ff !important; }
+        .is-today::after { content: "OGGI"; position: absolute; top: 8px; right: 8px; font-size: 0.65rem; background: #0284c7; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        
+        .badge { background: #e0f2fe; color: #0369a1; font-size: 0.85rem; padding: 6px; border-radius: 6px; margin-top: auto; text-align: center; font-weight: bold; border: 1px solid #bae6fd; }
+
+        @media (min-width: 1025px) {
+            .header-title { display: flex; flex-direction: column; line-height: 1; }
+            .header-title .t-past { font-size: 1.2rem; font-weight: normal; }
+            .header-title .t-schiav { font-size: 1.9rem; font-weight: bold; }
+            
+            .header-brand-banner { display: none !important; }
+            .top-header { position: relative; padding: 0.65rem 2rem; margin-bottom: 8px; justify-content: flex-end; }
+            .month-nav { position: absolute; left: 50%; transform: translateX(-50%); }
+            
+            .action-buttons {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                position: relative;
+            }
+            .button-group-left {
+                flex: 1 1 0;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                min-width: 0;
+            }
+            .desktop-brand {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 55%, #e0f2fe 100%);
+                border: 2px solid rgba(2, 132, 199, 0.28);
+                border-radius: 18px;
+                padding: 8px 28px 8px 16px;
+                box-shadow:
+                    inset 0 2.5px 0 rgba(255,255,255,1),
+                    inset 0 -3px 0 rgba(2, 132, 199, 0.08),
+                    0 5px 0 #cbd5e1,
+                    0 10px 22px rgba(2, 132, 199, 0.14);
+                flex: 1 1 auto;
+                width: 100%;
+            }
+            .desktop-brand-logo {
+                width: 64px;
+                height: 64px;
+                border-radius: 16px;
+                border: 2.5px solid rgba(2, 132, 199, 0.3);
+                box-shadow: 0 6px 14px rgba(2, 132, 199, 0.2), inset 0 1px 1px rgba(255,255,255,0.5);
+                display: block;
+                flex-shrink: 0;
+            }
+            .desktop-brand-text {
+                display: flex;
+                flex-direction: column;
+                line-height: 1.1;
+                white-space: nowrap;
+            }
+            .desktop-brand-past {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: #0284c7;
+                letter-spacing: 0.22em;
+                text-transform: uppercase;
+                margin-bottom: 1px;
+            }
+            .desktop-brand-schiav {
+                font-size: 2.5rem;
+                font-weight: 900;
+                color: #0369a1;
+                letter-spacing: -0.01em;
+                line-height: 1;
+                text-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+            }
+
+            .button-group-center {
+                flex: 0 0 450px;
+                width: 450px;
+                max-width: 450px;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                justify-content: center;
+                position: static;
+                transform: none;
+            }
+            .button-group-center .btn-main {
+                flex: 1;
+                justify-content: center;
+                padding: 14px 16px;
+                font-size: 1.02rem;
+                white-space: nowrap;
+            }
+
+            .button-group-right {
+                flex: 1 1 0;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                min-width: 0;
+            }
+            .desktop-right-wrapper {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 6px;
+                width: fit-content;
+            }
+            .desktop-right-top {
+                display: flex;
+                gap: 8px;
+                align-items: stretch;
+                justify-content: flex-end;
+            }
+            .desktop-right-top .digital-clock {
+                padding: 5px 12px;
+                min-width: 125px;
+                border-radius: 10px;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+            .desktop-right-top .digital-clock .clock-date {
+                font-size: 0.62rem;
+            }
+            .desktop-right-top .digital-clock .clock-time {
+                font-size: 1.25rem;
+            }
+            .desktop-right-top .order-counter {
+                padding: 5px 12px;
+                min-width: 120px;
+                border-radius: 10px;
+                justify-content: center;
+            }
+            .desktop-right-top .order-counter .label {
+                font-size: 0.58rem;
+                margin-bottom: 2px;
+            }
+            .desktop-right-top .order-counter .count {
+                font-size: 1.25rem;
+            }
+
+            .desktop-right-bottom {
+                display: flex;
+                gap: 8px;
+                width: 100%;
+                justify-content: stretch;
+            }
+            .desktop-right-bottom .btn-secondary {
+                flex: 1;
+                padding: 6px 8px;
+                font-size: 0.74rem;
+                white-space: nowrap;
+            }
+
+            .counter-row { display: none !important; }
+
+            /* Calendario schermo intero */
+            .container {
+                flex: 1 1 0;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+            .calendar-wrapper {
+                flex: 1 1 0;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                padding-bottom: 0;
+            }
+            .calendar-grid {
+                flex: 1 1 0;
+                overflow: hidden;
+                grid-template-rows: auto;
+                grid-auto-rows: 1fr;
+                gap: 6px;
+            }
+            .day-card {
+                min-height: unset;
+                padding: 8px 10px;
+            }
+            .day-name { padding: 5px 0; font-size: 0.8rem; }
+            .search-box { margin: 0 auto 5px; }
+            .top-controls { margin-bottom: 5px; }
+            .badge { font-size: 0.78rem; padding: 4px; }
+        }
+
+        @media (max-width: 1024px) {
+            .header-brand-banner { display: flex !important; }
+            .desktop-brand { display: none !important; }
+            .desktop-right-wrapper { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+            .desktop-right-top { display: none !important; }
+            .desktop-right-bottom { width: 100%; display: flex; gap: 10px; justify-content: stretch; }
+            .desktop-right-bottom .btn-secondary { flex: 1; }
+            .top-header { justify-content: center; text-align: center; }
+            .action-buttons { flex-direction: column; align-items: stretch; }
+            .button-group-left { display: none; }
+            .button-group-center { justify-content: stretch; flex-wrap: wrap; }
+            .button-group-center .btn-main { flex: 1; }
+            .button-group-right { justify-content: stretch; flex-wrap: wrap; }
+            .counter-row {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 10px;
+                align-items: stretch;
+                justify-content: center;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .counter-row .order-counter {
+                flex: 1 1 0;
+                min-width: 0;
+                padding: 6px 10px;
+                box-sizing: border-box;
+            }
+            .counter-row .order-counter .label {
+                font-size: 0.62rem;
+                line-height: 1.1;
+                white-space: nowrap;
+            }
+            .counter-row .order-counter .count {
+                font-size: 1.2rem;
+                line-height: 1.1;
+            }
+            .digital-clock-mobile {
+                display: flex !important;
+                flex: 1 1 0;
+                min-width: 0;
+                padding: 6px 10px;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                box-sizing: border-box;
+            }
+            .digital-clock-mobile .clock-date-m {
+                font-size: 0.60rem;
+                line-height: 1.1;
+                white-space: nowrap;
+            }
+            .digital-clock-mobile .clock-time-m {
+                font-size: 1.18rem;
+                line-height: 1.1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-header { padding: 0.75rem 1rem; flex-direction: column; gap: 10px; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; margin-bottom: 0; position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+            .top-header > div:first-child { flex-direction: row; justify-content: center; align-items: center; gap: 12px; width: 100%; }
+            .top-header .header-title { font-size: 1.4rem; text-align: left; display: flex; flex-direction: column; line-height: 1; }
+            .header-title .t-past { font-size: 0.9rem; font-weight: normal; }
+            .header-title .t-schiav { font-size: 1.5rem; font-weight: bold; }
+            .top-header img { width: 44px !important; height: 44px !important; }
+            .month-nav { width: 100%; justify-content: space-between; }
+            .month-nav h2 { font-size: 1.25rem; min-width: auto; flex: 1; margin: 0; }
+            .nav-arrow { padding: 4px 14px; font-size: 1rem; }
+            .user-menu { width: 100%; }
+            .user-menu-btn { width: 100%; justify-content: center; padding: 8px; font-size: 0.95rem; }
+            .user-menu-dropdown { width: 100%; left: 0; top: calc(100% + 5px); }
+            
+            .button-group-center { display: none !important; }
+            .button-group-right { flex-direction: column; width: 100%; gap: 10px; }
+            .desktop-right-bottom { flex-direction: row; flex-wrap: wrap; width: 100%; gap: 10px; }
+            .desktop-right-bottom .btn-secondary { flex: 1 1 0; justify-content: center; margin-bottom: 0; box-sizing: border-box; padding: 10px 4px; font-size: 0.9rem; white-space: nowrap; }
+            .mobile-btn-row { display: flex !important; flex-direction: row; gap: 10px; width: 100%; box-sizing: border-box; margin-top: 8px; }
+            .mobile-btn-row .btn-main { flex: 1; justify-content: center; padding: 14px 8px; font-size: 1rem; font-weight: 700; border-radius: 14px; text-align: center; box-sizing: border-box; }
+            .counter-row {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                width: 100% !important;
+                gap: 10px;
+                box-sizing: border-box;
+            }
+            .digital-clock-mobile, .counter-row .order-counter {
+                flex: 1 1 0 !important;
+                min-width: 0 !important;
+                width: 50% !important;
+                box-sizing: border-box;
+                padding: 6px 8px !important;
+            }
+            .digital-clock-mobile .clock-date-m { font-size: 0.58rem !important; }
+            .digital-clock-mobile .clock-time-m { font-size: 1.12rem !important; }
+            .counter-row .order-counter .label { font-size: 0.58rem !important; }
+            .counter-row .order-counter .count { font-size: 1.12rem !important; }
+            
+            #calSearch { padding: 12px 15px; font-size: 1rem; border-radius: 12px; }
+            .day-card { min-height: 100px; padding: 8px; }
+            .day-card strong { font-size: 0.95rem; }
+            .badge { font-size: 0.75rem; padding: 4px; }
+        }
+
+        .digital-clock-mobile {
+            display: none;
+            background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+            border: 1px solid rgba(255,255,255,0.9);
+            border-radius: 8px;
+            padding: 8px 12px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            box-shadow:
+                inset 0 2px 0 rgba(255,255,255,1),
+                inset 0 -3px 0 rgba(0,0,0,0.05),
+                0 4px 0 #cbd5e1,
+                0 6px 12px rgba(15,23,42,0.12);
+        }
+        .digital-clock-mobile .clock-date-m {
+            font-family: 'Inter', monospace;
+            font-size: 0.60rem;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .digital-clock-mobile .clock-time-m {
+            font-family: 'Courier New', monospace;
+            font-size: 1.18rem;
+            font-weight: 700;
+            color: #059669;
+            letter-spacing: 0.04em;
+            line-height: 1;
+            text-shadow: 0 1px 2px rgba(5,150,105,0.15);
+        }
+    </style>
+</head>
+<body>
+    <header class="top-header">
+        <div class="header-brand-banner" style="display: flex; align-items: center; gap: 15px;">
+            <img src="/static/images/icon.png" alt="Logo Pasticceria Schiavoni" style="width: 50px; height: 50px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.2);">
+            <h1 class="header-title">
+                <span class="t-past">Pasticceria</span> <span class="t-schiav">Schiavoni</span>
+            </h1>
+        </div>
+        <div class="month-nav">
+            <a href="?mese=8&anno=2026" class="nav-arrow">❮</a>
+            <h2>Settembre 2026</h2>
+            <a href="?mese=10&anno=2026" class="nav-arrow">❯</a>
+        </div>
+        <div class="user-menu">
+            <div class="user-menu-btn" onclick="toggleUserMenu(event)"><span>emanuele</span> ▼</div>
+            <ul class="user-menu-dropdown" id="userMenuDropdown">
+                <li><a href="/conferma_admin">Gestione Utenti</a></li>
+                <li><a href="/logout" style="color: #fca5a5;">Logout</a></li>
+            </ul>
+        </div>
+    </header>
+    <div id="mobileHeaderSpacer" class="mobile-header-spacer"></div>
+    
+    <div class="top-controls">
+        <div class="action-buttons">
+            <div class="button-group-left">
+                <div class="desktop-brand">
+                    <img src="/static/images/icon.png" alt="Logo Pasticceria Schiavoni" class="desktop-brand-logo">
+                    <div class="desktop-brand-text">
+                        <span class="desktop-brand-past">Pasticceria</span>
+                        <span class="desktop-brand-schiav">Schiavoni</span>
+                    </div>
+                </div>
+            </div>
+            <div class="button-group-center">
+                
+                <a href="/nuovo_ordine_form" class="btn-main green">+ Nuovo Ordine</a>
+                <a href="/nuovo_rinfresco" class="btn-main purple">+ Nuovo Rinfresco</a>
+                
+            </div>
+            <div class="button-group-right">
+                <div class="desktop-right-wrapper">
+                    <div class="desktop-right-top">
+                        <div class="digital-clock">
+                            <span class="clock-date" id="clockDate"></span>
+                            <span class="clock-time" id="clockTime"></span>
+                        </div>
+                        <div class="order-counter">
+                            <span class="label">Totale Ordini Mese</span>
+                            <div class="count">35</div>
+                        </div>
+                    </div>
+                    <div class="desktop-right-bottom">
+                        
+                        <a href="/anagrafica" class="btn-secondary">ANAGRAFICA</a>
+                        
+                        <a href="/supporto" class="btn-secondary">SUPPORTO</a>
+                    </div>
+                </div>
+                <div class="counter-row">
+                    <div class="digital-clock-mobile">
+                        <span class="clock-date-m" id="clockDateM"></span>
+                        <span class="clock-time-m" id="clockTimeM"></span>
+                    </div>
+                    <div class="order-counter">
+                        <span class="label">Totale Ordini Mese</span>
+                        <div class="count">35</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mobile-btn-row" style="display:none;">
+                
+                <a href="/nuovo_ordine_form" class="btn-main green">+ Nuovo Ordine</a>
+                <a href="/nuovo_rinfresco" class="btn-main purple">+ Nuovo Rinfresco</a>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="calSearch" placeholder="🔍 Cerca cliente o dolce nel mese..." onkeyup="searchInCalendar()">
+    </div>
+
+    <div class="container">
+        <div class="calendar-wrapper">
+            <div class="calendar-grid">
+                <div class="day-name">LUN</div> <div class="day-name">MAR</div> <div class="day-name">MER</div>
+                <div class="day-name">GIO</div> <div class="day-name">VEN</div> <div class="day-name">SAB</div> <div class="day-name">DOM</div>
+
+                
+                    
+                    <a href="/giorno/2026-09-01" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>1</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-02" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>2</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-03" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>3</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-04" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>4</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-05" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>5</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-06" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>6</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-07" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>7</strong>
+                        
+                    </a>
+                    
+                
+                    
+                    <a href="/giorno/2026-09-08" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>8</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-09" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>9</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-10" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>10</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-11" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>11</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-12" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>12</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-13" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>13</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-14" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>14</strong>
+                        
+                    </a>
+                    
+                
+                    
+                    <a href="/giorno/2026-09-15" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>15</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-16" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>16</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-17" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>17</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-18" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>18</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-19" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>19</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-20" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>20</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-21" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>21</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                
+                    
+                    <a href="/giorno/2026-09-22" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>22</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-23" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>23</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-24" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>24</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-25" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>25</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-26" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>26</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-27" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>27</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-28" 
+                       class="day-card  is-today"
+                       data-ordini='[]'>
+                        <strong>28</strong>
+                        
+                    </a>
+                    
+                
+                    
+                    <a href="/giorno/2026-09-29" 
+                       class="day-card  "
+                       data-ordini='[]'>
+                        <strong>29</strong>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-30" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>30</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-30" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>30</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-30" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>30</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-30" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>30</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-30" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>30</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                    <a href="/giorno/2026-09-30" 
+                       class="day-card  "
+                       data-ordini='["mario rossi millefoglie"]'>
+                        <strong>30</strong>
+                        
+                            <span class="badge">1 Ordini</span>
+                        
+                    </a>
+                    
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleUserMenu(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('userMenuDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('userMenuDropdown');
+            const menu = document.querySelector('.user-menu');
+            if (dropdown && menu && !menu.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function searchInCalendar() {
+            let input = document.getElementById('calSearch').value.toLowerCase();
+            let cards = document.getElementsByClassName('day-card');
+            for (let c of cards) {
+                if (input.length === 0) {
+                    c.classList.remove('search-hidden');
+                    continue;
+                }
+                let data = c.getAttribute('data-ordini');
+                if (data && data.toLowerCase().includes(input)) {
+                    c.classList.remove('search-hidden');
+                } else {
+                    c.classList.add('search-hidden');
+                }
+            }
+        }
+
+        const GIORNI = ['DOM','LUN','MAR','MER','GIO','VEN','SAB'];
+        function updateClock() {
+            const now = new Date();
+            const gg = String(now.getDate()).padStart(2,'0');
+            const mm = String(now.getMonth()+1).padStart(2,'0');
+            const aaaa = now.getFullYear();
+            const giorno = GIORNI[now.getDay()];
+            const hh = String(now.getHours()).padStart(2,'0');
+            const mi = String(now.getMinutes()).padStart(2,'0');
+            const ss = String(now.getSeconds()).padStart(2,'0');
+            const dateStr = giorno + ' ' + gg + '/' + mm + '/' + aaaa;
+            const timeStr = hh + ':' + mi + ':' + ss;
+            // Desktop clock
+            const dateEl = document.getElementById('clockDate');
+            const timeEl = document.getElementById('clockTime');
+            if (dateEl) dateEl.textContent = dateStr;
+            if (timeEl) timeEl.textContent = timeStr;
+            // Mobile clock
+            const dateMEl = document.getElementById('clockDateM');
+            const timeMEl = document.getElementById('clockTimeM');
+            if (dateMEl) dateMEl.textContent = dateStr;
+            if (timeMEl) timeMEl.textContent = timeStr;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js')
+            .then(function(registration) {
+                console.log('Service Worker registered with scope:', registration.scope);
+            }).catch(function(error) {
+                console.log('Service Worker registration failed:', error);
+            });
+        }
+        // Spacer dinamico per header fisso su mobile
+        function adjustMobileHeaderSpacer() {
+            if (window.innerWidth <= 768) {
+                const header = document.querySelector('.top-header');
+                const spacer = document.getElementById('mobileHeaderSpacer');
+                if (header && spacer) {
+                    const h = header.offsetHeight;
+                    spacer.style.display = 'block';
+                    spacer.style.height = h + 'px';
+                }
+            } else {
+                const spacer = document.getElementById('mobileHeaderSpacer');
+                if (spacer) {
+                    spacer.style.display = 'none';
+                    spacer.style.height = '0';
+                }
+            }
+        }
+        adjustMobileHeaderSpacer();
+        window.addEventListener('resize', adjustMobileHeaderSpacer);
+    </script>
+</body>
+</html>

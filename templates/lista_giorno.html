@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio - {{ data_it }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 16px; background: #f8fafc; color: black; }
+        .no-print { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn { flex: 1; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 800; text-align: center; color: white; border: none; cursor: pointer; display: inline-block; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-print { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #047857, 0 6px 10px rgba(16,185,129,0.3); }
+        .btn-back { background: linear-gradient(135deg, #64748b 0%, #475569 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #334155, 0 6px 10px rgba(100,116,139,0.3); }
+        .btn:hover { transform: translateY(-2px) scale(1.02); filter: brightness(1.05); }
+        .btn-print:hover { box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #047857, 0 8px 15px rgba(16,185,129,0.4); }
+        .btn-back:hover { box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #334155, 0 8px 15px rgba(100,116,139,0.4); }
+        .btn:active { transform: translateY(4px); box-shadow: inset 0 1px 1px rgba(0,0,0,0.1), 0 0px 0 rgba(0,0,0,0); }
+
+        .btn-vassoio { background: #f59e0b; color: white; padding: 5px 10px; font-size: 0.8rem; text-transform: uppercase; border-radius: 6px; text-decoration: none; font-weight: bold; }
+
+        h2 { font-family: 'Playfair Display'; text-align: center; border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; }
+
+        /* TABELLA PER PC E STAMPA */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 2px solid #000; padding: 12px; text-align: left; font-size: 1.1rem; }
+        th { background: #f1f5f9; font-size: 0.9rem; text-transform: uppercase; }
+
+        .col-ritiro { text-align: center; font-weight: bold; width: 80px; }
+        .col-quantita { text-align: center; font-weight: bold; background: #fffcf0; width: 120px; }
+        .col-orario { text-align: center; font-weight: bold; width: 100px; }
+        .col-azioni { text-align: center; width: 120px; }
+
+        .neg-p { color: #b91c1c; }
+        .neg-o { color: #1e40af; }
+
+        /* ====== VERSIONE MOBILE (CARDS - LAYOUT VERTICALE) ====== */
+        .mobile-cards-container { display: none; }
+
+        .mobile-count {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            border-radius: 14px;
+            padding: 12px 18px;
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 0.02em;
+        }
+
+        .mobile-lab-card {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.09), 0 8px 24px rgba(0,0,0,0.07);
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Striscia colorata in cima alla card con negozio + orario */
+        .card-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            gap: 10px;
+        }
+        .card-top-bar.bar-palocco {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        .card-top-bar.bar-ostia {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        }
+
+        .card-negozio-label {
+            font-size: 1rem;
+            font-weight: 800;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .card-orario {
+            font-size: 1rem;
+            font-weight: 800;
+            color: white;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.35);
+            white-space: nowrap;
+        }
+
+        /* Nome torta in grande */
+        .card-prodotto-wrap {
+            padding: 14px 16px 10px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .card-prodotto {
+            font-size: 1.45rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #0f172a;
+            line-height: 1.2;
+            display: block;
+        }
+
+        /* Corpo della card: colonna singola, ogni riga è ben separata */
+        .card-body {
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .card-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #94a3b8;
+            flex-shrink: 0;
+            min-width: 80px;
+        }
+
+        .card-value {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #1e293b;
+            text-align: right;
+        }
+
+        .card-qta-value {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #0369a1;
+            background: #eff6ff;
+            border-radius: 8px;
+            padding: 4px 12px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .card-footer {
+            padding: 10px 16px 14px;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .btn-vassoio-card {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            text-align: center;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 3px 0 #b45309, 0 6px 14px rgba(245,158,11,0.3);
+        }
+
+        @media screen and (max-width: 768px) {
+            body { padding: 10px; }
+            table { display: none; }
+            h2 { font-size: 1.2rem; }
+            .mobile-cards-container { display: block; }
+            .no-print { gap: 8px; }
+            .btn { font-size: 0.85rem; padding: 14px 10px; }
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            table { display: table !important; width: 100%; }
+            .mobile-cards-container { display: none !important; }
+            body { padding: 0; }
+            th.col-azioni, td.col-azioni { display: none; } /* Nasconde i pulsanti in stampa lista */
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <button onclick="window.print()" class="btn btn-print">🖨️ STAMPA LISTA</button>
+        <button onclick="tornaIndietro('{{ url_for("gestione_giorno", data=data_it) }}')" class="btn btn-back">⬅ TORNA INDIETRO</button>
+    </div>
+
+    <script>
+        function tornaIndietro(fallbackUrl) {
+            window.close();
+            setTimeout(function() {
+                if (!window.closed) {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else if (fallbackUrl) {
+                        window.location.href = fallbackUrl;
+                    }
+                }
+            }, 150);
+        }
+    </script>
+
+    <h2>PRODUZIONE TORTE - {{ data_it }}</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ritiro</th>
+                <th>Nome</th>
+                <th>Quantità</th>
+                <th>Torta</th>
+                <th>Orario</th>
+                <th class="no-print col-azioni">Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for o in ordini %}
+            <tr>
+                <td class="col-ritiro">
+                    <span class="{% if o.negozio|lower == 'palocco' %}neg-p{% else %}neg-o{% endif %}">
+                        {{ o.negozio }}
+                    </span>
+                </td>
+                <td>{{ o.cliente }}</td>
+                <td class="col-quantita">{{ o.kg }} {{ o.unita_misura }}</td>
+                <td style="text-transform: uppercase; font-weight: bold;">{{ o.tipo_dolce }}</td>
+                <td class="col-orario">{{ o.orario }}</td>
+                <td class="no-print col-azioni">
+                    {# Appare solo se la categoria contiene la parola 'salato' #}
+                    {% if 'salato' in o.categoria|lower %}
+                        <a href="{{ url_for('stampa_vassoio_salato', id=o.id) }}" class="btn btn-vassoio">🥐 VASSOIO</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- VERSIONE MOBILE - LAYOUT VERTICALE -->
+    <div class="mobile-cards-container">
+        <div class="mobile-count">
+            <span>📋 LISTA PRODUZIONE</span>
+            <span>{{ ordini|length }} ordini</span>
+        </div>
+        {% for o in ordini %}
+        <div class="mobile-lab-card">
+            <!-- Striscia colorata: PALOCCO=rosso, OSTIA=blu -->
+            <div class="card-top-bar {% if o.negozio|lower == 'palocco' %}bar-palocco{% else %}bar-ostia{% endif %}">
+                <span class="card-negozio-label">📍 {{ o.negozio }}</span>
+                <span class="card-orario">🕒 {{ o.orario }}</span>
+            </div>
+            <!-- Nome torta in grande -->
+            <div class="card-prodotto-wrap">
+                <span class="card-prodotto">{{ o.tipo_dolce }}</span>
+            </div>
+            <!-- Dettagli: colonna singola, label a sinistra, valore a destra -->
+            <div class="card-body">
+                <div class="card-row">
+                    <span class="card-label">👤 Cliente</span>
+                    <span class="card-value">{{ o.cliente }}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">⚖️ Quantità</span>
+                    <span class="card-qta-value">{{ o.kg }} {{ o.unita_misura }}</span>
+                </div>
+            </div>
+            {% if 'salato' in o.categoria|lower %}
+            <div class="card-footer no-print">
+                <a href="{{ url_for('stampa_vassoio_salato', id=o.id) }}" class="btn-vassoio-card">
+                    🥐 STAMPA RICEVUTA VASSOIO
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

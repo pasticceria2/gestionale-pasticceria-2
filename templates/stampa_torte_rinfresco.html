@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Stampa Torte Rinfresco - {{ o.cliente }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        @page { size: A4 portrait; margin: 0; }
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 20px; background-color: #f8fafc; }
+        .ticket-container { width: 210mm; min-height: 148.5mm; background: white; margin: 0 auto; padding: 5mm 15mm; box-sizing: border-box; position: relative; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.05), inset 0 2px 0 rgba(255, 255, 255, 0.9), inset 0 -3px 0 rgba(0,0,0,0.02); border: 1px solid rgba(255,255,255,0.9); page-break-after: always; }
+        .header { text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 5px; margin-bottom: 10px; }
+        .shop-sub { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .info-box { padding: 6px 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.04); }
+        .label { font-size: 0.65rem; font-weight: bold; color: #64748b; text-transform: uppercase; display: block; }
+        .value { font-size: 1.1rem; font-weight: 700; }
+        .value-time { font-size: 1.2rem; }
+        .order-details { padding: 10px 15px; background: #f8fafc; margin-bottom: 10px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); }
+        .order-title { font-size: 1.6rem; font-weight: 800; color: #000000; margin: 0; text-transform: uppercase; }
+        .notes-section { padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 10px; background-color: #f8fafc; box-shadow: inset 0 2px 4px rgba(0,0,0,0.04); }
+        .notes-text { font-size: 1.1rem; font-weight: 600; text-align: center; text-transform: uppercase; color: #000; white-space: pre-line; }
+        .no-print { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 15px; text-align: center; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); width: 210mm; margin: 0 auto 20px auto; }
+        .btn { padding: 12px 20px; cursor: pointer; border-radius: 12px; font-weight: bold; text-decoration: none; display: inline-block; margin: 0 5px; border: none; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .btn-print { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #047857, 0 6px 10px rgba(16,185,129,0.3); }
+        .btn-print:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #047857, 0 8px 15px rgba(16,185,129,0.4); filter: brightness(1.05); }
+        .btn-print:active { transform: translateY(4px); box-shadow: inset 0 1px 1px rgba(0,0,0,0.1), 0 0px 0 transparent; }
+        .btn-back { background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%); color: #1e293b; box-shadow: inset 0 1px 1px rgba(255,255,255,1), 0 4px 0 #94a3b8, 0 6px 10px rgba(0,0,0,0.1); }
+        .btn-back:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,1), 0 6px 0 #94a3b8, 0 8px 15px rgba(0,0,0,0.15); filter: brightness(1.02); }
+        .btn-back:active { transform: translateY(4px); box-shadow: inset 0 1px 1px rgba(0,0,0,0.1), 0 0px 0 transparent; }
+        @media print {
+            .no-print { display: none; }
+            body { background: white; padding: 0; }
+            .ticket-container { border: none; box-shadow: none; border-radius: 0; margin: 0; padding: 5mm 15mm; border-bottom: 1px dashed #cbd5e1; page-break-after: always; }
+            .info-box, .order-details, .notes-section { box-shadow: none; border: 1.5px solid #1e293b; border-radius: 6px; background: transparent; }
+            @page { size: A4 portrait; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <button onclick="window.print()" class="btn btn-print">🖨️ STAMPA TUTTE</button>
+    <button onclick="tornaIndietro('{{ url_for("gestione_giorno", data=o.data_consegna) }}')" class="btn btn-back">⬅ INDIETRO</button>
+</div>
+
+{% for torta in torte %}
+{% set highlight_color = '#000000' %} {# Default black #}
+{% set highlight_bg = '#f8fafc' %}   {# Default light gray #}
+{% if o.negozio|lower == 'palocco' %}
+    {% set highlight_color = '#ef4444' %} {# Red #}
+    {% set highlight_bg = '#fee2e2' %}    {# Light Red #}
+{% elif o.modalita|lower == 'consegna' %}
+    {% set highlight_color = '#10b981' %} {# Green #}
+    {% set highlight_bg = '#d1fae5' %}    {# Light Green #}
+{% endif %}
+
+<div class="ticket-container">
+    <div class="header">
+        <div class="shop-sub">LABORATORIO</div>
+    </div>
+    <div class="info-grid">
+        <div class="info-box">
+            <span class="label">Cliente</span>
+            <span class="value">{{ o.cliente }}</span>
+        </div>
+        <div class="info-box" style="background: {{ highlight_bg }};">
+            <span class="label">Negozio Ritiro</span>
+            <span class="value" style="color: {{ highlight_color }};">{{ o.negozio }}</span>
+        </div>
+        <div class="info-box">
+            <span class="label">Data Consegna</span>
+            <span class="value">{{ o.data_consegna | formato_data }}</span>
+        </div>
+        <div class="info-box" style="background: {{ highlight_bg }};">
+            <span class="label">Orario</span>
+            <span class="value value-time" style="color: {{ highlight_color }};">{{ o.orario }}</span>
+        </div>
+    </div>
+
+    <div class="order-details" style="border-left: 6px solid {{ highlight_color }};">
+        <span class="label">Torta</span>
+        <p class="order-title">{{ torta.tipo }}</p>
+        {% if torta.qta and torta.qta|string|length > 0 %}
+            <p style="margin: 3px 0 0; color: #000; font-size: 1rem;">
+                Qtà: <strong>{{ torta.qta }} {{ torta.unita }}</strong>
+            </p>
+        {% endif %}
+    </div>
+
+    {% if torta.gusto %}
+    <div class="notes-section">
+        <span class="label">Gusto e Farcitura</span>
+        <div class="notes-text" style="font-size: 1.2rem; color: #000; font-weight: 700;">
+            {{ torta.gusto.replace('\n', '<br>') | safe }}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if torta.note %}
+    <div class="notes-section">
+        <span class="label">Note e Scritte</span>
+        <div class="notes-text" style="font-size: 1.2rem; font-weight: 700;">
+            {{ torta.note.replace('\n', '<br>') | safe }}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endfor %}
+
+<script>
+    function tornaIndietro(fallbackUrl) {
+        window.close();
+        setTimeout(function() {
+            if (!window.closed) {
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else if (fallbackUrl) {
+                    window.location.href = fallbackUrl;
+                }
+            }
+        }, 150);
+    }
+
+    window.onload = function() {
+        setTimeout(function() { window.print(); }, 800);
+    }
+</script>
+
+</body>
+</html>

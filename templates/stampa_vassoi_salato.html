@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Stampa Vassoi Salato</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        @page { size: A4 portrait; margin: 0; }
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: #f1f5f9; }
+        .ticket-container { width: 210mm; background: white; margin: auto; padding: 5mm 15mm; box-sizing: border-box; display: flex; flex-wrap: wrap; justify-content: flex-start; align-content: flex-start; min-height: 297mm; }
+        .vassoio-card { width: 90mm; height: 48mm; border: 2px solid #000; border-radius: 8px; margin: 2mm; padding: 4mm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+        .v-header { text-align: center; }
+        .v-orario { font-size: 1.1rem; font-weight: 700; }
+        .v-cliente { font-size: 0.8rem; text-transform: uppercase; }
+        .v-prodotto { text-align: center; font-size: 1.3rem; font-weight: 800; text-transform: uppercase; line-height: 1.2; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        .v-qta { position: absolute; top: 3mm; right: 3mm; font-size: 1.5rem; font-weight: 800; }
+        .v-negozio { text-align: center; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; border-top: 1px solid #ccc; padding-top: 3px; }
+        .no-print { width: 100%; background: #1e293b; padding: 10px; text-align: center; margin-bottom: 10px; }
+        .btn { padding: 8px 15px; cursor: pointer; border-radius: 6px; font-weight: bold; text-decoration: none; display: inline-block; margin: 0 5px; border: none; }
+        .btn-print { background: #10b981; color: white; }
+        .btn-back { background: #fff; color: #1e293b; }
+        @media print { .no-print { display: none; } body { background: white; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <button onclick="triggerPrint()" class="btn btn-print">🖨️ STAMPA ETICHETTE</button>
+    <a href="/giorno/{{ vassoi[0].data if vassoi else '' }}" class="btn btn-back">⬅ TORNA AL GIORNO</a>
+</div>
+
+<div class="ticket-container">
+    {% for v in vassoi %}
+    <div class="vassoio-card">
+        <div class="v-header">
+            <div class="v-orario">{{ v.orario.strftime('%H:%M') }}</div>
+            <div class="v-cliente">{{ v.cliente }}</div>
+        </div>
+        <div class="v-prodotto">{{ v.tipo_dolce }}</div>
+        {% if v.kg %}<div class="v-qta">x{{ v.kg }}</div>{% endif %}
+        <div class="v-negozio">{{ v.negozio }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    function triggerPrint() {
+        fetch(`/api/ordine/set_stampato/{{ o.id }}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                window.print();
+            })
+            .catch(error => console.error('Errore:', error));
+    }
+
+    window.onload = function() {
+        setTimeout(triggerPrint, 800);
+    }
+</script>
+
+</body>
+</html>

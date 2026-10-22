@@ -1,0 +1,2018 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Piano Ferie - Pasticceria Schiavoni</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Flash Message 3D */
+        .alert-3d {
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 8px;
+        }
+        .alert-danger { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .alert-warning { background: #fffbe8; color: #92400e; border: 1px solid #fde68a; }
+        .alert-info { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+
+        /* Top Header 3D */
+        .top-header {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 60%, #075985 100%);
+            color: white;
+            padding: 1.2rem 1.6rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.35),
+                0 6px 0 #0c4a6e,
+                0 14px 25px -4px rgba(2, 132, 199, 0.4);
+            border-radius: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .header-brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-brand-wrap img {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .header-title {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 800;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+            letter-spacing: -0.01em;
+        }
+
+        .header-title small {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #bae6fd;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* Navigazione Mese 3D */
+        .month-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.18);
+            padding: 6px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .month-nav h2 {
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 800;
+            min-width: 170px;
+            text-align: center;
+            letter-spacing: -0.01em;
+            color: #ffffff;
+        }
+
+        .nav-arrow {
+            text-decoration: none;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.22);
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(1.05);
+        }
+
+        .nav-arrow:active {
+            transform: translateY(2px);
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-3d {
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .btn-home {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            color: white;
+            box-shadow:
+                inset 0 1px 1px rgba(255,255,255,0.3),
+                0 4px 0 #334155,
+                0 6px 12px rgba(0,0,0,0.15);
+        }
+        .btn-home:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 5px 0 #334155, 0 8px 16px rgba(0,0,0,0.2); }
+        .btn-home:active { transform: translateY(3px); box-shadow: inset 0 1px 1px rgba(0,0,0,0.2), 0 1px 0 #334155; }
+
+        .btn-add-vacation {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.4),
+                0 4px 0 #047857,
+                0 8px 15px rgba(16, 185, 129, 0.35);
+        }
+        .btn-add-vacation:hover { transform: translateY(-2px); box-shadow: inset 0 1.5px 1px rgba(255,255,255,0.5), 0 5px 0 #047857, 0 10px 18px rgba(16, 185, 129, 0.45); }
+        .btn-add-vacation:active { transform: translateY(3px); box-shadow: inset 0 1px 1px rgba(0,0,0,0.2), 0 1px 0 #047857; }
+
+        /* Stats & Filter Bar 3D */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .stat-card-3d {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1.5px solid #e2e8f0;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.9),
+                0 4px 0 #cbd5e1,
+                0 8px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.15s ease;
+        }
+        .stat-card-3d:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        .icon-ostia {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35), inset 0 1px 1px rgba(255,255,255,0.4);
+        }
+        .icon-palocco {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35), inset 0 1px 1px rgba(255,255,255,0.4);
+        }
+        .icon-pending {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+            box-shadow: 0 4px 10px rgba(100, 116, 139, 0.35), inset 0 1px 1px rgba(255,255,255,0.4);
+        }
+        .icon-all {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.35), inset 0 1px 1px rgba(255,255,255,0.4);
+        }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-content .stat-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+        }
+        .stat-content .stat-number {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: #0f172a;
+            line-height: 1.1;
+        }
+
+        /* Filter Pills */
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            background: #e2e8f0;
+            padding: 3px;
+            border-radius: 12px;
+            width: fit-content;
+        }
+        .filter-tab {
+            text-decoration: none;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #475569;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .filter-tab.active {
+            background: #ffffff;
+            color: #0f172a;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .filter-tab.active.tab-ostia { color: #0284c7; }
+        .filter-tab.active.tab-palocco { color: #dc2626; }
+
+        /* Calendar Card 3D */
+        .calendar-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.9),
+                0 6px 0 #cbd5e1,
+                0 15px 30px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .calendar-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 6px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            width: 100%;
+            min-width: 850px;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: 800;
+            color: #64748b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 8px 0;
+            background: #f8fafc;
+            border-radius: 10px;
+            letter-spacing: 0.05em;
+        }
+
+        .day-cell {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            min-height: 110px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            position: relative;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.9),
+                0 3px 0 #e2e8f0,
+                0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .day-cell:hover {
+            transform: translateY(-3px);
+            border-color: #0284c7;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.9),
+                0 6px 0 #cbd5e1,
+                0 10px 18px rgba(2, 132, 199, 0.15);
+        }
+
+        .day-cell.other-month {
+            background: #f8fafc;
+            opacity: 0.45;
+        }
+
+        .day-cell.is-today {
+            border: 2.5px solid #0284c7 !important;
+            background: #f0f9ff !important;
+        }
+
+        .day-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .day-number {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1;
+        }
+
+        .badge-today {
+            font-size: 0.62rem;
+            font-weight: 800;
+            background: #0284c7;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .badge-conflict {
+            font-size: 0.62rem;
+            font-weight: 800;
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+            padding: 2px 5px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .vacation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 120px;
+        }
+
+        /* 3D Vacation Pills */
+        .vacation-pill {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 7px;
+            border-radius: 8px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            line-height: 1.2;
+            word-break: break-word;
+            transition: transform 0.12s ease;
+        }
+        .vacation-pill:hover {
+            transform: scale(1.02);
+        }
+
+        /* IN ATTESA DI CONFERMA -> GRIGIO */
+        .pill-pending {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+            border-bottom: 2px solid #475569;
+            box-shadow: 0 2px 4px rgba(100, 116, 139, 0.35);
+            color: #ffffff;
+        }
+
+        /* OSTIA CONFERMATA -> BLU */
+        .pill-ostia {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-bottom: 2px solid #075985;
+            box-shadow: 0 2px 4px rgba(2, 132, 199, 0.35);
+        }
+
+        /* PALOCCO CONFERMATA -> ROSSO */
+        .pill-palocco {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-bottom: 2px solid #991b1b;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.35);
+        }
+
+        /* MALATTIA CONFERMATA -> ARANCIONE */
+        .pill-malattia {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            border-bottom: 2px solid #c2410c;
+            box-shadow: 0 2px 4px rgba(249, 115, 22, 0.35);
+        }
+
+        /* NON APPROVATO -> GRIGIO SCURO OPACO */
+        .pill-denied {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            border-bottom: 2px solid #374151;
+            box-shadow: 0 2px 4px rgba(75, 85, 99, 0.3);
+            color: #f3f4f6;
+            opacity: 0.82;
+        }
+        .pill-denied .sede-tag {
+            background: rgba(255,255,255,0.15);
+        }
+        .pill-denied-label {
+            font-size: 0.56rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            opacity: 0.9;
+            text-transform: uppercase;
+            color: #fde68a;
+            margin-left: 3px;
+        }
+
+        .vacation-pill .sede-tag {
+            font-size: 0.6rem;
+            background: rgba(255, 255, 255, 0.25);
+            padding: 1px 4px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+
+        /* Add prompt on hover in day cell */
+        .cell-add-hint {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: auto;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+        .day-cell:hover .cell-add-hint {
+            opacity: 1;
+        }
+
+        /* Riepilogo Lista Ferie Mese 3D */
+        .summary-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 22px;
+            border: 1px solid #e2e8f0;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.9),
+                0 6px 0 #cbd5e1,
+                0 15px 30px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .summary-title {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 3px rgba(0,0,0,0.04);
+            min-width: 260px;
+        }
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.88rem;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .vacation-table-wrapper {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        .vacation-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            min-width: 750px;
+        }
+
+        .vacation-table th {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .vacation-table tr.v-row {
+            background: #f8fafc;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            transition: all 0.15s ease;
+        }
+        .vacation-table tr.v-row:hover {
+            background: #f0f9ff;
+            transform: translateY(-1px);
+        }
+
+        .vacation-table td {
+            padding: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+        .vacation-table td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        .vacation-table td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; text-align: right; }
+
+        .badge-sede-ostia {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-sede-palocco {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Badge Stato */
+        .badge-status-confirmed {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-status-pending {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1.5px solid #cbd5e1;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Action Buttons 3D */
+        .btn-action-3d {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 10px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 700;
+            transition: all 0.15s ease;
+            gap: 5px;
+        }
+
+        .btn-action-confirm {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 3px 0 #047857;
+            margin-right: 4px;
+        }
+        .btn-action-confirm:hover { background: #059669; transform: translateY(-2px); }
+        .btn-action-confirm:active { transform: translateY(2px); box-shadow: 0 1px 0 #047857; }
+
+        .btn-action-revoke {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 3px 0 #cbd5e1;
+            margin-right: 4px;
+        }
+        .btn-action-revoke:hover { background: #e2e8f0; transform: translateY(-2px); }
+        .btn-action-revoke:active { transform: translateY(2px); box-shadow: 0 1px 0 #cbd5e1; }
+
+        .btn-action-deny {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            box-shadow: 0 3px 0 #c2410c;
+            margin-right: 4px;
+        }
+        .btn-action-deny:hover { background: #ea580c; transform: translateY(-2px); }
+        .btn-action-deny:active { transform: translateY(2px); box-shadow: 0 1px 0 #c2410c; }
+
+        .btn-action-edit {
+            background: #e2e8f0;
+            color: #334155;
+            box-shadow: 0 3px 0 #cbd5e1;
+            margin-right: 4px;
+        }
+        .btn-action-edit:hover { background: #cbd5e1; transform: translateY(-2px); }
+        .btn-action-edit:active { transform: translateY(2px); box-shadow: 0 1px 0 #cbd5e1; }
+
+        .btn-action-del {
+            background: #fee2e2;
+            color: #dc2626;
+            box-shadow: 0 3px 0 #fca5a5;
+        }
+        .btn-action-del:hover { background: #fecaca; transform: translateY(-2px); }
+        .btn-action-del:active { transform: translateY(2px); box-shadow: 0 1px 0 #fca5a5; }
+
+        /* MODAL 3D */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 520px;
+            padding: 26px;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 1),
+                0 10px 0 #cbd5e1,
+                0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalPop {
+            0% { opacity: 0; transform: scale(0.92) translateY(15px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-modal-close {
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-weight: bold;
+            transition: all 0.15s ease;
+        }
+        .btn-modal-close:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* Existing Vacations Info in Modal */
+        .modal-day-info {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .modal-day-info-title {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            border-radius: 12px;
+            border: 1.5px solid #cbd5e1;
+            background: #ffffff;
+            box-shadow: inset 0 2px 3px rgba(0,0,0,0.05);
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        .form-input:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+
+        /* Sede Selector 3D Segmented */
+        .sede-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .sede-option {
+            position: relative;
+            cursor: pointer;
+        }
+        .sede-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .sede-btn-3d {
+            padding: 12px;
+            border-radius: 14px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.15s ease;
+            border: 2px solid transparent;
+            user-select: none;
+        }
+
+        /* Ostia Option */
+        .sede-option-ostia .sede-btn-3d {
+            background: #f0f9ff;
+            color: #0369a1;
+            border-color: #bae6fd;
+            box-shadow: 0 3px 0 #bae6fd;
+        }
+        .sede-option-ostia input:checked + .sede-btn-3d {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border-color: #075985;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 4px 0 #075985, 0 8px 15px rgba(2, 132, 199, 0.35);
+        }
+
+        /* Palocco Option */
+        .sede-option-palocco .sede-btn-3d {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
+            box-shadow: 0 3px 0 #fecaca;
+        }
+        .sede-option-palocco input:checked + .sede-btn-3d {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border-color: #991b1b;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 4px 0 #991b1b, 0 8px 15px rgba(239, 68, 68, 0.35);
+        }
+
+        .date-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .modal-footer .btn-3d {
+            flex: 1;
+            justify-content: center;
+            padding: 13px 16px;
+            font-size: 0.95rem;
+        }
+
+        .btn-modal-cancel {
+            background: #e2e8f0;
+            color: #475569;
+            box-shadow: 0 4px 0 #cbd5e1;
+        }
+        .btn-modal-cancel:hover { background: #cbd5e1; transform: translateY(-2px); }
+        .btn-modal-cancel:active { transform: translateY(2px); box-shadow: 0 1px 0 #cbd5e1; }
+
+        /* Responsive Mobile Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 8px 6px;
+                overflow-x: hidden;
+            }
+            /* Evita scroll orizzontale */
+            .container,
+            .summary-card,
+            .vacation-table-wrapper,
+            .vacation-table {
+                max-width: 100%;
+                min-width: 0 !important;
+                overflow-x: hidden;
+            }
+            .vacation-table {
+                min-width: unset !important;
+            }
+            .container {
+                gap: 12px;
+            }
+            .top-header { 
+                padding: 12px 14px; 
+                border-radius: 18px; 
+                flex-direction: column; 
+                align-items: stretch; 
+                gap: 10px;
+                text-align: center; 
+            }
+            .header-brand-wrap { 
+                justify-content: center;
+                gap: 10px;
+            }
+            .header-brand-wrap img {
+                width: 38px;
+                height: 38px;
+            }
+            .header-title span {
+                font-size: 1.25rem;
+            }
+            .header-title small {
+                font-size: 0.72rem;
+            }
+            .month-nav { 
+                width: 100%; 
+                justify-content: space-between;
+                padding: 6px 12px;
+                border-radius: 14px;
+            }
+            .month-nav h2 { 
+                font-size: 1.15rem; 
+                min-width: auto; 
+            }
+            .nav-arrow {
+                width: 38px;
+                height: 38px;
+                font-size: 1.1rem;
+            }
+            .header-actions { 
+                width: 100%; 
+                display: flex;
+                gap: 8px;
+            }
+            .header-actions .btn-3d { 
+                flex: 1; 
+                justify-content: center;
+                padding: 10px 8px;
+                font-size: 0.82rem;
+            }
+            
+            /* Stats Bar on Mobile */
+            .stats-bar { 
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card-3d {
+                padding: 10px 12px;
+                border-radius: 14px;
+                gap: 8px;
+            }
+            .stat-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+                border-radius: 10px;
+            }
+            .stat-number {
+                font-size: 1.25rem;
+            }
+            .stat-label {
+                font-size: 0.72rem;
+            }
+            /* Filtro sede a tutta larghezza in mobile */
+            .stats-bar .stat-card-3d:last-child {
+                grid-column: 1 / -1;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .stats-bar .stat-card-3d:last-child > div {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .filter-tabs {
+                width: 100%;
+                display: flex;
+            }
+            .filter-tab {
+                flex: 1;
+                text-align: center;
+                padding: 6px 8px;
+                font-size: 0.76rem;
+            }
+
+            /* Calendario Mobile */
+            .calendar-card { 
+                padding: 10px 8px; 
+                border-radius: 18px; 
+            }
+            .calendar-grid {
+                gap: 4px;
+            }
+            .day-header {
+                padding: 6px 2px;
+                font-size: 0.7rem;
+                letter-spacing: 0.02em;
+            }
+            .day-cell { 
+                min-height: 80px; 
+                padding: 4px 3px; 
+                border-radius: 10px;
+                gap: 2px;
+            }
+            .day-top-bar {
+                margin-bottom: 2px;
+            }
+            .day-number {
+                font-size: 0.88rem;
+            }
+            .badge-today {
+                font-size: 0.55rem;
+                padding: 1px 4px;
+            }
+            .badge-conflict {
+                font-size: 0.55rem;
+                padding: 1px 3px;
+            }
+            .vacation-pill {
+                padding: 2px 4px;
+                font-size: 0.68rem;
+                border-radius: 6px;
+                line-height: 1.15;
+                margin-bottom: 2px;
+            }
+            .vacation-pill .sede-tag {
+                font-size: 0.52rem;
+                padding: 0.5px 2px;
+            }
+            .cell-add-hint {
+                display: none;
+            }
+
+            /* Tabella e Riepilogo Mobile */
+            .summary-card {
+                padding: 14px 12px;
+                border-radius: 18px;
+            }
+            .summary-title {
+                font-size: 1.1rem;
+            }
+            .search-box { 
+                width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+
+            /* Modali su Mobile */
+            .modal-card {
+                padding: 20px 16px;
+                border-radius: 20px;
+                max-width: 100%;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            .modal-title {
+                font-size: 1.15rem;
+            }
+            .date-row { 
+                grid-template-columns: 1fr; 
+                gap: 10px;
+            }
+            .sede-selector { 
+                grid-template-columns: 1fr 1fr; 
+                gap: 8px;
+            }
+            .sede-btn-3d {
+                padding: 10px 8px;
+                font-size: 0.85rem;
+            }
+            .modal-footer {
+                flex-direction: column-reverse;
+                gap: 8px;
+            }
+            .modal-footer > div {
+                width: 100%;
+                display: flex;
+                gap: 8px;
+            }
+            .modal-footer .btn-3d, .modal-footer a.btn-3d {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 14px;
+                text-align: center;
+            }
+            /* ===== PIANO FERIE: MOBILE CARD LAYOUT ===== */
+            .vacation-table-wrapper {
+                overflow-x: visible;
+            }
+            .vacation-table {
+                display: block;
+                width: 100%;
+            }
+            .vacation-table thead {
+                display: none;
+            }
+            .vacation-table tbody {
+                display: flex;
+                flex-direction: column;
+                gap: 14px;
+            }
+            /* Ogni riga = card */
+            .vacation-table tbody tr {
+                display: flex;
+                flex-direction: column;
+                background: #ffffff;
+                border-radius: 16px;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+                padding: 14px;
+                gap: 6px;
+            }
+            /* Riga "nessuna ferie" */
+            .vacation-table tbody tr.empty-row {
+                align-items: center;
+            }
+            /* Ogni cella */
+            .vacation-table td {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 3px 0;
+                border: none !important;
+                font-size: 0.88rem;
+                color: #334155;
+                line-height: 1.4;
+            }
+            /* Label inline prima del valore */
+            .vacation-table td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                font-size: 0.68rem;
+                text-transform: uppercase;
+                color: #94a3b8;
+                letter-spacing: 0.05em;
+                min-width: 64px;
+                flex-shrink: 0;
+            }
+            /* Colonna azioni — bottoni a tutta larghezza, impilati */
+            .vacation-table td:last-child {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                padding-top: 12px;
+                margin-top: 6px;
+                border-top: 1px solid #f1f5f9;
+            }
+            .vacation-table td:last-child::before {
+                display: none;
+            }
+            .vacation-table td:last-child .btn-action-3d {
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+                width: 100% !important;
+                min-height: 44px;
+                padding: 10px 14px;
+                font-size: 0.88rem;
+                font-weight: 700;
+                border-radius: 12px;
+                gap: 8px;
+                box-sizing: border-box;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+    <!-- Top Header 3D -->
+    <header class="top-header">
+        <div class="header-brand-wrap">
+            <img src="/static/images/icon.png" alt="Logo Pasticceria Schiavoni">
+            <div class="header-title">
+                <span>Piano Ferie</span>
+                <small>Pasticceria Schiavoni</small>
+            </div>
+        </div>
+
+        <div class="month-nav">
+            <a href="?mese={{ prev_mese }}&anno={{ prev_anno }}&sede={{ filtro_sede }}" class="nav-arrow" title="Mese Precedente"><i class="fa-solid fa-chevron-left"></i></a>
+            <h2>{{ mese_nome }} {{ anno }}</h2>
+            <a href="?mese={{ next_mese }}&anno={{ next_anno }}&sede={{ filtro_sede }}" class="nav-arrow" title="Mese Successivo"><i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+
+        <div class="header-actions">
+            <a href="{{ url_for('produzione') }}" class="btn-3d btn-home">
+                <i class="fa-solid fa-arrow-left"></i> Calendario Ordini
+            </a>
+            <button class="btn-3d btn-add-vacation" onclick="openAddModal()">
+                <i class="fa-solid fa-plus"></i> Inserisci Richiesta
+            </button>
+        </div>
+    </header>
+
+    <!-- Flash Messages 3D -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div>
+          {% for category, message in messages %}
+            <div class="alert-3d alert-{{ category if category != 'error' else 'danger' }}">
+              <i class="fa-solid fa-circle-info"></i> {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Statistiche & Filtri 3D -->
+    <div class="stats-bar">
+        <div class="stat-card-3d">
+            <div class="stat-icon icon-ostia"></div>
+            <div class="stat-content">
+                <span class="stat-label">Ostia</span>
+                <span class="stat-number">{{ conteggio_ostia }} <small style="font-size:0.75rem; font-weight:600; color:#64748b;">confermati</small></span>
+            </div>
+        </div>
+
+        <div class="stat-card-3d">
+            <div class="stat-icon icon-palocco"></div>
+            <div class="stat-content">
+                <span class="stat-label">Palocco</span>
+                <span class="stat-number">{{ conteggio_palocco }} <small style="font-size:0.75rem; font-weight:600; color:#64748b;">confermati</small></span>
+            </div>
+        </div>
+
+        <div class="stat-card-3d">
+            <div class="stat-icon icon-pending">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-label">In Attesa</span>
+                <span class="stat-number">{{ conteggio_attesa }} <small style="font-size:0.75rem; font-weight:600; color:#64748b;">da approvare</small></span>
+            </div>
+        </div>
+
+        <div class="stat-card-3d" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="stat-icon icon-all">
+                    <i class="fa-solid fa-filter"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">Filtro Sede</span>
+                    <div class="filter-tabs" style="margin-top: 4px;">
+                        <a href="?mese={{ mese }}&anno={{ anno }}&sede=tutte" class="filter-tab {% if filtro_sede == 'tutte' %}active{% endif %}">Tutte</a>
+                        <a href="?mese={{ mese }}&anno={{ anno }}&sede=ostia" class="filter-tab tab-ostia {% if filtro_sede == 'ostia' %}active{% endif %}">Ostia</a>
+                        <a href="?mese={{ mese }}&anno={{ anno }}&sede=palocco" class="filter-tab tab-palocco {% if filtro_sede == 'palocco' %}active{% endif %}">Palocco</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendario Ferie 3D -->
+    <div class="calendar-card">
+        <div class="calendar-wrapper">
+            <div class="calendar-grid">
+                <div class="day-header">LUN</div>
+                <div class="day-header">MAR</div>
+                <div class="day-header">MER</div>
+                <div class="day-header">GIO</div>
+                <div class="day-header">VEN</div>
+                <div class="day-header">SAB</div>
+                <div class="day-header">DOM</div>
+
+                {% for settimana in tabellone %}
+                    {% for d in settimana %}
+                    <div class="day-cell {% if d.fuori_mese %}other-month{% endif %} {% if d.data == oggi %}is-today{% endif %}"
+                         onclick="openDayModal('{{ d.data }}', {{ d.ferie_json|tojson }})">
+                        <div class="day-top-bar">
+                            <span class="day-number">{{ d.giorno_num }}</span>
+                            {% if d.data == oggi %}
+                            <span class="badge-today">OGGI</span>
+                            {% elif d.has_conflict %}
+                            <span class="badge-conflict" title="Più persone in ferie contemporaneamente"><i class="fa-solid fa-triangle-exclamation"></i> {{ d.totale_ferie }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="vacation-list">
+                            {% for f in d.ferie_json %}
+                                {% set is_gl = f.tipo_evento == 'giorno_libero' %}
+                                {% set is_malattia = f.tipo_evento == 'malattia' %}
+                                {% set extra_info = (' (' ~ f.orario_richiesto ~ ')') if (is_gl and f.orario_richiesto) else '' %}
+                                {% if f.rifiutato %}
+                                    <div class="vacation-pill pill-denied"
+                                         title="{{ f.nome }} ({{ f.sede }})&#10;{% if is_malattia %}MALATTIA{% elif is_gl %}GIORNO CON ORARIO{% else %}FERIE{% endif %}&#10;NON APPROVATO da {{ f.rifiutato_da }}&#10;Dal {{ f.data_inizio }} al {{ f.data_fine }}{% if f.note %}&#10;Note: {{ f.note }}{% endif %}">
+                                        <span>{{ f.nome }}{{ extra_info }}</span>
+                                        <span class="pill-denied-label">✕ N.A.</span>
+                                        <span class="sede-tag">{{ f.sede[:3]|upper }}</span>
+                                    </div>
+                                {% elif not f.confermato %}
+                                    <div class="vacation-pill pill-pending" 
+                                         title="{{ f.nome }} ({{ f.sede }})&#10;{% if is_malattia %}MALATTIA{% elif is_gl %}GIORNO CON ORARIO: {{ f.orario_richiesto }}{% else %}FERIE{% endif %}&#10;IN ATTESA DI CONFERMA&#10;Dal {{ f.data_inizio }} al {{ f.data_fine }}{% if f.note %}&#10;Note: {{ f.note }}{% endif %}">
+                                        <span>{{ f.nome }}{{ extra_info }}</span>
+                                        <span class="sede-tag">{{ f.sede[:3]|upper }}</span>
+                                    </div>
+                                {% else %}
+                                    <div class="vacation-pill {% if is_malattia %}pill-malattia{% elif f.sede|lower == 'ostia' %}pill-ostia{% else %}pill-palocco{% endif %}" 
+                                         title="{{ f.nome }} ({{ f.sede }})&#10;{% if is_malattia %}MALATTIA{% elif is_gl %}GIORNO CON ORARIO: {{ f.orario_richiesto }}{% else %}FERIE{% endif %}&#10;CONFERMATO{% if f.confermato_da %} da {{ f.confermato_da }}{% endif %}&#10;Dal {{ f.data_inizio }} al {{ f.data_fine }}{% if f.note %}&#10;Note: {{ f.note }}{% endif %}">
+                                        <span>{{ f.nome }}{{ extra_info }}</span>
+                                        <span class="sede-tag">{{ f.sede[:3]|upper }}</span>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="cell-add-hint">
+                            <i class="fa-solid fa-plus"></i> Inserisci richiesta
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Riepilogo Tabella / Elenco Ferie del Mese -->
+    <div class="summary-card">
+        <div class="summary-header">
+            <h3 class="summary-title">
+                <i class="fa-solid fa-calendar-check" style="color: #0284c7;"></i>
+                Elenco Ferie di {{ mese_nome }} {{ anno }}
+            </h3>
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8;"></i>
+                <input type="text" id="vacationSearch" placeholder="Cerca dipendente, sede o stato..." onkeyup="filterVacations()">
+            </div>
+        </div>
+
+        <div class="vacation-table-wrapper">
+            <table class="vacation-table" id="vacationTable">
+                <thead>
+                    <tr>
+                        <th>Dipendente</th>
+                        <th>Tipo</th>
+                        <th>Sede</th>
+                        <th>Periodo</th>
+                        <th>Stato</th>
+                        <th>Note</th>
+                        <th style="text-align: right;">Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in elenco_ferie_mese %}
+                    {% set f_creator = (f.creato_da or '')|trim|lower %}
+                    {% set can_delete = can_manage_ferie or (curr_username and curr_username == f_creator) or not f_creator %}
+                    {% set is_gl = f.tipo_evento == 'giorno_libero' %}
+                    {% set is_malattia = f.tipo_evento == 'malattia' %}
+                    <tr class="v-row" data-search="{{ f.nome|lower }} {{ f.sede|lower }} {{ 'giorno con orario' if is_gl else ('malattia' if is_malattia else 'ferie') }} {{ 'confermato' if f.confermato else 'attesa' }} {{ f.note|lower if f.note else '' }}">
+                        <td data-label="Dipendente">
+                            <strong style="color: #0f172a; font-size: 0.95rem;">{{ f.nome }}</strong>
+                            {% if f.creato_da %}
+                            <div style="font-size: 0.72rem; color: #94a3b8;">Inserito da: {{ f.creato_da }}</div>
+                            {% endif %}
+                        </td>
+                        <td data-label="Tipo">
+                            {% if is_malattia %}
+                            <span style="display:inline-block; padding:3px 8px; border-radius:6px; background:#ffedd5; color:#9a3412; font-size:0.75rem; font-weight:700;">
+                                Malattia
+                            </span>
+                            {% elif is_gl %}
+                            <span style="display:inline-block; padding:3px 8px; border-radius:6px; background:#fef3c7; color:#92400e; font-size:0.75rem; font-weight:700;">
+                                Giorno con Orario {% if f.orario_richiesto %}<br><small style="color:#b45309;">Turno: {{ f.orario_richiesto }}</small>{% endif %}
+                            </span>
+                            {% else %}
+                            <span style="display:inline-block; padding:3px 8px; border-radius:6px; background:#e0f2fe; color:#0369a1; font-size:0.75rem; font-weight:700;">
+                                Ferie
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Sede">
+                            {% if f.sede|lower == 'ostia' %}
+                            <span class="badge-sede-ostia">
+                                <i class="fa-solid fa-location-dot"></i> Ostia
+                            </span>
+                            {% else %}
+                            <span class="badge-sede-palocco">
+                                <i class="fa-solid fa-location-dot"></i> Palocco
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Periodo">
+                            <i class="fa-regular fa-calendar" style="color: #64748b; margin-right: 4px;"></i>
+                            {{ f.data_inizio_it }} &rarr; {{ f.data_fine_it }}
+                        </td>
+                        <td data-label="Stato">
+                            {% if f.rifiutato %}
+                            <span class="badge-status-pending" title="Non approvato da {{ f.rifiutato_da or 'Admin' }}" style="background: linear-gradient(135deg, #fff7ed, #ffedd5); color: #c2410c; border: 1px solid #fed7aa;">
+                                <i class="fa-solid fa-circle-xmark"></i> Non Approvato
+                            </span>
+                            {% elif f.confermato %}
+                            <span class="badge-status-confirmed" title="Confermato da {{ f.confermato_da or 'Admin' }}">
+                                <i class="fa-solid fa-circle-check"></i> Confermato
+                            </span>
+                            {% else %}
+                            <span class="badge-status-pending" title="In attesa di approvazione da Roberto">
+                                <i class="fa-solid fa-clock"></i> In Attesa
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Note" style="color: #64748b;">
+                            {{ f.note or '-' }}
+                        </td>
+                        <td>
+                            {% if can_manage_ferie %}
+                                {% if f.rifiutato %}
+                                <a href="{{ url_for('sospendi_piano_ferie', id=f.id, mese=mese, anno=anno) }}" 
+                                   class="btn-action-3d btn-action-revoke" title="Ripristina in attesa">
+                                    <i class="fa-solid fa-rotate-left"></i> Ripristina
+                                </a>
+                                {% elif not f.confermato %}
+                                <a href="{{ url_for('conferma_piano_ferie', id=f.id, mese=mese, anno=anno) }}" 
+                                   class="btn-action-3d btn-action-confirm" title="Conferma / Approva">
+                                    <i class="fa-solid fa-check"></i> Approva
+                                </a>
+                                <a href="{{ url_for('rifiuta_piano_ferie', id=f.id, mese=mese, anno=anno) }}"
+                                   class="btn-action-3d btn-action-deny" title="Non Approvato"
+                                   onclick="return confirm('Segnare come NON APPROVATO la richiesta di {{ f.nome }}?')">
+                                    <i class="fa-solid fa-xmark"></i> Non Approvato
+                                </a>
+                                {% else %}
+                                <a href="{{ url_for('sospendi_piano_ferie', id=f.id, mese=mese, anno=anno) }}" 
+                                   class="btn-action-3d btn-action-revoke" title="Reimposta in attesa (in grigio)">
+                                    <i class="fa-solid fa-rotate-left"></i> Sospendi
+                                </a>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if can_delete %}
+                            <button type="button" class="btn-action-3d btn-action-edit" title="Modifica" 
+                                    data-id="{{ f.id }}"
+                                    data-nome="{{ f.nome }}"
+                                    data-sede="{{ f.sede }}"
+                                    data-inizio="{{ f.data_inizio_iso }}"
+                                    data-fine="{{ f.data_fine_iso }}"
+                                    data-note="{{ f.note or '' }}"
+                                    data-tipo="{{ f.tipo_evento or 'ferie' }}"
+                                    data-orario="{{ f.orario_richiesto or '' }}"
+                                    data-creatoda="{{ f.creato_da or '' }}"
+                                    onclick="openEditModalFromEl(this)">
+                                <i class="fa-solid fa-pen"></i> Modifica
+                            </button>
+                            <a href="{{ url_for('elimina_piano_ferie', id=f.id, mese=mese, anno=anno) }}" 
+                               class="btn-action-3d btn-action-del" title="Elimina" 
+                               onclick="return confirm('Sei sicuro di voler eliminare questa voce per {{ f.nome }}?')">
+                                <i class="fa-solid fa-trash"></i> Elimina
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #94a3b8; padding: 24px;">
+                            <i class="fa-solid fa-umbrella-beach" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+                            Nessuna richiesta registrata in questo mese. Clicca su un giorno o su "+ Inserisci Richiesta" per aggiungere.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Autocomplete Datalist per i nomi dipendenti -->
+<datalist id="dipendentiList">
+    {% for n in dipendenti_suggeriti %}
+    <option value="{{ n }}"></option>
+    {% endfor %}
+</datalist>
+
+<!-- MODAL 3D INSERIMENTO / DETTAGLI GIORNO -->
+<div class="modal-overlay" id="addModalOverlay" onclick="handleOverlayClick(event, 'addModalOverlay')">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modalTitle">
+                Inserisci Richiesta Ferie o Cambio Turno
+            </h3>
+            <button class="btn-modal-close" onclick="closeAddModal()">&times;</button>
+        </div>
+
+        <!-- Sezione chi è già in ferie nel giorno selezionato -->
+        <div class="modal-day-info" id="existingVacationsBox" style="display: none;">
+            <div class="modal-day-info-title">
+                <i class="fa-solid fa-users"></i> Persone in ferie in questa data (<span id="infoDateLabel"></span>):
+            </div>
+            <div id="existingVacationsList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+        </div>
+
+        <form action="{{ url_for('salva_piano_ferie') }}" method="POST" id="addVacationForm">
+            <input type="hidden" name="mese_ritorno" value="{{ mese }}">
+            <input type="hidden" name="anno_ritorno" value="{{ anno }}">
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label" for="addNome">
+                    <i class="fa-solid fa-user"></i> Nome Dipendente:
+                </label>
+                <input type="text" name="nome" id="addNome" class="form-input" list="dipendentiList" placeholder="Es. Marco Rossi" required autofocus autocomplete="off">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label">
+                    <i class="fa-solid fa-location-dot"></i> Sede:
+                </label>
+                <div class="sede-selector">
+                    <label class="sede-option sede-option-ostia">
+                        <input type="radio" name="sede" value="Ostia" checked>
+                        <div class="sede-btn-3d">
+                            Ostia
+                        </div>
+                    </label>
+                    <label class="sede-option sede-option-palocco">
+                        <input type="radio" name="sede" value="Palocco">
+                        <div class="sede-btn-3d">
+                            Palocco
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="date-row" style="margin-bottom: 14px;">
+                <div class="form-group">
+                    <label class="form-label" for="addDataInizio">
+                        <i class="fa-regular fa-calendar-plus"></i> Data Inizio:
+                    </label>
+                    <input type="date" name="data_inizio" id="addDataInizio" class="form-input" required onchange="syncEndDate()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="addDataFine">
+                        <i class="fa-regular fa-calendar-check"></i> Data Fine:
+                    </label>
+                    <input type="date" name="data_fine" id="addDataFine" class="form-input" required>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label" for="addNote">
+                    <i class="fa-regular fa-comment-dots"></i> Note (facoltative):
+                </label>
+                <input type="text" name="note" id="addNote" class="form-input" placeholder="Es. Turno mattina / Ferie estive">
+            </div>
+
+            <!-- Tipo evento: Ferie, Giorno con Orario, Malattia -->
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label"><i class="fa-solid fa-tag"></i> Tipo:</label>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:700;font-size:0.9rem;">
+                        <input type="radio" name="tipo_evento" id="addTipoFerie" value="ferie" checked onchange="toggleOrario('add')">
+                        <span style="background:#e0f2fe;color:#0369a1;padding:6px 14px;border-radius:10px;border:2px solid #bae6fd;">Ferie</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:700;font-size:0.9rem;">
+                        <input type="radio" name="tipo_evento" id="addTipoGiornoLibero" value="giorno_libero" onchange="toggleOrario('add')">
+                        <span style="background:#fef3c7;color:#92400e;padding:6px 14px;border-radius:10px;border:2px solid #fde68a;">Giorno con Orario</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:700;font-size:0.9rem;">
+                        <input type="radio" name="tipo_evento" id="addTipoMalattia" value="malattia" onchange="toggleOrario('add')">
+                        <span style="background:#ffedd5;color:#9a3412;padding:6px 14px;border-radius:10px;border:2px solid #fed7aa;">Malattia</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Orario turno (visibile solo per Giorno con Orario + Ostia) -->
+            <div class="form-group" id="addOrarioGroup" style="display:none; margin-bottom:14px;">
+                <label class="form-label" for="addOrario">
+                    <i class="fa-solid fa-clock"></i> Orario turno scelto:
+                </label>
+                <select name="orario_richiesto" id="addOrario" class="form-input">
+                    <option value="">-- Seleziona orario --</option>
+                    <option value="6:30-14">6:30 – 14:00</option>
+                    <option value="7-14">7:00 – 14:00</option>
+                    <option value="7-14-a">7:00 – 14:00 (A)</option>
+                    <option value="7-14-b">7:00 – 14:00 (B)</option>
+                    <option value="7-14-c">7:00 – 14:00 (C)</option>
+                    <option value="8-13/16-20:30">8:00–13:00 / 16:00–20:30 (spezzato)</option>
+                    <option value="14-20:30">14:00 – 20:30</option>
+                    <option value="14-20:30-a">14:00 – 20:30 (A)</option>
+                    <option value="14-20:30-b">14:00 – 20:30 (B)</option>
+                </select>
+                <small style="color:#64748b;font-size:0.78rem;margin-top:4px;">Il turno di quella persona in questo giorno verrà aggiornato con l'orario scelto (solo Ostia, giorno singolo).</small>
+            </div>
+
+            {% if not can_manage_ferie %}
+            <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font-size: 0.8rem; color: #475569; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle-info" style="color: #64748b;"></i>
+                <span>La richiesta sarà salvata in <strong>grigio</strong> in attesa di conferma da <strong>Roberto</strong>.</span>
+            </div>
+            {% endif %}
+
+            <div class="modal-footer">
+                <button type="button" class="btn-3d btn-modal-cancel" onclick="closeAddModal()">Annulla</button>
+                <button type="submit" class="btn-3d btn-add-vacation">
+                    Salva
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL 3D MODIFICA FERIE -->
+<div class="modal-overlay" id="editModalOverlay" onclick="handleOverlayClick(event, 'editModalOverlay')">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fa-solid fa-pen-to-square" style="color: #0284c7;"></i> Modifica Ferie
+            </h3>
+            <button class="btn-modal-close" onclick="closeEditModal()">&times;</button>
+        </div>
+
+        <form action="" method="POST" id="editVacationForm">
+            <input type="hidden" name="mese_ritorno" value="{{ mese }}">
+            <input type="hidden" name="anno_ritorno" value="{{ anno }}">
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label" for="editNome">
+                    <i class="fa-solid fa-user"></i> Nome Dipendente:
+                </label>
+                <input type="text" name="nome" id="editNome" class="form-input" list="dipendentiList" required autocomplete="off">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label">
+                    <i class="fa-solid fa-location-dot"></i> Sede:
+                </label>
+                <div class="sede-selector">
+                    <label class="sede-option sede-option-ostia">
+                        <input type="radio" name="sede" value="Ostia" id="editSedeOstia">
+                        <div class="sede-btn-3d">
+                            Ostia
+                        </div>
+                    </label>
+                    <label class="sede-option sede-option-palocco">
+                        <input type="radio" name="sede" value="Palocco" id="editSedePalocco">
+                        <div class="sede-btn-3d">
+                            Palocco
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="date-row" style="margin-bottom: 14px;">
+                <div class="form-group">
+                    <label class="form-label" for="editDataInizio">
+                        <i class="fa-regular fa-calendar-plus"></i> Data Inizio:
+                    </label>
+                    <input type="date" name="data_inizio" id="editDataInizio" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editDataFine">
+                        <i class="fa-regular fa-calendar-check"></i> Data Fine:
+                    </label>
+                    <input type="date" name="data_fine" id="editDataFine" class="form-input" required>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label" for="editNote">
+                    <i class="fa-regular fa-comment-dots"></i> Note (facoltative):
+                </label>
+                <input type="text" name="note" id="editNote" class="form-input">
+            </div>
+
+            <!-- Tipo evento: Ferie, Giorno con Orario, Malattia -->
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label"><i class="fa-solid fa-tag"></i> Tipo:</label>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:700;font-size:0.9rem;">
+                        <input type="radio" name="tipo_evento" id="editTipoFerie" value="ferie" checked onchange="toggleOrario('edit')">
+                        <span style="background:#e0f2fe;color:#0369a1;padding:6px 14px;border-radius:10px;border:2px solid #bae6fd;">Ferie</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:700;font-size:0.9rem;">
+                        <input type="radio" name="tipo_evento" id="editTipoGiornoLibero" value="giorno_libero" onchange="toggleOrario('edit')">
+                        <span style="background:#fef3c7;color:#92400e;padding:6px 14px;border-radius:10px;border:2px solid #fde68a;">Giorno con Orario</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:700;font-size:0.9rem;">
+                        <input type="radio" name="tipo_evento" id="editTipoMalattia" value="malattia" onchange="toggleOrario('edit')">
+                        <span style="background:#ffedd5;color:#9a3412;padding:6px 14px;border-radius:10px;border:2px solid #fed7aa;">Malattia</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Orario turno (visibile solo per Giorno con Orario + Ostia) -->
+            <div class="form-group" id="editOrarioGroup" style="display:none; margin-bottom:14px;">
+                <label class="form-label" for="editOrario">
+                    <i class="fa-solid fa-clock"></i> Orario turno scelto:
+                </label>
+                <select name="orario_richiesto" id="editOrario" class="form-input">
+                    <option value="">-- Seleziona orario --</option>
+                    <option value="6:30-14">6:30 – 14:00</option>
+                    <option value="7-14">7:00 – 14:00</option>
+                    <option value="7-14-a">7:00 – 14:00 (A)</option>
+                    <option value="7-14-b">7:00 – 14:00 (B)</option>
+                    <option value="7-14-c">7:00 – 14:00 (C)</option>
+                    <option value="8-13/16-20:30">8:00–13:00 / 16:00–20:30 (spezzato)</option>
+                    <option value="14-20:30">14:00 – 20:30</option>
+                    <option value="14-20:30-a">14:00 – 20:30 (A)</option>
+                    <option value="14-20:30-b">14:00 – 20:30 (B)</option>
+                </select>
+                <small style="color:#64748b;font-size:0.78rem;margin-top:4px;">Il turno di quella persona in questo giorno verrà aggiornato con l'orario scelto (solo Ostia, giorno singolo).</small>
+            </div>
+
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div>
+                    <a id="btnModalDeleteFerie" href="#" class="btn-3d" 
+                       style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff; text-decoration: none; padding: 9px 15px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 0 #b91c1c;" 
+                       onclick="return confirm('Sei sicuro di voler eliminare definitivamente queste ferie?');">
+                        <i class="fa-solid fa-trash"></i> Elimina Ferie
+                    </a>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-3d btn-modal-cancel" onclick="closeEditModal()">Annulla</button>
+                    <button type="submit" class="btn-3d btn-home" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+                        <i class="fa-solid fa-floppy-disk"></i> Salva Modifiche
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const CAN_MANAGE_FERIE = {{ 'true' if can_manage_ferie else 'false' }};
+    const CURR_USERNAME = "{{ curr_username }}";
+    const CURRENT_MESE = "{{ mese }}";
+    const CURRENT_ANNO = "{{ anno }}";
+
+    function syncEndDate() {
+        const start = document.getElementById('addDataInizio').value;
+        const end = document.getElementById('addDataFine');
+        if (start && (!end.value || end.value < start)) {
+            end.value = start;
+        }
+    }
+
+    function toggleOrario(prefix) {
+        const form = (prefix === 'edit') ? document.getElementById('editVacationForm') : document.getElementById('addVacationForm');
+        if (!form) return;
+        const tipo = form.querySelector('input[name="tipo_evento"]:checked');
+        const sedeOstia = form.querySelector('input[name="sede"][value="Ostia"]');
+        const group = document.getElementById(prefix + 'OrarioGroup');
+        if (!group) return;
+        // Mostra solo per Giorno con Orario su sede Ostia (mai per Ferie o Malattia)
+        const isGiornoLibero = tipo && tipo.value === 'giorno_libero';
+        const isOstia = sedeOstia && sedeOstia.checked;
+        const show = isGiornoLibero && isOstia;
+        group.style.display = show ? 'block' : 'none';
+        if (!show) {
+            const selectEl = group.querySelector('select');
+            if (selectEl) selectEl.value = '';
+        }
+    }
+
+    // Aggiunge listener alle sedi per aggiornare visibilità orario
+    document.querySelectorAll('#addVacationForm input[name="sede"]').forEach(r => r.addEventListener('change', () => toggleOrario('add')));
+    document.querySelectorAll('#editVacationForm input[name="sede"]').forEach(r => r.addEventListener('change', () => toggleOrario('edit')));
+
+    function openAddModal(dateStr = null) {
+        const today = new Date().toISOString().split('T')[0];
+        const targetDate = dateStr || today;
+        document.getElementById('addDataInizio').value = targetDate;
+        document.getElementById('addDataFine').value = targetDate;
+        document.getElementById('addNome').value = '';
+        document.getElementById('addNote').value = '';
+        // Reset tipo evento
+        const tipoFerie = document.getElementById('addTipoFerie');
+        if (tipoFerie) tipoFerie.checked = true;
+        // Reset orario
+        const addOrario = document.getElementById('addOrario');
+        if (addOrario) addOrario.value = '';
+        toggleOrario('add');
+        document.getElementById('existingVacationsBox').style.display = 'none';
+        document.getElementById('addModalOverlay').classList.add('active');
+        setTimeout(() => document.getElementById('addNome').focus(), 100);
+    }
+
+    function openDayModal(dateStr, ferieList) {
+        document.getElementById('addDataInizio').value = dateStr;
+        document.getElementById('addDataFine').value = dateStr;
+        document.getElementById('addNome').value = '';
+        document.getElementById('addNote').value = '';
+        const tipoFerie = document.getElementById('addTipoFerie');
+        if (tipoFerie) tipoFerie.checked = true;
+        const addOrario = document.getElementById('addOrario');
+        if (addOrario) addOrario.value = '';
+        toggleOrario('add');
+
+        const box = document.getElementById('existingVacationsBox');
+        const list = document.getElementById('existingVacationsList');
+        const label = document.getElementById('infoDateLabel');
+
+        const parts = dateStr.split('-');
+        label.textContent = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+        if (ferieList && ferieList.length > 0) {
+            box.style.display = 'flex';
+            list.innerHTML = '';
+            ferieList.forEach(f => {
+                const isOstia = f.sede.toLowerCase() === 'ostia';
+                const isGl = f.tipo_evento === 'giorno_libero';
+                const isMalattia = f.tipo_evento === 'malattia';
+                const pillClass = f.rifiutato ? 'pill-denied' : (isMalattia ? 'pill-malattia' : (!f.confermato ? 'pill-pending' : (isOstia ? 'pill-ostia' : 'pill-palocco')));
+                const statusText = f.rifiutato ? ('Non Approvato' + (f.rifiutato_da ? ' da ' + f.rifiutato_da : '')) : (f.confermato ? 'Confermato' : 'In Attesa');
+                const fCreator = (f.creato_da || '').toLowerCase().trim();
+                const canDel = CAN_MANAGE_FERIE || !fCreator || (CURR_USERNAME && CURR_USERNAME === fCreator);
+                const labelTipo = isMalattia ? 'Malattia' : (isGl ? 'Giorno con Orario' + (f.orario_richiesto ? ` (${f.orario_richiesto})` : '') : 'Ferie');
+                
+                const div = document.createElement('div');
+                div.className = `vacation-pill ${pillClass}`;
+                div.style.padding = '8px 10px';
+                div.style.fontSize = '0.82rem';
+                
+                let actionBtnsHtml = '<div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">';
+                if (CAN_MANAGE_FERIE) {
+                    if (f.rifiutato) {
+                        // Rifiutato: mostra solo Ripristina (per poter cambiare idea)
+                        actionBtnsHtml += `<a href="/piano-ferie/sospendi/${f.id}?mese=${CURRENT_MESE}&anno=${CURRENT_ANNO}" class="btn-action-3d btn-action-revoke" style="padding: 4px 8px; font-size: 0.74rem;" onclick="event.stopPropagation();"><i class="fa-solid fa-rotate-left"></i> Ripristina</a>`;
+                    } else if (!f.confermato) {
+                        // In attesa: mostra Approva e Non Approvato
+                        actionBtnsHtml += `<a href="/piano-ferie/conferma/${f.id}?mese=${CURRENT_MESE}&anno=${CURRENT_ANNO}" class="btn-action-3d btn-action-confirm" style="padding: 4px 8px; font-size: 0.74rem;" onclick="event.stopPropagation();"><i class="fa-solid fa-check"></i> Approva</a>`;
+                        actionBtnsHtml += `<a href="/piano-ferie/rifiuta/${f.id}?mese=${CURRENT_MESE}&anno=${CURRENT_ANNO}" class="btn-action-3d btn-action-deny" style="padding: 4px 8px; font-size: 0.74rem;" onclick="event.stopPropagation(); return confirm('Segnare come NON APPROVATO la richiesta di ${f.nome}?');"><i class="fa-solid fa-xmark"></i> Non App.</a>`;
+                    } else {
+                        // Confermato: mostra Sospendi
+                        actionBtnsHtml += `<a href="/piano-ferie/sospendi/${f.id}?mese=${CURRENT_MESE}&anno=${CURRENT_ANNO}" class="btn-action-3d btn-action-revoke" style="padding: 4px 8px; font-size: 0.74rem;" onclick="event.stopPropagation();"><i class="fa-solid fa-rotate-left"></i> Sospendi</a>`;
+                    }
+                }
+                if (canDel) {
+                    actionBtnsHtml += `
+                        <button type="button" class="btn-action-3d btn-action-edit" title="Modifica" style="padding: 4px 8px; font-size: 0.74rem;" 
+                                data-id="${f.id}" data-nome="${f.nome}" data-sede="${f.sede}" data-inizio="${f.data_inizio_iso}" data-fine="${f.data_fine_iso}" data-note="${f.note || ''}" data-tipo="${f.tipo_evento || 'ferie'}" data-orario="${f.orario_richiesto || ''}" data-creatoda="${f.creato_da || ''}"
+                                onclick="event.stopPropagation(); closeAddModal(); openEditModalFromEl(this);">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <a href="/piano-ferie/elimina/${f.id}?mese=${CURRENT_MESE}&anno=${CURRENT_ANNO}" 
+                           class="btn-action-3d btn-action-del" title="Elimina" style="padding: 4px 8px; font-size: 0.74rem;" 
+                           onclick="event.stopPropagation(); return confirm('Sei sicuro di voler eliminare la richiesta di ${f.nome}?');">
+                            <i class="fa-solid fa-trash"></i> Elimina
+                        </a>
+                    `;
+                }
+                actionBtnsHtml += '</div>';
+
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                        <div>
+                            <strong>${f.nome}</strong> (${f.sede}) &bull; <span style="font-size:0.75rem; font-weight:600;">${labelTipo}</span> - <span style="font-size:0.75rem; opacity:0.9;">${statusText}</span>
+                            <div style="font-size:0.72rem; opacity:0.85;">${f.data_inizio} &rarr; ${f.data_fine}</div>
+                        </div>
+                        ${actionBtnsHtml}
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        } else {
+            box.style.display = 'none';
+        }
+
+        document.getElementById('addModalOverlay').classList.add('active');
+        setTimeout(() => document.getElementById('addNome').focus(), 100);
+    }
+
+    function closeAddModal() {
+        document.getElementById('addModalOverlay').classList.remove('active');
+    }
+
+    function openEditModalFromEl(btn) {
+        const id = btn.getAttribute('data-id');
+        const nome = btn.getAttribute('data-nome');
+        const sede = btn.getAttribute('data-sede');
+        const dataInizio = btn.getAttribute('data-inizio');
+        const dataFine = btn.getAttribute('data-fine');
+        const note = btn.getAttribute('data-note') || '';
+        const tipo = btn.getAttribute('data-tipo') || 'ferie';
+        const orario = btn.getAttribute('data-orario') || '';
+        const creator = (btn.getAttribute('data-creatoda') || '').toLowerCase().trim();
+
+        document.getElementById('editVacationForm').action = `/piano-ferie/modifica/${id}`;
+        document.getElementById('editNome').value = nome;
+        document.getElementById('editDataInizio').value = dataInizio;
+        document.getElementById('editDataFine').value = dataFine;
+        document.getElementById('editNote').value = note;
+
+        if (sede.toLowerCase() === 'ostia') {
+            document.getElementById('editSedeOstia').checked = true;
+        } else {
+            document.getElementById('editSedePalocco').checked = true;
+        }
+
+        if (tipo === 'giorno_libero') {
+            document.getElementById('editTipoGiornoLibero').checked = true;
+        } else if (tipo === 'malattia') {
+            document.getElementById('editTipoMalattia').checked = true;
+        } else {
+            document.getElementById('editTipoFerie').checked = true;
+        }
+
+        const editOrario = document.getElementById('editOrario');
+        if (editOrario) editOrario.value = orario;
+
+        toggleOrario('edit');
+
+        const delBtn = document.getElementById('btnModalDeleteFerie');
+        if (delBtn) {
+            delBtn.href = `/piano-ferie/elimina/${id}?mese=${CURRENT_MESE}&anno=${CURRENT_ANNO}`;
+            const canDel = CAN_MANAGE_FERIE || !creator || (CURR_USERNAME && CURR_USERNAME === creator);
+            delBtn.style.display = canDel ? 'inline-flex' : 'none';
+        }
+
+        document.getElementById('editModalOverlay').classList.add('active');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModalOverlay').classList.remove('active');
+    }
+
+    function handleOverlayClick(e, overlayId) {
+        if (e.target.id === overlayId) {
+            if (overlayId === 'addModalOverlay') closeAddModal();
+            if (overlayId === 'editModalOverlay') closeEditModal();
+        }
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAddModal();
+            closeEditModal();
+        }
+    });
+
+    function filterVacations() {
+        const query = document.getElementById('vacationSearch').value.toLowerCase().trim();
+        const rows = document.querySelectorAll('#vacationTable tbody tr.v-row');
+        rows.forEach(r => {
+            const text = r.getAttribute('data-search') || '';
+            r.style.display = text.includes(query) ? '' : 'none';
+        });
+    }
+</script>
+
+</body>
+</html>

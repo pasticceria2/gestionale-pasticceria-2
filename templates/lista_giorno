@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Produzione del {{ data }}</title>
+    <style>
+        body { font-family: sans-serif; padding: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #eee; }
+        h1 { text-align: center; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body>
+    <h1>PRODUZIONE LABORATORIO - {{ data }}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Ora</th>
+                <th>Cliente</th>
+                <th>Ordine</th>
+                <th>Kg</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for o in ordini %}
+            <tr>
+                <td><strong>{{ o['orario'] }}</strong></td>
+                <td>{{ o['cliente'] }}</td>
+                <td>{{ o['categoria'] }} - {{ o['tipo_dolce'] }}</td>
+                <td>{{ o['kg'] }}</td>
+                <td>{{ o['descrizione'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="no-print" style="margin-top:20px; text-align:center;">
+        <button onclick="window.print()">STAMPA LISTA</button>
+        <a href="javascript:history.back()">Indietro</a>
+    </div>
+    <script>window.onload = function() { window.print(); }</script>
+</body>
+</html>

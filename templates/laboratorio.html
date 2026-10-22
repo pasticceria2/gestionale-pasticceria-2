@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Produzione - {{ data_it | formato_data }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 60%, #0284c7 100%);
+            color: white;
+            padding: 20px 28px;
+            border-radius: 18px;
+            margin-bottom: 24px;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.4),
+                0 6px 0 #0284c7,
+                0 12px 24px -4px rgba(14,165,233,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+        .page-header .data-badge {
+            background: rgba(255,255,255,0.22);
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 10px;
+            padding: 6px 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .no-print {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 22px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn:active { transform: translateY(4px); box-shadow: none !important; }
+        .btn-print {
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #0284c7, 0 6px 10px rgba(14,165,233,0.3);
+        }
+        .btn-print:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #0284c7, 0 8px 15px rgba(14,165,233,0.4); }
+        .btn-back {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #334155, 0 6px 10px rgba(100,116,139,0.3);
+        }
+        .btn-back:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #334155, 0 8px 15px rgba(100,116,139,0.4); }
+
+        .table-wrap {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow:
+                inset 0 2px 0 rgba(255,255,255,0.9),
+                inset 0 -3px 0 rgba(0,0,0,0.03),
+                0 4px 6px -1px rgba(15,23,42,0.06),
+                0 10px 15px -3px rgba(15,23,42,0.08);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+        thead th {
+            color: white;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        tbody tr { border-bottom: 1px solid #f1f5f9; transition: background 0.15s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #f8fafc; }
+        tbody td { padding: 13px 16px; vertical-align: middle; }
+
+        .td-ora { font-weight: 800; font-size: 1.05rem; color: #0284c7; white-space: nowrap; }
+        .td-prodotto { font-weight: 700; font-size: 1rem; text-transform: uppercase; color: #0f172a; }
+        .td-qta { font-weight: 800; color: #0369a1; white-space: nowrap; }
+        .td-cliente { font-weight: 700; }
+        .neg-palocco { font-weight: 700; color: #ef4444; }
+        .neg-ostia { font-weight: 700; color: #1e3a8a; }
+
+        .footer { margin-top: 16px; font-size: 0.8rem; color: #94a3b8; text-align: right; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { padding: 0 !important; background: white !important; font-size: 9pt !important; }
+            .page-header {
+                background: #0ea5e9 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border-radius: 8px !important;
+                box-shadow: none !important;
+            }
+            .table-wrap { 
+                display: block !important; 
+                box-shadow: none !important; 
+                border: 1px solid #e2e8f0 !important; 
+                overflow: visible !important; 
+            }
+            table { 
+                display: table !important; 
+                width: 100% !important; 
+                border-collapse: collapse !important;
+            }
+            thead { display: table-header-group !important; }
+            tbody { display: table-row-group !important; }
+            tr { display: table-row !important; page-break-inside: avoid !important; }
+            td, th { display: table-cell !important; }
+            thead tr { background: #1e293b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tbody td { padding: 6px 10px !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        function tornaIndietro(fallbackUrl) {
+            window.close();
+            setTimeout(function() {
+                if (!window.closed) {
+                    if (window.history.length > 1) { window.history.back(); }
+                    else if (fallbackUrl) { window.location.href = fallbackUrl; }
+                }
+            }, 150);
+        }
+    </script>
+
+    <div class="no-print">
+        <a href="javascript:window.print()" class="btn btn-print">STAMPA LISTA PRODUZIONE</a>
+        <button onclick="tornaIndietro('/giorno/{{ data_it }}')" class="btn btn-back">TORNA INDIETRO</button>
+    </div>
+
+    <div class="page-header">
+        <h1>PRODUZIONE TORTE</h1>
+        <span class="data-badge">{{ data_it | formato_data }}</span>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 12%;">Orario</th>
+                    <th style="width: 18%;">Ritiro / Negozio</th>
+                    <th style="width: 42%;">Torta</th>
+                    <th style="width: 13%;">Quantità</th>
+                    <th style="width: 15%;">Cliente</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in ordini %}
+                <tr>
+                    <td class="td-ora">{{ o.orario }}</td>
+                    <td>
+                        <span class="{% if o.negozio|lower == 'palocco' %}neg-palocco{% else %}neg-ostia{% endif %}">
+                            {{ o.negozio|replace('Negozio', '')|trim }}
+                        </span>
+                    </td>
+                    <td class="td-prodotto">{{ o.tipo_dolce }}</td>
+                    <td class="td-qta">
+                        {% if o.kg %}
+                            {{ o.kg }}{% if o.unita_misura and o.unita_misura != 'None' %} {{ o.unita_misura }}{% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="td-cliente">{{ o.cliente }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center; padding: 30px; color: #64748b;">
+                        Nessuna torta in produzione per oggi.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">Stampato il: {{ now }}</div>
+</body>
+</html>

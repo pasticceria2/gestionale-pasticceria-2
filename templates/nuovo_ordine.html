@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuovo Ordine - Pasticceria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-deep: #1e3a8a;
+            --success: #10b981;
+            --success-dark: #059669;
+            --success-deep: #047857;
+            --accent: #f59e0b;
+            --text-dark: #0f172a;
+            --text-slate: #334155;
+            --text-muted: #64748b;
+            --bg-border: #cbd5e1;
+            --card-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 20px 35px -10px rgba(15, 23, 42, 0.18), 0 40px 70px -20px rgba(15, 23, 42, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background-color: #f8fafc;
+            padding: 24px 14px 40px; 
+            max-width: 680px; 
+            margin: 0 auto; 
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* CARD PRINCIPALE CON STRATIFICAZIONE 3D */
+        .card { 
+            background: #ffffff; 
+            padding: 34px 26px; 
+            border-radius: 28px; 
+            box-shadow: var(--card-shadow), inset 0 2px 0 rgba(255, 255, 255, 0.95), inset 0 -3px 0 rgba(0, 0, 0, 0.05);
+            position: relative; 
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            margin-bottom: 25px;
+        }
+
+        /* INTESTAZIONE FLUTTUANTE 3D CON EFFETTO ESTRUSIONE */
+        .header-3d {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 22px 20px;
+            text-align: center;
+            margin: -34px -26px 28px -26px;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.4),
+                inset 0 -2px 4px rgba(0,0,0,0.15),
+                0 6px 0 #1e40af,
+                0 14px 25px -4px rgba(37, 99, 235, 0.45);
+            position: relative;
+        }
+
+        .header-3d h1 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.65rem;
+            margin: 0;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+        }
+        
+        .row { 
+            display: flex; 
+            gap: 14px; 
+            margin-bottom: 16px; 
+        }
+        .row > div { 
+            flex: 1; 
+        }
+        
+        label { 
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem; 
+            font-weight: 700; 
+            color: var(--text-slate); 
+            margin-bottom: 7px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+        }
+
+        /* CAMPI INPUT E SELECT 3D (RAISED) */
+        input:not([type="file"]), select, textarea { 
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 100%; 
+            padding: 13px 15px; 
+            border: 1.5px solid #cbd5e1; 
+            border-radius: 14px; 
+            font-size: 0.95rem; 
+            font-family: inherit;
+            outline: none; 
+            background-color: #ffffff;
+            color: var(--text-dark);
+            box-shadow: 
+                inset 0 2px 0 rgba(255, 255, 255, 1),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.04),
+                0 3px 0 #b2c1d0,
+                0 5px 14px rgba(15, 23, 42, 0.10);
+            transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        input:focus, select:focus, textarea:focus { 
+            border-color: var(--primary); 
+            background-color: #ffffff;
+            box-shadow: 
+                inset 0 2px 0 rgba(255, 255, 255, 1),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.04),
+                0 3px 0 #1d4ed8,
+                0 6px 20px rgba(37, 99, 235, 0.22);
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        /* PANNELLO 3D: INDIRIZZO CONSEGNA */
+        #campoIndirizzo { 
+            background: linear-gradient(145deg, #f0fdf4 0%, #e6fced 100%); 
+            padding: 18px; 
+            border-radius: 18px; 
+            border: 2px solid #86efac; 
+            margin-bottom: 20px; 
+            display: none;
+            box-shadow: 
+                inset 0 2px 1px rgba(255, 255, 255, 0.9),
+                0 4px 0 #6ee7b7,
+                0 10px 20px -3px rgba(16, 185, 129, 0.18);
+            animation: slideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* PANNELLO 3D: FOTO ALLEGATA */
+        .sezione-foto {
+            background: linear-gradient(145deg, #faf5ff 0%, #f3e8ff 100%); 
+            padding: 18px; 
+            border-radius: 18px; 
+            border: 2px solid #d8b4fe; 
+            margin-bottom: 22px;
+            box-shadow: 
+                inset 0 2px 1px rgba(255, 255, 255, 0.9),
+                0 4px 0 #c084fc,
+                0 10px 20px -3px rgba(168, 85, 247, 0.16);
+        }
+
+        /* PANNELLO 3D: STATO PAGAMENTO */
+        .sezione-pagamento { 
+            background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%); 
+            padding: 18px; 
+            border-radius: 18px; 
+            border: 2px solid #7dd3fc; 
+            margin-bottom: 24px; 
+            box-shadow: 
+                inset 0 2px 1px rgba(255, 255, 255, 0.9),
+                0 4px 0 #38bdf8,
+                0 10px 20px -3px rgba(14, 165, 233, 0.16);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .sezione-pagamento label { 
+            color: #0369a1; 
+        }
+        
+        .sezione-pagamento input, .sezione-pagamento select { 
+            border-color: #93c5fd; 
+            background: #ffffff;
+        }
+
+        .sezione-pagamento .row {
+            display: flex;
+            align-items: flex-end; 
+            margin-bottom: 0;
+            gap: 14px;
+        }
+
+        /* PULSANTI TATTILI 3D (PUSH-DOWN REALISTICI) */
+        .btn-3d {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 16px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.08rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            margin-top: 14px;
+            text-transform: uppercase;
+            text-decoration: none;
+            position: relative;
+            user-select: none;
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* TASTO VERDE: SALVA ORDINE */
+        .btn-green-3d {
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.5),
+                inset 0 -2px 2px rgba(0, 0, 0, 0.12),
+                0 6px 0 #047857,
+                0 14px 22px rgba(16, 185, 129, 0.38);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-green-3d:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.6),
+                inset 0 -2px 2px rgba(0, 0, 0, 0.12),
+                0 8px 0 #047857,
+                0 18px 28px rgba(16, 185, 129, 0.45);
+        }
+
+        .btn-green-3d:active {
+            transform: translateY(5px);
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 1px 0 #047857,
+                0 4px 8px rgba(16, 185, 129, 0.25);
+        }
+
+        /* TASTO BLU: SALVA E STAMPA */
+        .btn-blue-3d {
+            background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+            color: #ffffff;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.5),
+                inset 0 -2px 2px rgba(0, 0, 0, 0.12),
+                0 6px 0 #1d4ed8,
+                0 14px 22px rgba(37, 99, 235, 0.38);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-blue-3d:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.6),
+                inset 0 -2px 2px rgba(0, 0, 0, 0.12),
+                0 8px 0 #1d4ed8,
+                0 18px 28px rgba(37, 99, 235, 0.45);
+        }
+
+        .btn-blue-3d:active {
+            transform: translateY(5px);
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 1px 0 #1d4ed8,
+                0 4px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        /* TASTO ANNULLA 3D */
+        .btn-cancel-3d, .btn-cancel-3d:link, .btn-cancel-3d:visited, .btn-cancel-3d:hover, .btn-cancel-3d:active, .btn-cancel-3d:focus { 
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #475569; 
+            border: 1px solid #cbd5e1;
+            padding: 12px 20px; 
+            border-radius: 12px;
+            font-weight: 700; 
+            font-size: 0.95rem;
+            text-decoration: none !important; /* Rimossa la sottolineatura */
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.9),
+                0 3px 0 #94a3b8,
+                0 6px 12px rgba(0, 0, 0, 0.05);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-cancel-3d:hover {
+            transform: translateY(-1px);
+            text-decoration: none !important;
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.9),
+                0 4px 0 #94a3b8,
+                0 8px 16px rgba(0, 0, 0, 0.08);
+            color: #1e293b;
+        }
+
+        .btn-cancel-3d:active {
+            transform: translateY(3px);
+            text-decoration: none !important;
+            box-shadow: 
+                inset 0 2px 3px rgba(0, 0, 0, 0.15),
+                0 0 0 #94a3b8;
+        }
+
+        /* TASTO ROSSO 3D PER ELIMINARE FOTO */
+        .btn-red-3d {
+            background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 
+                inset 0 1px 1px rgba(255,255,255,0.4),
+                0 3px 0 #b91c1c,
+                0 6px 12px rgba(239, 68, 68, 0.3);
+            transition: all 0.1s ease;
+        }
+
+        .btn-red-3d:active {
+            transform: translateY(3px);
+            box-shadow: 
+                inset 0 2px 3px rgba(0,0,0,0.3),
+                0 0 0 #b91c1c;
+        }
+
+        /* FILE INPUT 3D */
+        .file-input-3d {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ffffff;
+            color: #7c3aed;
+            border: 2px solid #8b5cf6;
+            padding: 13px 18px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            width: 100%;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.9),
+                0 5px 0 #6d28d9,
+                0 10px 20px rgba(139, 92, 246, 0.18);
+            transition: all 0.12s ease;
+            letter-spacing: 0.3px;
+            user-select: none;
+        }
+        .file-input-3d:hover {
+            background: #f5f3ff;
+            transform: translateY(-2px);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.9),
+                0 7px 0 #6d28d9,
+                0 14px 24px rgba(139, 92, 246, 0.25);
+        }
+        .file-input-3d:active {
+            transform: translateY(4px);
+            box-shadow:
+                inset 0 2px 4px rgba(139, 92, 246, 0.12),
+                0 1px 0 #6d28d9;
+        }
+        .file-input-3d .file-name {
+            font-weight: 500;
+            font-size: 0.82rem;
+            opacity: 0.75;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+        }
+        .file-input-wrap { position: relative; }
+        .file-input-wrap input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ANTEPRIMA FOTO 3D */
+        #fotoPreview {
+            max-width: 100%; 
+            max-height: 160px; 
+            border-radius: 12px; 
+            border: 2px solid #e9d5ff; 
+            object-fit: contain; 
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.2), 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(-8px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        @keyframes slideDown { 
+            from { opacity: 0; transform: translateY(-12px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* BANNER SUGGERIMENTO CLIENTE */
+        .client-suggestions {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0; right: 0;
+            background: #ffffff;
+            border: 2px solid #3b82f6;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.18), 0 4px 0 #1d4ed8;
+            z-index: 999;
+            overflow: hidden;
+            animation: slideDown 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .client-suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.12s;
+        }
+        .client-suggestion-item:last-child { border-bottom: none; }
+        .client-suggestion-item:hover, .client-suggestion-item:active {
+            background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 100%);
+        }
+        .client-suggestion-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #bfdbfe;
+            flex-shrink: 0;
+        }
+        .client-suggestion-initials {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .client-suggestion-info { flex: 1; min-width: 0; }
+        .client-suggestion-name { font-weight: 700; font-size: 0.92rem; color: #1e293b; }
+        .client-suggestion-phone { font-size: 0.78rem; color: #64748b; }
+        .client-suggestion-new {
+            padding: 11px 14px;
+            background: linear-gradient(90deg, #f0fdf4 0%, #dcfce7 100%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: #15803d;
+        }
+        .client-suggestion-new:hover { background: #bbf7d0; }
+        .client-input-wrap { position: relative; }
+
+        /* MODALE AGGIUNTA RAPIDA CLIENTE */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 9000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 30px 26px 24px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow:
+                0 30px 60px -10px rgba(15,23,42,0.35),
+                inset 0 2px 0 rgba(255,255,255,0.9),
+                inset 0 -3px 0 rgba(0,0,0,0.06);
+            animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.88) translateY(20px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        .modal-subtitle {
+            font-size: 0.82rem;
+            color: #64748b;
+            margin-bottom: 22px;
+        }
+        .modal-field { margin-bottom: 16px; }
+        .modal-field label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .modal-field input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            background: #fff;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,1), 0 3px 0 #b2c1d0;
+            transition: all 0.15s ease;
+        }
+        .modal-field input:focus {
+            border-color: #3b82f6;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,1), 0 3px 0 #1d4ed8, 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        .modal-error {
+            color: #dc2626;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            display: none;
+        }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-btn-save {
+            flex: 2;
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 13px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: inset 0 1.5px 1px rgba(255,255,255,0.5), 0 5px 0 #047857, 0 10px 20px rgba(16,185,129,0.3);
+            transition: all 0.12s ease;
+        }
+        .modal-btn-save:hover { transform: translateY(-2px); }
+        .modal-btn-save:active { transform: translateY(4px); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 1px 0 #047857; }
+        .modal-btn-save:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
+        .modal-btn-cancel {
+            flex: 1;
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 13px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #94a3b8;
+            transition: all 0.12s ease;
+        }
+        .modal-btn-cancel:active { transform: translateY(3px); box-shadow: none; }
+
+        /* ADATTAMENTO RESPONSIVO MOBILE */
+        @media (max-width: 480px) {
+            body { padding: 14px 10px 30px; }
+            .card { padding: 26px 16px; border-radius: 22px; }
+            .header-3d { margin: -26px -16px 22px -16px; border-top-left-radius: 22px; border-top-right-radius: 22px; padding: 18px 14px; }
+            .header-3d h1 { font-size: 1.4rem; }
+            .row:not(.sezione-pagamento .row) {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .sezione-foto .row {
+                flex-direction: column !important;
+            }
+            .sezione-pagamento .row {
+                flex-direction: row; 
+            }
+            .btn-3d {
+                padding: 14px 16px;
+                font-size: 0.98rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="header-3d">
+            <h1>Nuovo Ordine</h1>
+            <div class="header-badge">Pasticceria & Laboratorio</div>
+        </div>
+        
+        <form action="/aggiungi" method="POST" enctype="multipart/form-data">
+            <div class="row">
+                <div>
+                    <label>Cliente</label>
+                    <div class="client-input-wrap">
+                        <input type="text" id="input-cliente" name="cliente" placeholder="Nome e Cognome" required autocomplete="off">
+                        <div id="suggestions-cliente" class="client-suggestions" style="display:none;"></div>
+                    </div>
+                </div>
+                <div>
+                    <label>Telefono</label>
+                    <div class="client-input-wrap">
+                        <input type="tel" id="input-telefono" name="telefono" placeholder="333 1234567" autocomplete="off">
+                        <div id="suggestions-telefono" class="client-suggestions" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <label>Negozio di Riferimento</label>
+                    <select name="negozio" id="negozioSelect" required>
+                        <option value="" disabled selected>-- Seleziona Negozio --</option>
+                        {% if is_schiavoni %}
+                        <option value="Palocco">Palocco</option>
+                        {% endif %}
+                        <option value="Ostia">Ostia</option>
+                        <option value="Altro">Altro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <label>Data Consegna</label>
+                    <input type="date" name="data_consegna" value="{{ oggi }}" required>
+                </div>
+                <div>
+                    <label>Orario</label>
+                    <input type="time" name="orario" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <label>Categoria</label>
+                    <select name="categoria" required>
+                        <option value="" disabled selected>Seleziona categoria</option>
+                        <option value="torta">Torta</option>
+                        <option value="mignon">Mignon / Pasticceria</option>
+                        <option value="salato">Salato</option>
+                        <option value="altro">Altro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <label>Operatore</label>
+                    <input type="text" name="operatore" value="{{ session.username }}" placeholder="Chi scrive?" required>
+                </div>
+                <div>
+                    <label>Canale</label>
+                    <select name="canale">
+                        <option value="Persona">Di persona</option>
+                        <option value="Telefono">Telefono</option>
+                        <option value="Social">Social (WA/IG)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div style="flex: 1;">
+                    <label>Modalità di Ritiro</label>
+                    <select name="modalita" id="modalitaSelect" onchange="toggleIndirizzo()" style="font-weight: 600;">
+                        <option value="Negozio">Ritiro in Negozio</option>
+                        <option value="Consegna">Consegna a Domicilio</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="campoIndirizzo">
+                <label style="color: #065f46; font-size: 0.85rem;">Indirizzo di Consegna a Domicilio</label>
+                <input type="text" name="indirizzo" placeholder="Via, Civico, Piano, Citofono..." style="background: #ffffff;">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label>Tipo Prodotto / Dolce</label>
+                <input type="text" name="tipo_dolce" placeholder="Es: Millefoglie, Pizzette rosse, Cornetti salati" required>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label>Farcitura / Dettagli</label>
+                <textarea name="farcitura" rows="2" placeholder="Es: Crema chantilly e fragoline di bosco, Prosciutto crudo..."></textarea>
+            </div>
+
+            <div class="row">
+                <div>
+                    <label>Quantità</label>
+                    <input type="number" step="0.1" name="kg" placeholder="1.5">
+                </div>
+                <div>
+                    <label>Unità di Misura</label>
+                    <select name="unita_misura">
+                        <option value="kg">Kg</option>
+                        <option value="gr">gr</option>
+                        <option value="persone">Persone</option>
+                        <option value="pezzi">Pezzi</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 22px;">
+                <label>Note / Scritte sulla Torta</label>
+                <textarea name="descrizione" rows="2" placeholder="Es: Scritta 'Buon Compleanno Marco' in cioccolato fondente"></textarea>
+            </div>
+
+            <!-- Sezione Allegato Foto e Descrizione Foto 3D -->
+            <div class="sezione-foto">
+                <label style="color: #6b21a8; font-weight: 800; margin-bottom: 12px; font-size: 0.85rem;">
+                    Allegato Foto & Descrizione Decorazione
+                </label>
+                <div class="row" style="margin-bottom: 0;">
+                    <div style="flex: 1;">
+                        <label style="color: #7e22ce;">Carica Foto</label>
+                        <div class="file-input-wrap">
+                            <label class="file-input-3d" id="fotoLabel">
+                                <span>📎</span>
+                                <span>Scegli foto...</span>
+                                <span class="file-name" id="fotoNome"></span>
+                            </label>
+                            <input type="file" name="foto" id="fotoInput" accept="image/*" onchange="previewImage(event); aggiornaLabelFoto(this);">
+                        </div>
+                        <div id="fotoPreviewContainer" style="margin-top: 12px; display: none; text-align: center; position: relative;">
+                            <img id="fotoPreview" src="" alt="Anteprima Foto">
+                            <br>
+                            <button type="button" onclick="clearImagePreview()" class="btn-red-3d" style="margin-top: 10px;">Rimuovi foto</button>
+                        </div>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="color: #7e22ce;">Note sulla Foto</label>
+                        <textarea name="foto_descrizione" rows="4" placeholder="Note specifiche sulla foto (es: riferimento decorazione, colori torta, dettagli logo)..." style="background: #ffffff;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sezione Pagamento 3D -->
+            <div class="sezione-pagamento">
+                <div class="row">
+                    <div>
+                        <label>Stato Pagamento <span id="saldato-check" style="display: none; color: #16a34a; font-weight: bold;">SALDATO</span></label>
+                        <select name="pagamento_tipo" id="pagamento_tipo" onchange="gestisciPagamento()">
+                            <option value="Acconto" selected>Acconto</option>
+                            <option value="Saldato">Saldato</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Importo (€)</label>
+                        <input type="number" name="pagamento_importo" id="pagamento_importo" step="0.01" value="0.00">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pulsanti Tattili 3D -->
+            <button type="submit" name="azione" value="salva" class="btn-3d btn-green-3d">
+                SALVA ORDINE
+            </button>
+            <button type="submit" name="azione" value="salva_stampa" class="btn-3d btn-blue-3d">
+                SALVA E STAMPA
+            </button>
+            
+            <div style="margin-top: 24px; border-top: 2px dashed #e2e8f0; padding-top: 18px; text-align: center;">
+                <a href="/produzione" class="btn-cancel-3d" style="text-decoration: none !important;">Annulla e Torna al Calendario</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- MODALE AGGIUNTA RAPIDA CLIENTE -->
+    <div class="modal-overlay" id="modalAggiungiCliente">
+        <div class="modal-box">
+            <div class="modal-title">➕ Nuovo Cliente</div>
+            <div class="modal-subtitle" id="modalSubtitle">Aggiungi rapidamente il cliente all'anagrafica</div>
+            <div class="modal-field">
+                <label>Nome e Cognome *</label>
+                <input type="text" id="modal-nome" placeholder="Es. Mario Rossi" autocomplete="off">
+            </div>
+            <div class="modal-field">
+                <label>Telefono</label>
+                <input type="tel" id="modal-telefono" placeholder="333 1234567" autocomplete="off">
+            </div>
+            <div class="modal-error" id="modal-error"></div>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn-cancel" onclick="closeQuickAddModal()">Annulla</button>
+                <button type="button" class="modal-btn-save" id="modal-btn-salva" onclick="salvaClienteRapido()">SALVA E INSERISCI</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const previewContainer = document.getElementById('fotoPreviewContainer');
+            const previewImg = document.getElementById('fotoPreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function clearImagePreview() {
+            const input = document.getElementById('fotoInput');
+            const previewContainer = document.getElementById('fotoPreviewContainer');
+            const previewImg = document.getElementById('fotoPreview');
+            input.value = '';
+            previewImg.src = '';
+            previewContainer.style.display = 'none';
+            const nomeEl = document.getElementById('fotoNome');
+            if (nomeEl) nomeEl.textContent = '';
+        }
+
+        function aggiornaLabelFoto(input) {
+            const nomeEl = document.getElementById('fotoNome');
+            if (nomeEl && input.files && input.files[0]) {
+                nomeEl.textContent = input.files[0].name;
+            }
+        }
+
+        function toggleIndirizzo() {
+            var select = document.getElementById("modalitaSelect");
+            var campo = document.getElementById('campoIndirizzo');
+            var negozioSelect = document.getElementById('negozioSelect');
+
+            if (select.value === "Consegna") {
+                campo.style.display = "block";
+                campo.querySelector('input').required = true;
+                negozioSelect.value = "Altro";
+                select.style.border = "2px solid #10b981";
+                select.style.color = "#065f46";
+                select.style.backgroundColor = "#f0fdf4";
+                select.style.fontWeight = "700";
+            } else {
+                campo.style.display = "none";
+                campo.querySelector('input').required = false;
+                campo.querySelector('input').value = "";
+                select.style.border = "";
+                select.style.color = "";
+                select.style.backgroundColor = "";
+                select.style.fontWeight = "600";
+                if (negozioSelect.value === "Altro") {
+                    negozioSelect.value = "";
+                }
+            }
+        }
+
+        function gestisciPagamento() {
+            const tipoPagamento = document.getElementById('pagamento_tipo');
+            const importoPagamento = document.getElementById('pagamento_importo');
+            const check = document.getElementById('saldato-check');
+
+            if (tipoPagamento.value === 'Saldato') {
+                importoPagamento.disabled = true;
+                importoPagamento.style.background = '#e2e8f0';
+                importoPagamento.style.color = '#64748b';
+                check.style.display = 'inline';
+            } else {
+                importoPagamento.disabled = false;
+                importoPagamento.style.background = '#ffffff';
+                importoPagamento.style.color = 'inherit';
+                check.style.display = 'none';
+            }
+        }
+
+        // ──────────────────────────────────────────
+        // AUTOCOMPLETE CLIENTE
+        // ──────────────────────────────────────────
+        let suggestTimer = null;
+
+        function getInitials(name) {
+            return name.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase();
+        }
+
+        function buildSuggestionList(results, containerId, query) {
+            const box = document.getElementById(containerId);
+            box.innerHTML = '';
+
+            if (results.length > 0) {
+                results.forEach(function(c) {
+                    const item = document.createElement('div');
+                    item.className = 'client-suggestion-item';
+
+                    let avatarHtml;
+                    if (c.foto) {
+                        avatarHtml = `<img class="client-suggestion-avatar" src="${c.foto}" alt="">`;
+                    } else {
+                        avatarHtml = `<div class="client-suggestion-initials">${getInitials(c.nome || '?')}</div>`;
+                    }
+
+                    item.innerHTML = `
+                        ${avatarHtml}
+                        <div class="client-suggestion-info">
+                            <div class="client-suggestion-name">${c.nome || ''}</div>
+                            <div class="client-suggestion-phone">${c.telefono || ''}</div>
+                        </div>
+                        <span style="font-size:0.75rem;color:#94a3b8;">↵ seleziona</span>
+                    `;
+                    item.addEventListener('click', function() {
+                        document.getElementById('input-cliente').value = c.nome || '';
+                        document.getElementById('input-telefono').value = c.telefono || '';
+                        document.getElementById('suggestions-cliente').style.display = 'none';
+                        document.getElementById('suggestions-telefono').style.display = 'none';
+                    });
+                    box.appendChild(item);
+                });
+            }
+
+            // Aggiungi opzione "Crea cliente" via modale
+            const addItem = document.createElement('div');
+            addItem.className = 'client-suggestion-new';
+            addItem.innerHTML = `<span style="font-size:1.1rem;">➕</span> Aggiungi "${query}" in Anagrafica`;
+            addItem.addEventListener('click', function() {
+                openQuickAddModal(query);
+            });
+            box.appendChild(addItem);
+
+            box.style.display = 'block';
+        }
+
+        function fetchSuggestions(value, containerId) {
+            const box = document.getElementById(containerId);
+            if (!value || value.length < 2) {
+                box.style.display = 'none';
+                return;
+            }
+            clearTimeout(suggestTimer);
+            suggestTimer = setTimeout(function() {
+                fetch('/api/cerca_cliente?q=' + encodeURIComponent(value))
+                    .then(r => r.json())
+                    .then(data => buildSuggestionList(data, containerId, value))
+                    .catch(() => { box.style.display = 'none'; });
+            }, 200);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleIndirizzo();
+            gestisciPagamento();
+            const operatoreInput = document.querySelector('input[name="operatore"]');
+            if (operatoreInput && !operatoreInput.value) {
+                operatoreInput.value = "{{ session.username }}";
+            }
+
+            document.getElementById('input-cliente').addEventListener('input', function() {
+                fetchSuggestions(this.value, 'suggestions-cliente');
+            });
+            document.getElementById('input-telefono').addEventListener('input', function() {
+                fetchSuggestions(this.value, 'suggestions-telefono');
+            });
+
+            // Chiudi dropdown cliccando altrove
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.client-input-wrap')) {
+                    document.getElementById('suggestions-cliente').style.display = 'none';
+                    document.getElementById('suggestions-telefono').style.display = 'none';
+                }
+            });
+        });
+
+        // ──────────────────────────────────────────
+        // MODALE AGGIUNTA RAPIDA CLIENTE
+        // ──────────────────────────────────────────
+        function openQuickAddModal(prefill) {
+            document.getElementById('modal-nome').value = prefill || '';
+            document.getElementById('modal-telefono').value = '';
+            document.getElementById('modal-error').style.display = 'none';
+            document.getElementById('modal-error').textContent = '';
+            document.getElementById('modal-btn-salva').disabled = false;
+            document.getElementById('modal-btn-salva').textContent = 'SALVA E INSERISCI';
+            document.getElementById('suggestions-cliente').style.display = 'none';
+            document.getElementById('suggestions-telefono').style.display = 'none';
+            document.getElementById('modalAggiungiCliente').classList.add('active');
+            setTimeout(() => document.getElementById('modal-nome').focus(), 100);
+        }
+
+        function closeQuickAddModal() {
+            document.getElementById('modalAggiungiCliente').classList.remove('active');
+        }
+
+        function salvaClienteRapido() {
+            const nome = document.getElementById('modal-nome').value.trim();
+            const telefono = document.getElementById('modal-telefono').value.trim();
+            const errEl = document.getElementById('modal-error');
+            const btnSalva = document.getElementById('modal-btn-salva');
+
+            if (!nome) {
+                errEl.textContent = 'Il nome è obbligatorio.';
+                errEl.style.display = 'block';
+                document.getElementById('modal-nome').focus();
+                return;
+            }
+
+            btnSalva.disabled = true;
+            btnSalva.textContent = 'Salvataggio...';
+            errEl.style.display = 'none';
+
+            fetch('/api/crea_cliente_rapido', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome: nome, telefono: telefono })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    // Compila i campi del form ordine
+                    document.getElementById('input-cliente').value = data.nome;
+                    document.getElementById('input-telefono').value = data.telefono || '';
+                    closeQuickAddModal();
+                } else {
+                    errEl.textContent = data.error || 'Errore durante il salvataggio.';
+                    errEl.style.display = 'block';
+                    btnSalva.disabled = false;
+                    btnSalva.textContent = 'SALVA E INSERISCI';
+                }
+            })
+            .catch(() => {
+                errEl.textContent = 'Errore di rete. Riprova.';
+                errEl.style.display = 'block';
+                btnSalva.disabled = false;
+                btnSalva.textContent = 'SALVA E INSERISCI';
+            });
+        }
+
+        // Chiudi modale cliccando fuori dalla modal-box
+        document.getElementById('modalAggiungiCliente').addEventListener('click', function(e) {
+            if (e.target === this) closeQuickAddModal();
+        });
+    </script>
+</body>
+</html>

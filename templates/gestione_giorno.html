@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dettaglio {{ data_it | formato_data }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; padding: 15px; }
+        .header { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; gap: 14px; }
+
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: #f8fafc;
+            padding-top: 12px;
+            padding-bottom: 8px;
+            margin: -15px -15px 12px -15px;
+            padding-left: 15px;
+            padding-right: 15px;
+            box-shadow: 0 4px 12px rgba(15,23,42,0.08);
+        }
+        
+        .header-top-row { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; }
+
+        .header-title-box {
+            background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+            padding: 12px 28px;
+            border-radius: 14px;
+            box-shadow: 
+                inset 0 2px 0 rgba(255,255,255,1),
+                inset 0 -3px 0 rgba(0,0,0,0.05),
+                0 5px 0 #cbd5e1,
+                0 8px 16px rgba(15,23,42,0.12);
+            border: 1px solid rgba(255,255,255,0.9);
+        }
+        h2 { font-family: 'Inter', sans-serif; font-weight: 700; margin: 0; color: #1e293b; font-size: 1.6rem; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
+        
+        .btn-group { display: flex; gap: 12px; width: 100%; flex-wrap: wrap; justify-content: center; }
+        .btn { flex: 1; min-width: 140px; text-align: center; padding: 14px 10px; border-radius: 12px; text-decoration: none; font-weight: bold; color: white; font-size: 0.85rem; border: none; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        
+        .btn-lab { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #1d4ed8, 0 6px 10px rgba(59,130,246,0.3); }
+        .btn-consegne { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #15803d, 0 6px 10px rgba(34,197,94,0.3); }
+        .btn-salato { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #0369a1, 0 6px 10px rgba(14,165,233,0.3); }
+        .btn-list { background: linear-gradient(135deg, #e05260 0%, #c53030 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #7f1d1d, 0 6px 10px rgba(197,48,48,0.3); }
+        .btn-nota { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #6d28d9, 0 6px 10px rgba(139,92,246,0.3); }
+        .btn-back { background: linear-gradient(135deg, #64748b 0%, #475569 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #334155, 0 6px 10px rgba(100,116,139,0.3); }
+
+        .btn:hover { transform: translateY(-2px) scale(1.02); filter: brightness(1.05); }
+        .btn-lab:hover { box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #1d4ed8, 0 8px 15px rgba(59,130,246,0.4); }
+        .btn-consegne:hover { box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #15803d, 0 8px 15px rgba(34,197,94,0.4); }
+        .btn-salato:hover { box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #0369a1, 0 8px 15px rgba(14,165,233,0.4); }
+        .btn-list:hover { box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #7f1d1d, 0 8px 15px rgba(197,48,48,0.4); }
+        .btn-nota:hover { box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #6d28d9, 0 8px 15px rgba(139,92,246,0.4); }
+        .btn-back:hover { box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #334155, 0 8px 15px rgba(100,116,139,0.4); }
+
+        .btn-nuovo { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #047857, 0 6px 10px rgba(16,185,129,0.3); }
+        .btn-nuovo:hover { box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #047857, 0 8px 15px rgba(16,185,129,0.4); }
+
+        /* Pulsante + visibile solo su mobile, accanto alla data */
+        .btn-mobile-nuovo {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #047857, 0 6px 10px rgba(16,185,129,0.3);
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            flex-shrink: 0;
+        }
+        .btn-mobile-nuovo:hover { transform: translateY(-2px) scale(1.02); filter: brightness(1.05); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #047857, 0 8px 15px rgba(16,185,129,0.4); }
+        .btn-mobile-nuovo:active { transform: translateY(4px); box-shadow: inset 0 1px 1px rgba(0,0,0,0.1), 0 0px 0 rgba(0,0,0,0); }
+
+        @media (max-width: 640px) {
+            .btn-mobile-nuovo { display: flex; }
+            .btn-nuovo-desktop { display: none !important; }
+
+            /* Riga superiore: data centrata + pulsante NUOVO a destra */
+            .header-top-row { justify-content: center; gap: 10px; }
+            .header-title-box { flex: 1 1 auto; min-width: 0; padding: 10px 14px; }
+            .btn-mobile-nuovo { flex: 0 0 auto; align-self: center; }
+
+            /* Btn-group sotto: griglia 2 colonne */
+            .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .btn { min-width: unset; padding: 12px 8px; font-size: 0.78rem; }
+
+            /* Testo data più compatto su mobile */
+            h2 { font-size: 1.2rem; }
+
+            /* Card, pulsanti e log stampe su mobile */
+            .order-card { padding: 14px; margin-bottom: 14px; }
+            .actions { gap: 8px; margin-top: 12px; padding-top: 12px; flex-wrap: wrap; justify-content: flex-start; }
+            .action-btn { padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; border: 1px solid transparent; }
+            .btn-action-preview { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+            .btn-action-preview:hover { background: #dbeafe; }
+            .btn-action-print { background: #f1f5f9; color: #334155; border-color: #cbd5e1; }
+            .btn-action-print:hover { background: #e2e8f0; }
+            .btn-action-cake { background: #fdf2f8; color: #be185d; border-color: #fbcfe8; }
+            .btn-action-cake:hover { background: #fce7f3; }
+            .btn-action-salty { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+            .btn-action-salty:hover { background: #dcfce7; }
+            .btn-action-edit { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+            .btn-action-edit:hover { background: #fef3c7; }
+            .btn-action-delete { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+            .btn-action-delete:hover { background: #fee2e2; }
+            .print-log { padding: 6px 10px; margin-top: 8px; font-size: 0.7rem; gap: 3px; border-radius: 8px; }
+            .print-log-row { gap: 5px; font-size: 0.7rem; }
+            .print-log-date { font-size: 0.68rem; }
+        }
+
+        /* Stili Desktop/Tablet per le azioni azionabili dell'ordine */
+        .action-btn { padding: 8px 14px; font-size: 0.85rem; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; border: 1px solid transparent; cursor: pointer; }
+        .btn-action-preview { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+        .btn-action-preview:hover { background: #dbeafe; transform: translateY(-1px); }
+        .btn-action-print { background: #f1f5f9; color: #334155; border-color: #cbd5e1; }
+        .btn-action-print:hover { background: #e2e8f0; transform: translateY(-1px); }
+        .btn-action-cake { background: #fdf2f8; color: #be185d; border-color: #fbcfe8; }
+        .btn-action-cake:hover { background: #fce7f3; transform: translateY(-1px); }
+        .btn-action-salty { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+        .btn-action-salty:hover { background: #dcfce7; transform: translateY(-1px); }
+        .btn-action-edit { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+        .btn-action-edit:hover { background: #fef3c7; transform: translateY(-1px); }
+        .btn-action-delete { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+        .btn-action-delete:hover { background: #fee2e2; transform: translateY(-1px); }
+
+        /* Modal overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: linear-gradient(160deg, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 22px 20px 18px 20px;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: 
+                inset 0 2px 0 rgba(255,255,255,1),
+                inset 0 -3px 0 rgba(0,0,0,0.03),
+                0 10px 25px -5px rgba(15, 23, 42, 0.2),
+                0 25px 50px -12px rgba(0,0,0,0.35);
+            animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.85) translateY(20px); opacity: 0; }
+            to   { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .modal-choices { display: flex; gap: 12px; flex-direction: column; width: 100%; }
+        .modal-btn {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 10px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-btn-ordine { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #b45309, 0 6px 10px rgba(245,158,11,0.3); }
+        .modal-btn-ordine:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #b45309, 0 8px 15px rgba(245,158,11,0.4); filter: brightness(1.05); }
+        .modal-btn-rinfresco { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #5b21b6, 0 6px 10px rgba(139,92,246,0.3); }
+        .modal-btn-rinfresco:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #5b21b6, 0 8px 15px rgba(139,92,246,0.4); filter: brightness(1.05); }
+        .modal-btn:active { transform: translateY(4px); box-shadow: inset 0 1px 1px rgba(0,0,0,0.1), 0 0px 0 transparent; }
+        .modal-cancel {
+            font-family: 'Inter', sans-serif;
+            margin-top: 14px;
+            padding: 9px 24px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #475569;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 
+                inset 0 1.5px 0 rgba(255,255,255,1),
+                0 3px 0 #cbd5e1,
+                0 5px 8px rgba(0,0,0,0.08);
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            align-self: center;
+        }
+        .modal-cancel:hover {
+            color: #1e293b;
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 0 rgba(255,255,255,1),
+                0 4px 0 #cbd5e1,
+                0 7px 12px rgba(0,0,0,0.12);
+        }
+        .modal-cancel:active {
+            transform: translateY(3px);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.1), 0 0 0 transparent;
+        }
+
+        .btn:active { transform: translateY(4px); box-shadow: inset 0 1px 1px rgba(0,0,0,0.1), 0 0px 0 rgba(0,0,0,0); }
+
+        .search-container { margin-bottom: 20px; }
+        #searchInput { width: 100%; padding: 15px 20px; border-radius: 14px; border: 2px solid transparent; font-size: 1.05rem; outline: none; box-sizing: border-box; background: #ffffff; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 2px 10px rgba(0,0,0,0.05); transition: all 0.2s ease; }
+        #searchInput:focus { border-color: #3b82f6; box-shadow: inset 0 2px 4px rgba(59,130,246,0.1), 0 4px 12px rgba(59,130,246,0.15); }
+
+        .order-card { 
+            background: #ffffff; 
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #3b82f6;
+            border-radius: 16px; 
+            padding: 18px; 
+            margin-bottom: 18px; 
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 10px 15px -5px rgba(15, 23, 42, 0.08), inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -3px 0 rgba(0,0,0,0.03); 
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .order-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 12px -2px rgba(15, 23, 42, 0.08), 0 20px 25px -5px rgba(15, 23, 42, 0.1), inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -3px 0 rgba(0,0,0,0.03); 
+        }
+        .order-card.is-palocco {
+            border-left-color: #ef4444;
+        }
+        .is-consegna { 
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%) !important; 
+            border: 1px solid #86efac !important; 
+            border-left: 4px solid #15803d !important;
+            box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.08), 0 10px 15px -5px rgba(34, 197, 94, 0.1), inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -3px 0 rgba(34, 197, 94, 0.1) !important;
+        }
+        .is-consegna:hover {
+            box-shadow: 0 8px 12px -2px rgba(34, 197, 94, 0.1), 0 20px 25px -5px rgba(34, 197, 94, 0.15), inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -3px 0 rgba(34, 197, 94, 0.1) !important;
+        }
+
+        .print-log { 
+            font-size: 0.74rem; 
+            color: #64748b; 
+            margin-top: 12px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .is-consegna .print-log {
+            background: rgba(255, 255, 255, 0.75);
+            border-color: #bbf7d0;
+        }
+        .print-log-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            line-height: 1.4;
+        }
+        .print-log-icon {
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            opacity: 0.8;
+        }
+        .print-log-user {
+            font-weight: 700;
+            color: #1e293b;
+            flex-shrink: 0;
+        }
+        .print-log-sep {
+            color: #94a3b8;
+            font-weight: 700;
+            flex-shrink: 0;
+            font-size: 0.75rem;
+        }
+        .print-log-date {
+            color: #64748b;
+            font-size: 0.72rem;
+        }
+
+        .order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 10px; }
+        .ora { font-weight: 800; color: #10b981; font-size: 1.1rem; }
+        .neg-badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; font-weight: 700; text-transform: uppercase; box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
+        .palocco { background: linear-gradient(135deg, #fecaca 0%, #f87171 100%); color: #7f1d1d; }
+        .ostia { background: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 100%); color: #1e3a8a; }
+
+        .info-row { margin: 6px 0; }
+        .label { color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px; }
+        .valore { font-weight: 700; color: #0f172a; font-size: 1.05rem; }
+        .small-info { font-size: 0.85rem; color: #475569; font-style: italic; }
+
+        .actions { display: flex; justify-content: flex-start; align-items: center; gap: 10px; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <div class="sticky-top">
+    <div class="header">
+        <!-- Riga superiore: data centrata (+ NUOVO accanto su mobile) -->
+        <div class="header-top-row">
+            <div class="header-title-box">
+                <h2>{{ data_it | formato_data }}</h2>
+            </div>
+            <!-- Pulsante NUOVO visibile solo su mobile, accanto alla data -->
+            <button class="btn-mobile-nuovo" onclick="apriModalNuovo()" title="Nuovo ordine o rinfresco">
+                <i class="fas fa-plus"></i> NUOVO
+            </button>
+        </div>
+        <!-- Riga inferiore: pulsanti azione -->
+        <div class="btn-group">
+            <a href="{{ url_for('laboratorio_giorno', data=data_it) }}" class="btn btn-lab">
+                LABORATORIO
+            </a>
+            
+            <a href="{{ url_for('consegne_giorno', data=data_it) }}" class="btn btn-consegne">
+                CONSEGNE
+            </a>
+
+            <a href="{{ url_for('salato_giorno', data=data_it) }}" class="btn btn-salato">
+                NOTA SALATO
+            </a>
+
+            <a href="{{ url_for('nota_giornaliera', data=data_it) }}" class="btn btn-nota">
+                NOTA GIORNALIERA
+            </a>
+
+            <a href="{{ url_for('lista_totale', data=data_it) }}" class="btn btn-list">
+                LISTA PALOCCO
+            </a>
+
+            <a href="{{ url_for('produzione') }}" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i> ESCI
+            </a>
+            <!-- Pulsante NUOVO visibile su desktop nel btn-group -->
+            <button onclick="apriModalNuovo()" class="btn btn-nuovo btn-nuovo-desktop">
+                <i class="fas fa-plus"></i> NUOVO
+            </button>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="🔍 Cerca cliente o dolce..." onkeyup="filterOrders()">
+    </div>
+    </div>
+
+    <div id="ordersList">
+        {% for o in ordini %}
+        <div class="order-card {% if o.modalita == 'Consegna' %}is-consegna{% endif %} {% if o.categoria == 'Rinfresco' %}is-rinfresco{% endif %} {% if o.negozio|lower == 'palocco' %}is-palocco{% endif %}" id="ordine-{{ o.id }}">
+            
+            <div class="order-header">
+                <span class="ora">🕒 {{ o.orario }}</span>
+                <div>
+                    {% if o.modalita == 'Consegna' %}
+                    <span class="neg-badge" style="background: #22c55e; color: white;">CONSEGNA</span>
+                    {% endif %}
+                    <span class="neg-badge {% if o.negozio == 'Palocco' %}palocco{% else %}ostia{% endif %}">{{ o.negozio }}</span>
+                </div>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Cliente</span>
+                <span class="valore">{{ o.cliente }}</span>
+                <span class="small-info"> - {{ o.operatore }} ({{ o.canale }})</span>
+            </div>
+
+            <div class="info-row">
+                <span class="label">Ordine ({{ o.categoria }})</span>
+                <span class="valore">{{ o.tipo_dolce }}</span>
+                {% if o.categoria != 'Rinfresco' %}
+                <span class="valore">- {{ o.kg }} {{ o.unita_misura }}</span>
+                {% endif %}
+            </div>
+
+            {% if o.descrizione %}
+            {% if o.categoria == 'Rinfresco' %}
+            <div class="info-row" style="margin-top: 10px; padding: 10px; background: #ffffff; border-radius: 6px; font-size: 0.9rem; border: 1px solid #e2e8f0; line-height: 1.5; color: #1e293b;">
+                {{ o.descrizione.replace('LABORATORIO:', '').replace('SALATO:', '').replace('ALTRO:', '').replace('NOTE:', '').replace('GUSTO:', '').replace('|', '<br>').replace('\n', '<br>') | safe }}
+            </div>
+            {% else %}
+            <div class="info-row" style="margin-top: 10px; padding: 8px; background: #ffffff; border-radius: 5px; font-size: 0.85rem; border-left: 3px solid #e2e8f0;">
+                <strong>Note / Dettaglio:</strong> {{ o.descrizione }}
+            </div>
+            {% endif %}
+            {% endif %}
+
+            {% if o.foto or o.foto_descrizione %}
+            <div class="info-row" style="margin-top: 8px; padding: 8px; background: #faf5ff; border-radius: 5px; font-size: 0.85rem; border-left: 3px solid #a855f7; display: flex; gap: 10px; align-items: center;">
+                {% if o.foto %}
+                <a href="{{ o.foto }}" target="_blank" style="flex-shrink: 0;">
+                    <img src="{{ o.foto }}" alt="Foto allegata" style="width: 55px; height: 55px; object-fit: cover; border-radius: 6px; border: 1px solid #d8b4fe;">
+                </a>
+                {% endif %}
+                <div style="flex: 1;">
+                    <strong style="color: #6b21a8;">📷 Foto & Descrizione:</strong>
+                    {% if o.foto_descrizione %}
+                    <div style="color: #4c1d95; margin-top: 2px;">{{ o.foto_descrizione }}</div>
+                    {% else %}
+                    <div style="color: #7e22ce; font-style: italic; margin-top: 2px;">Foto allegata</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div style="margin-top: 8px; font-size: 0.82rem; font-weight: 700; padding: 5px 11px; border-radius: 6px; display: inline-block; letter-spacing: 0.3px; 
+                {% if o.pagamento_tipo in ['Saldato', 'Saldo'] %}background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;{% endif %}
+                {% if o.pagamento_tipo == 'Acconto' and o.pagamento_importo and o.pagamento_importo|float > 0 %}background: #fef9c3; color: #854d0e; border: 1px solid #fde047;{% endif %}
+                {% if o.pagamento_tipo not in ['Saldato', 'Saldo'] and (o.pagamento_tipo != 'Acconto' or not o.pagamento_importo or o.pagamento_importo|float <= 0) %}background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;{% endif %}">
+                
+                {% if o.pagamento_tipo in ['Saldato', 'Saldo'] %}
+                    ✅ SALDATO
+                {% elif o.pagamento_tipo == 'Acconto' and o.pagamento_importo and o.pagamento_importo|float > 0 %}
+                    💰 ACCONTO: € {{ o.pagamento_importo }}
+                {% else %}
+                    DA PAGARE
+                {% endif %}
+            </div>
+
+            <!-- AZIONI SOSTITUITE CON ICONE FONTAWESOME E ETICHETTE DI TESTO -->
+            <div class="actions">
+                {% if o.categoria == 'Rinfresco' %}
+                    <a href="{{ url_for('anteprima_ordine', id=o.id) }}" class="action-btn btn-action-preview" title="Anteprima ordine" target="_blank">
+                        <i class="fa-solid fa-file-lines"></i> Anteprima
+                    </a>
+                    <a href="{{ url_for('stampa_vassoi_salato', id=o.id) }}" class="action-btn btn-action-salty print-btn" title="Stampa Salato (Multiplo)" data-order-id="{{ o.id }}">
+                        <i class="fa-solid fa-burger"></i> Stampa salato
+                    </a>
+                    {% if o.rinfresco_items and o.rinfresco_items.torte %}
+                        {% for torta in o.rinfresco_items.torte %}
+                            <a href="{{ url_for('stampa_singola_debug', id=o.id, torta_id=loop.index0) }}" class="action-btn btn-action-cake print-btn" title="Stampa Torta {{ loop.index }}" data-order-id="{{ o.id }}">
+                                <i class="fa-solid fa-cake-candles"></i> Stampa torta {{ loop.index }}
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+                    <a href="{{ url_for('stampa_ordine', id=o.id) }}" class="action-btn btn-action-print print-btn" title="Stampa Rinfresco Completo" data-order-id="{{ o.id }}">
+                        <i class="fa-solid fa-print"></i> Stampa
+                    </a>
+                {% elif o.categoria|lower == 'salato' %}
+                    <a href="{{ url_for('anteprima_ordine', id=o.id) }}" class="action-btn btn-action-preview" title="Anteprima ordine" target="_blank">
+                        <i class="fa-solid fa-file-lines"></i> Anteprima
+                    </a>
+                    <a href="{{ url_for('stampa_vassoi_salato', id=o.id) }}" class="action-btn btn-action-salty print-btn" title="Stampa Salato" data-order-id="{{ o.id }}">
+                        <i class="fa-solid fa-burger"></i> Stampa salato
+                    </a>
+                    <a href="{{ url_for('stampa_ordine', id=o.id) }}" class="action-btn btn-action-print print-btn" title="Stampa Ordine" data-order-id="{{ o.id }}">
+                        <i class="fa-solid fa-print"></i> Stampa
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('anteprima_ordine', id=o.id) }}" class="action-btn btn-action-preview" title="Anteprima ordine" target="_blank">
+                        <i class="fa-solid fa-file-lines"></i> Anteprima
+                    </a>
+                    <a href="{{ url_for('stampa_ordine', id=o.id) }}" class="action-btn btn-action-print print-btn" title="Stampa Ordine" data-order-id="{{ o.id }}">
+                        <i class="fa-solid fa-print"></i> Stampa
+                    </a>
+                {% endif %}
+
+                {% if session.get('permissions', {}).get('can_edit', True) %}
+                {% if o.categoria == 'Rinfresco' %}
+                <a href="{{ url_for('modifica_rinfresco', id=o.id) }}" class="action-btn btn-action-edit" title="Modifica Rinfresco">
+                    <i class="fa-solid fa-pen"></i> Modifica
+                </a>
+                {% else %}
+                <a href="{{ url_for('modifica_ordine_form', id=o.id) }}" class="action-btn btn-action-edit" title="Modifica">
+                    <i class="fa-solid fa-pen"></i> Modifica
+                </a>
+                {% endif %}
+                {% endif %}
+
+                {% if session.get('permissions', {}).get('can_delete', True) %}
+                <a href="{{ url_for('elimina_ordine', id=o.id) }}" onclick="return confirm('Eliminare questo ordine?')" class="action-btn btn-action-delete" title="Elimina">
+                    <i class="fa-solid fa-trash"></i>
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Log stampe: in colonna, flusso naturale senza sovrastare nulla -->
+            <div id="print-log-{{ o.id }}" class="print-log" style="{% if not (o.print_log or (o.stampato and o.stampato_da)) %}display: none;{% endif %}">
+                {% if o.print_log %}
+                    {% for voce in o.print_log %}
+                        <div class="print-log-row" data-utente="{{ voce.utente }}">
+                            <span class="print-log-icon">🖨️</span>
+                            <span class="print-log-user">{{ voce.utente }}</span>
+                            <span class="print-log-sep">·</span>
+                            <span class="print-log-date">{{ voce.data }}</span>
+                        </div>
+                    {% endfor %}
+                {% elif o.stampato and o.stampato_da %}
+                    <div class="print-log-row" data-utente="{{ o.stampato_da }}">
+                        <span class="print-log-icon">🖨️</span>
+                        <span class="print-log-user">{{ o.stampato_da }}</span>
+                        {% if o.stampato_il %}
+                            <span class="print-log-sep">·</span>
+                            <span class="print-log-date">{{ o.stampato_il | formato_timestamp }}</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+        {% else %}
+        <p style="text-align: center; color: #64748b;">Nessun ordine per oggi.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Modal scelta nuovo ordine/rinfresco -->
+    <div class="modal-overlay" id="modalNuovo" onclick="chiudiModalNuovo(event)">
+        <div class="modal-box">
+            <div class="modal-choices">
+                <a href="{{ url_for('nuovo_ordine_form') }}?data={{ data_it }}" class="modal-btn modal-btn-ordine">
+                    NUOVO ORDINE
+                </a>
+                <a href="{{ url_for('nuovo_rinfresco') }}?data={{ data_it }}" class="modal-btn modal-btn-rinfresco">
+                    NUOVO RINFRESCO
+                </a>
+            </div>
+            <button type="button" class="modal-cancel" onclick="chiudiModalNuovo()">ANNULLA</button>
+        </div>
+    </div>
+
+    <script>
+        function filterOrders() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('order-card');
+            for (let card of cards) {
+                let txt = card.innerText.toLowerCase();
+                card.style.display = txt.includes(input) ? "" : "none";
+            }
+        }
+
+        document.querySelectorAll('.print-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const orderId = this.dataset.orderId;
+                
+                // Apri finestra di stampa
+                window.open(this.href, '_blank');
+                
+                // Registra stampa nel DB
+                fetch(`/api/ordine/set_stampato/${orderId}`, { 
+                    method: 'POST' 
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        const log = document.getElementById(`print-log-${orderId}`);
+                        if(log) {
+                            if(data.is_new) {
+                                // Nuovo utente: aggiunge riga in colonna
+                                const riga = document.createElement('div');
+                                riga.className = 'print-log-row';
+                                riga.setAttribute('data-utente', data.utente);
+                                riga.innerHTML = `<span class="print-log-icon">🖨️</span><span class="print-log-user">${data.utente}</span><span class="print-log-sep">·</span><span class="print-log-date">${data.data}</span>`;
+                                log.appendChild(riga);
+                            } else {
+                                // Stesso utente: aggiorna solo la data nella riga esistente
+                                const existing = log.querySelector(`[data-utente="${data.utente}"]`);
+                                if(existing) {
+                                    existing.innerHTML = `<span class="print-log-icon">🖨️</span><span class="print-log-user">${data.utente}</span><span class="print-log-sep">·</span><span class="print-log-date">${data.data}</span>`;
+                                }
+                            }
+                            log.style.display = 'flex';
+                        }
+                    }
+                });
+            });
+        });
+
+        function apriModalNuovo() {
+            document.getElementById('modalNuovo').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function chiudiModalNuovo(event) {
+            // Chiudi solo se si clicca sull'overlay (non sul box)
+            if (event && event.target !== document.getElementById('modalNuovo')) return;
+            document.getElementById('modalNuovo').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Chiudi con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') chiudiModalNuovo();
+        });
+    </script>
+</body>
+</html>

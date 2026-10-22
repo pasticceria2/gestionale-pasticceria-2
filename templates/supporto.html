@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Supporto & Note - Pasticceria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: #f8fafc; 
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+        }
+
+        /* Flash Message 3D */
+        .alert-3d {
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .alert-warning {
+            background: #fffbe8;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        /* 3D Header Principale */
+        .top-header { 
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 60%, #075985 100%);
+            color: white; 
+            padding: 1.4rem 1.8rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap;
+            gap: 14px;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.35),
+                0 6px 0 #0c4a6e,
+                0 14px 25px -4px rgba(2, 132, 199, 0.4);
+            border-radius: 20px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .top-header h1 { 
+            font-family: 'Inter', sans-serif; 
+            font-weight: 800;
+            margin: 0; 
+            font-size: 1.7rem; 
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+            letter-spacing: -0.02em;
+        }
+
+        /* Pulsante 3D Ritorno */
+        .btn-back { 
+            text-decoration: none; 
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%); 
+            color: white; 
+            padding: 10px 18px; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 0.88rem; 
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 
+                inset 0 1px 1px rgba(255,255,255,0.3),
+                0 4px 0 #334155,
+                0 6px 12px rgba(0,0,0,0.15);
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: none;
+        }
+
+        .btn-back:hover { 
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1px 1px rgba(255,255,255,0.4),
+                0 5px 0 #334155,
+                0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .btn-back:active {
+            transform: translateY(3px);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.2), 0 1px 0 #334155;
+        }
+
+        /* Scheda Card Form Inserimento 3D */
+        .form-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.9),
+                0 8px 0 #cbd5e1,
+                0 16px 25px -4px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+
+        .form-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0 0 14px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-title i {
+            color: #0284c7;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            font-family: inherit;
+            font-size: 0.98rem;
+            font-weight: 500;
+            color: #0f172a;
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 14px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+            resize: vertical;
+            min-height: 120px;
+            outline: none;
+            transition: all 0.2s ease;
+            margin-bottom: 14px;
+        }
+
+        textarea:focus {
+            background: #ffffff;
+            border-color: #0284c7;
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.03),
+                0 0 0 4px rgba(2, 132, 199, 0.15);
+        }
+
+        .btn-salva {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 800;
+            padding: 12px 22px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.4),
+                0 5px 0 #075985,
+                0 8px 15px rgba(2, 132, 199, 0.35);
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 100%;
+        }
+
+        .btn-salva:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.5),
+                0 6px 0 #075985,
+                0 12px 20px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-salva:active {
+            transform: translateY(3px);
+            box-shadow: 
+                inset 0 1px 1px rgba(0, 0, 0, 0.2),
+                0 1px 0 #075985,
+                0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sezione Elenco Note */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .count-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            font-weight: 800;
+            font-size: 0.9rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #bae6fd;
+        }
+
+        .notes-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Card Nota Singola 3D */
+        .note-item {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 18px 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 
+                inset 0 1px 0 rgba(255,255,255,1),
+                0 4px 0 #cbd5e1,
+                0 6px 12px rgba(15,23,42,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .note-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1px 0 rgba(255,255,255,1),
+                0 6px 0 #cbd5e1,
+                0 8px 16px rgba(15,23,42,0.08);
+        }
+
+        .note-content { 
+            flex-grow: 1; 
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            min-width: 0;
+        }
+
+        .note-text { 
+            white-space: pre-wrap; 
+            margin: 0;
+            font-size: 0.98rem;
+            font-weight: 500;
+            color: #1e293b;
+            line-height: 1.55;
+        }
+
+        .note-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .note-date-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem; 
+            font-weight: 600;
+            color: #64748b; 
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .note-author-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem; 
+            font-weight: 700;
+            color: #0369a1; 
+            background: #e0f2fe;
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid #bae6fd;
+        }
+
+        .note-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Pulsanti Azione 3D (Modifica & Elimina) */
+        .btn-modifica {
+            text-decoration: none;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 0.88rem;
+            padding: 9px 13px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-shrink: 0;
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 
+                inset 0 1px 1px rgba(255,255,255,0.35), 
+                0 3px 0 #b45309, 
+                0 4px 8px rgba(245, 158, 11, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-modifica:hover { 
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1px 1px rgba(255,255,255,0.4), 
+                0 4px 0 #b45309, 
+                0 6px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-modifica:active {
+            transform: translateY(3px);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.1), 0 0px 0 rgba(0,0,0,0);
+        }
+
+        .btn-elimina {
+            text-decoration: none;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 0.88rem;
+            padding: 9px 13px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-shrink: 0;
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 
+                inset 0 1px 1px rgba(255,255,255,0.3), 
+                0 3px 0 #991b1b, 
+                0 4px 8px rgba(239, 68, 68, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-elimina:hover { 
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1px 1px rgba(255,255,255,0.4), 
+                0 4px 0 #991b1b, 
+                0 6px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-elimina:active {
+            transform: translateY(3px);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.1), 0 0px 0 rgba(0,0,0,0);
+        }
+
+        /* Form di Modifica In-place */
+        .edit-form-card {
+            margin-top: 12px;
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 14px;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .edit-textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #cbd5e1;
+            font-family: inherit;
+            font-size: 0.95rem;
+            min-height: 90px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        .edit-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-save-edit {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #047857;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-cancel-edit {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #334155;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Stato vuoto 3D */
+        .no-notes { 
+            text-align: center; 
+            color: #64748b; 
+            padding: 30px 20px; 
+            background: #ffffff; 
+            border-radius: 18px;
+            box-shadow: 
+                inset 0 1px 0 rgba(255,255,255,1),
+                0 4px 0 #cbd5e1,
+                0 8px 16px rgba(15,23,42,0.05);
+            border: 1px dashed #cbd5e1;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .no-notes i {
+            font-size: 2.5rem;
+            color: #10b981;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+
+            .top-header {
+                padding: 1.1rem 1.2rem;
+                border-radius: 16px;
+                margin-bottom: 18px;
+                gap: 12px;
+            }
+
+            .top-header h1 {
+                font-size: 1.3rem;
+                gap: 8px;
+            }
+
+            .btn-back {
+                padding: 8px 14px;
+                font-size: 0.82rem;
+                border-radius: 10px;
+            }
+
+            .form-card {
+                padding: 16px 14px;
+                border-radius: 16px;
+                margin-bottom: 20px;
+            }
+
+            .note-item {
+                padding: 14px;
+                border-radius: 14px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .note-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .btn-elimina span, .btn-modifica span {
+                display: inline;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header 3D -->
+        <div class="top-header">
+            <h1><i class="fa-solid fa-headset"></i> Supporto & Note</h1>
+            <a href="{{ url_for('produzione') }}" class="btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Calendario
+            </a>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert-3d alert-{{ category if category != 'error' else 'danger' }}">
+                <i class="fa-solid fa-circle-info"></i> {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Form Inserimento Nota 3D -->
+        <div class="form-card">
+            <h2 class="form-title">
+                <i class="fa-solid fa-pen-to-square"></i> Nuova Nota o Segnalazione
+            </h2>
+            <form action="{{ url_for('salva_nota_supporto') }}" method="POST">
+                <textarea name="testo" placeholder="Scrivi qui il problema riscontrato, un'idea o un promemoria per il sistema..." required></textarea>
+                <button type="submit" class="btn-salva">
+                    <i class="fa-solid fa-plus"></i> Aggiungi Nota
+                </button>
+            </form>
+        </div>
+
+        <!-- Sezione Elenco Note Salvate -->
+        <div class="section-header">
+            <h2>
+                <i class="fa-solid fa-note-sticky" style="color:#0284c7;"></i> Note Salvate
+            </h2>
+            <span class="count-badge">{{ notes|length if notes else 0 }}</span>
+        </div>
+
+        {% set curr_user = session.get('username', '')|lower %}
+
+        {% if notes %}
+        <ul class="notes-list">
+            {% for note in notes %}
+            {% set note_author = (note.autore or '')|lower %}
+            {% set can_edit = curr_user and (note_author == curr_user) %}
+            {% set can_delete = curr_user == 'emanuele' %}
+
+            <li class="note-item">
+                <div class="note-content">
+                    <div id="note-view-{{ note.id }}">
+                        <p class="note-text">{{ note.testo }}</p>
+                        <div class="note-meta">
+                            <div class="note-date-badge">
+                                <i class="fa-regular fa-clock"></i>
+                                {{ note.data_creazione | formato_nota_data }}
+                            </div>
+                            <div class="note-author-badge">
+                                <i class="fa-solid fa-user"></i>
+                                {{ note.autore if note.autore else 'Anonimo' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if can_edit %}
+                    <!-- Form Modifica In-line -->
+                    <div id="note-edit-{{ note.id }}" class="edit-form-card" style="display: none;">
+                        <form action="{{ url_for('modifica_nota_supporto', id=note.id) }}" method="POST">
+                            <textarea name="testo" class="edit-textarea" required>{{ note.testo }}</textarea>
+                            <div class="edit-buttons">
+                                <button type="submit" class="btn-save-edit">
+                                    <i class="fa-solid fa-check"></i> Salva
+                                </button>
+                                <button type="button" onclick="toggleEdit('{{ note.id }}')" class="btn-cancel-edit">
+                                    <i class="fa-solid fa-xmark"></i> Annulla
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="note-actions">
+                    {% if can_edit %}
+                    <button type="button" onclick="toggleEdit('{{ note.id }}')" class="btn-modifica" title="Modifica la tua nota">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>Modifica</span>
+                    </button>
+                    {% endif %}
+
+                    {% if can_delete %}
+                    <a href="{{ url_for('elimina_nota_supporto', id=note.id) }}" 
+                       onclick="return confirm('Sei sicuro di voler eliminare questa nota?')" 
+                       class="btn-elimina" title="Elimina nota (Permesso Emanuele)">
+                       <i class="fa-solid fa-trash-can"></i>
+                       <span>Elimina</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="no-notes">
+            <i class="fa-solid fa-circle-check"></i>
+            Nessuna nota di supporto salvata. Tutto sembra funzionare alla perfezione!
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleEdit(id) {
+            const viewDiv = document.getElementById('note-view-' + id);
+            const editDiv = document.getElementById('note-edit-' + id);
+            if (viewDiv && editDiv) {
+                if (editDiv.style.display === 'none' || editDiv.style.display === '') {
+                    editDiv.style.display = 'block';
+                    viewDiv.style.display = 'none';
+                } else {
+                    editDiv.style.display = 'none';
+                    viewDiv.style.display = 'block';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accesso Riservato - Pasticceria Schiavoni</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            background: #f1f5f9;
+        }
+
+        /* SFONDO DINAMICO CON BLOBS AMBIENTALI */
+        .bg-mesh {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 40%, #f8fafc 70%, #ede9fe 100%);
+            z-index: 0;
+        }
+
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.55;
+            z-index: 0;
+            pointer-events: none;
+            animation: blobPulse 12s ease-in-out infinite alternate;
+        }
+        .blob-1 {
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, #38bdf8, transparent 70%);
+            top: -100px;
+            left: -100px;
+        }
+        .blob-2 {
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, #818cf8, transparent 70%);
+            bottom: -80px;
+            right: -80px;
+            animation-delay: -4s;
+        }
+        .blob-3 {
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, #34d399, transparent 70%);
+            top: 50%;
+            left: 55%;
+            animation-delay: -8s;
+        }
+        @keyframes blobPulse {
+            0%   { transform: translate(0, 0) scale(1); }
+            50%  { transform: translate(25px, -25px) scale(1.08); }
+            100% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        /* CONTAINER CENTRALE */
+        .page-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 440px;
+            animation: cardSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes cardSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(28px) scale(0.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* CARD 3D */
+        .card-3d {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 26px;
+            padding: 36px 30px;
+            text-align: center;
+            border: 1.5px solid rgba(255, 255, 255, 0.9);
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.95),
+                0 8px 0 #cbd5e1,
+                0 22px 45px rgba(15, 23, 42, 0.12);
+            position: relative;
+        }
+
+        /* BADGE BRAND / ICONA 3D */
+        .logo-wrap {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 18px;
+        }
+        .brand-logo {
+            width: 76px;
+            height: 76px;
+            border-radius: 20px;
+            background: #ffffff;
+            object-fit: contain;
+            padding: 4px;
+            border: 2.5px solid #e2e8f0;
+            box-shadow:
+                0 5px 0 #cbd5e1,
+                0 12px 24px rgba(15, 23, 42, 0.1);
+        }
+        .shield-badge {
+            position: absolute;
+            bottom: -6px;
+            right: -6px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.45);
+        }
+
+        /* TITOLI */
+        .card-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 1.65rem;
+            font-weight: 900;
+            color: #0f172a;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 0.88rem;
+            color: #64748b;
+            line-height: 1.45;
+            margin-bottom: 24px;
+        }
+
+        /* ALERT 3D */
+        .alert-3d {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1.5px solid #fecaca;
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.7),
+                0 3px 0 #fca5a5,
+                0 6px 14px rgba(239, 68, 68, 0.12);
+        }
+
+        /* FORM */
+        form {
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #334155;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 8px;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon-left {
+            position: absolute;
+            left: 14px;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            pointer-events: none;
+            transition: color 0.15s;
+        }
+
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 44px 14px 42px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: #0f172a;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            background: #ffffff;
+            border-color: #0284c7;
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.02),
+                0 0 0 4px rgba(2, 132, 199, 0.14);
+        }
+        input:focus + .toggle-pwd,
+        .input-wrap:focus-within .input-icon-left {
+            color: #0284c7;
+        }
+
+        .toggle-pwd {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1rem;
+            padding: 6px;
+            cursor: pointer;
+            transition: color 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .toggle-pwd:hover {
+            color: #0f172a;
+        }
+
+        /* PULSANTE SBLOCCA 3D */
+        .btn-unlock {
+            width: 100%;
+            padding: 15px 22px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            cursor: pointer;
+            text-align: center;
+            letter-spacing: 0.02em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            user-select: none;
+            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.45),
+                inset 0 -2px 2px rgba(0,0,0,0.12),
+                0 5px 0 #075985,
+                0 12px 24px rgba(2, 132, 199, 0.35);
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.12s ease;
+        }
+
+        .btn-unlock:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.5),
+                inset 0 -2px 2px rgba(0,0,0,0.12),
+                0 7px 0 #075985,
+                0 16px 28px rgba(2, 132, 199, 0.45);
+        }
+
+        .btn-unlock:active {
+            transform: translateY(4px);
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.25),
+                0 1px 0 #075985,
+                0 4px 10px rgba(2, 132, 199, 0.2);
+        }
+
+        /* PULSANTE SECONDARIO TORNA AL CALENDARIO */
+        .divider {
+            margin: 24px 0 18px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+        }
+
+        .btn-back-3d {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #475569;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+            border: 1.5px solid #cbd5e1;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.9),
+                0 3px 0 #cbd5e1,
+                0 6px 12px rgba(0,0,0,0.04);
+            transition: all 0.12s ease;
+        }
+
+        .btn-back-3d:hover {
+            background: #ffffff;
+            color: #0f172a;
+            border-color: #94a3b8;
+            transform: translateY(-1px);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.9),
+                0 4px 0 #94a3b8,
+                0 8px 16px rgba(0,0,0,0.06);
+        }
+
+        .btn-back-3d:active {
+            transform: translateY(2px);
+            box-shadow:
+                inset 0 1px 2px rgba(0,0,0,0.1),
+                0 1px 0 #cbd5e1;
+        }
+
+        .footer-note {
+            margin-top: 14px;
+            font-size: 0.72rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="page-container">
+        <div class="card-3d">
+            <div class="logo-wrap">
+                <img src="{{ url_for('static', filename='images/icon.png') }}" alt="Logo Pasticceria Schiavoni" class="brand-logo">
+                <div class="shield-badge" title="Area Amministrativa">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+            </div>
+
+            <div>
+                <span class="card-pill">
+                    <i class="fa-solid fa-users-gear"></i> Gestione Utenti
+                </span>
+            </div>
+
+            <h1>Accesso Riservato</h1>
+            <p class="subtitle">Inserisci la tua password di accesso per confermare l'autorizzazione ed accedere al pannello.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert-3d">
+                            <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.1rem;"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('verifica_admin') }}" method="POST">
+                <div class="form-group">
+                    <label for="admin_password">
+                        <i class="fa-solid fa-key" style="color: #0284c7;"></i> La tua Password
+                    </label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-lock input-icon-left"></i>
+                        <input type="password" id="admin_password" name="admin_password" placeholder="Inserisci la password utente..." required autofocus autocomplete="current-password">
+                        <button type="button" class="toggle-pwd" onclick="togglePasswordVisibility()" title="Mostra/Nascondi password">
+                            <i class="fa-regular fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-unlock">
+                    <i class="fa-solid fa-lock-open"></i> Sblocca Accesso
+                </button>
+            </form>
+
+            <div class="divider"></div>
+
+            <a href="{{ url_for('produzione') }}" class="btn-back-3d">
+                <i class="fa-solid fa-arrow-left"></i> Torna al Calendario
+            </a>
+
+            <div class="footer-note">
+                <i class="fa-solid fa-lock"></i> Sessione protetta &bull; Pasticceria Schiavoni
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('admin_password');
+            const icon = document.getElementById('toggleIcon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>

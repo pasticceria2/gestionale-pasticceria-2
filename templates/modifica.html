@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifica Ordine #{{ o.id }} - Pasticceria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-deep: #1e3a8a;
+            --success: #10b981;
+            --success-dark: #059669;
+            --success-deep: #047857;
+            --accent: #f59e0b;
+            --text-dark: #0f172a;
+            --text-slate: #334155;
+            --text-muted: #64748b;
+            --bg-border: #cbd5e1;
+            --card-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 20px 35px -10px rgba(15, 23, 42, 0.18), 0 40px 70px -20px rgba(15, 23, 42, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background-color: #f8fafc;
+            padding: 24px 14px 40px; 
+            max-width: 680px; 
+            margin: 0 auto; 
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* CARD PRINCIPALE CON STRATIFICAZIONE 3D */
+        .card { 
+            background: #ffffff; 
+            padding: 34px 26px; 
+            border-radius: 28px; 
+            box-shadow: var(--card-shadow), inset 0 2px 0 rgba(255, 255, 255, 0.95), inset 0 -3px 0 rgba(0, 0, 0, 0.05);
+            position: relative; 
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            margin-bottom: 25px;
+        }
+
+        /* INTESTAZIONE FLUTTUANTE 3D CON EFFETTO ESTRUSIONE */
+        .header-3d {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            padding: 22px 20px;
+            text-align: center;
+            margin: -34px -26px 28px -26px;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.4),
+                inset 0 -2px 4px rgba(0,0,0,0.15),
+                0 6px 0 #075985,
+                0 14px 25px -4px rgba(2, 132, 199, 0.45);
+            position: relative;
+        }
+
+        .header-3d h1 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.65rem;
+            margin: 0;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+        }
+        
+        .row { 
+            display: flex; 
+            gap: 14px; 
+            margin-bottom: 16px; 
+        }
+        .row > div { 
+            flex: 1; 
+        }
+        
+        label { 
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem; 
+            font-weight: 700; 
+            color: var(--text-slate); 
+            margin-bottom: 7px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+        }
+
+        /* CAMPI INPUT E SELECT 3D (RAISED) */
+        input:not([type="file"]), select, textarea { 
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 100%; 
+            padding: 13px 15px; 
+            border: 1.5px solid #cbd5e1; 
+            border-radius: 14px; 
+            font-size: 0.95rem; 
+            font-family: inherit;
+            outline: none; 
+            background-color: #ffffff;
+            color: var(--text-dark);
+            box-shadow: 
+                inset 0 2px 0 rgba(255, 255, 255, 1),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.04),
+                0 3px 0 #b2c1d0,
+                0 5px 14px rgba(15, 23, 42, 0.10);
+            transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        input:focus, select:focus, textarea:focus { 
+            border-color: #0284c7; 
+            background-color: #ffffff;
+            box-shadow: 
+                inset 0 2px 0 rgba(255, 255, 255, 1),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.04),
+                0 3px 0 #0369a1,
+                0 6px 20px rgba(2, 132, 199, 0.22);
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        /* PANNELLO 3D: INDIRIZZO CONSEGNA */
+        #campoIndirizzo { 
+            background: linear-gradient(145deg, #f0fdf4 0%, #e6fced 100%); 
+            padding: 18px; 
+            border-radius: 18px; 
+            border: 2px solid #86efac; 
+            margin-bottom: 20px; 
+            box-shadow: 
+                inset 0 2px 1px rgba(255, 255, 255, 0.9),
+                0 4px 0 #6ee7b7,
+                0 10px 20px -3px rgba(16, 185, 129, 0.18);
+            animation: slideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* PANNELLO 3D: FOTO ALLEGATA */
+        .sezione-foto {
+            background: linear-gradient(145deg, #faf5ff 0%, #f3e8ff 100%); 
+            padding: 18px; 
+            border-radius: 18px; 
+            border: 2px solid #d8b4fe; 
+            margin-bottom: 22px;
+            box-shadow: 
+                inset 0 2px 1px rgba(255, 255, 255, 0.9),
+                0 4px 0 #c084fc,
+                0 10px 20px -3px rgba(168, 85, 247, 0.16);
+        }
+
+        /* PANNELLO 3D: STATO PAGAMENTO */
+        .campo-pagamento { 
+            background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%); 
+            padding: 18px; 
+            border-radius: 18px; 
+            border: 2px solid #7dd3fc; 
+            margin-bottom: 24px; 
+            box-shadow: 
+                inset 0 2px 1px rgba(255, 255, 255, 0.9),
+                0 4px 0 #38bdf8,
+                0 10px 20px -3px rgba(14, 165, 233, 0.16);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .campo-pagamento label { 
+            color: #0369a1; 
+        }
+        
+        .campo-pagamento input, .campo-pagamento select { 
+            border-color: #93c5fd; 
+            background: #ffffff;
+        }
+
+        .campo-pagamento .row {
+            display: flex;
+            align-items: flex-end; 
+            margin-bottom: 0;
+            gap: 14px;
+        }
+
+        /* PULSANTI TATTILI 3D (PUSH-DOWN REALISTICI) */
+        .btn-3d {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 16px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.08rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            margin-top: 14px;
+            text-transform: uppercase;
+            text-decoration: none;
+            position: relative;
+            user-select: none;
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* TASTO VERDE: AGGIORNA ORDINE */
+        .btn-green-3d {
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.5),
+                inset 0 -2px 2px rgba(0, 0, 0, 0.12),
+                0 6px 0 #047857,
+                0 14px 22px rgba(16, 185, 129, 0.38);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-green-3d:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.6),
+                inset 0 -2px 2px rgba(0, 0, 0, 0.12),
+                0 8px 0 #047857,
+                0 18px 28px rgba(16, 185, 129, 0.45);
+        }
+
+        .btn-green-3d:active {
+            transform: translateY(5px);
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 1px 0 #047857,
+                0 4px 8px rgba(16, 185, 129, 0.25);
+        }
+
+        /* TASTO ANNULLA 3D */
+        .btn-cancel-3d, .btn-cancel-3d:link, .btn-cancel-3d:visited, .btn-cancel-3d:hover, .btn-cancel-3d:active, .btn-cancel-3d:focus { 
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #475569; 
+            border: 1px solid #cbd5e1;
+            padding: 12px 20px; 
+            border-radius: 12px;
+            font-weight: 700; 
+            font-size: 0.95rem;
+            text-decoration: none !important;
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.9),
+                0 3px 0 #94a3b8,
+                0 6px 12px rgba(0, 0, 0, 0.05);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-cancel-3d:hover {
+            transform: translateY(-1px);
+            text-decoration: none !important;
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.9),
+                0 4px 0 #94a3b8,
+                0 8px 16px rgba(0, 0, 0, 0.08);
+            color: #1e293b;
+        }
+
+        .btn-cancel-3d:active {
+            transform: translateY(3px);
+            text-decoration: none !important;
+            box-shadow: 
+                inset 0 2px 3px rgba(0, 0, 0, 0.15),
+                0 0 0 #94a3b8;
+        }
+
+        /* TASTO ROSSO 3D PER ELIMINARE FOTO */
+        .btn-red-3d {
+            background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 
+                inset 0 1px 1px rgba(255,255,255,0.4),
+                0 3px 0 #b91c1c,
+                0 6px 12px rgba(239, 68, 68, 0.3);
+            transition: all 0.1s ease;
+        }
+
+        .btn-red-3d:active {
+            transform: translateY(3px);
+            box-shadow: 
+                inset 0 2px 3px rgba(0,0,0,0.3),
+                0 0 0 #b91c1c;
+        }
+
+        /* FILE INPUT 3D */
+        .file-input-3d {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ffffff;
+            color: #7c3aed;
+            border: 2px solid #8b5cf6;
+            padding: 13px 18px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            width: 100%;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.9),
+                0 5px 0 #6d28d9,
+                0 10px 20px rgba(139, 92, 246, 0.18);
+            transition: all 0.12s ease;
+            letter-spacing: 0.3px;
+            user-select: none;
+        }
+        .file-input-3d:hover {
+            background: #f5f3ff;
+            transform: translateY(-2px);
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.9),
+                0 7px 0 #6d28d9,
+                0 14px 24px rgba(139, 92, 246, 0.25);
+        }
+        .file-input-3d:active {
+            transform: translateY(4px);
+            box-shadow:
+                inset 0 2px 4px rgba(139, 92, 246, 0.12),
+                0 1px 0 #6d28d9;
+        }
+        .file-input-3d .file-name {
+            font-weight: 500;
+            font-size: 0.82rem;
+            opacity: 0.75;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+        }
+        .file-input-wrap { position: relative; }
+        .file-input-wrap input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ANTEPRIMA FOTO 3D */
+        #fotoPreview {
+            max-width: 100%; 
+            max-height: 160px; 
+            border-radius: 12px; 
+            border: 2px solid #e9d5ff; 
+            object-fit: contain; 
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.2), 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(-8px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        @keyframes slideDown { 
+            from { opacity: 0; transform: translateY(-12px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* ADATTAMENTO RESPONSIVO MOBILE */
+        @media (max-width: 480px) {
+            body { padding: 14px 10px 30px; }
+            .card { padding: 26px 16px; border-radius: 22px; }
+            .header-3d { margin: -26px -16px 22px -16px; border-top-left-radius: 22px; border-top-right-radius: 22px; padding: 18px 14px; }
+            .header-3d h1 { font-size: 1.4rem; }
+            .row:not(.campo-pagamento .row) {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .sezione-foto .row {
+                flex-direction: column !important;
+            }
+            .campo-pagamento .row {
+                flex-direction: row; 
+            }
+            .btn-3d {
+                padding: 14px 16px;
+                font-size: 0.98rem;
+            }
+            .btn-converti-rinfresco {
+                padding: 12px 14px;
+                font-size: 0.92rem;
+                gap: 8px;
+            }
+        }
+
+        /* PULSANTE TRASFORMA IN RINFRESCO SOTTO IL BANNER */
+        .converti-rinfresco-container {
+            margin: -8px 0 24px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-converti-rinfresco {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 13px 20px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: #ffffff !important;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.02rem;
+            text-decoration: none;
+            letter-spacing: 0.6px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.45),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+                0 4px 0 #5b21b6,
+                0 10px 20px rgba(124, 58, 237, 0.35);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            text-align: center;
+        }
+
+
+
+        .btn-converti-rinfresco:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.55),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+                0 6px 0 #5b21b6,
+                0 14px 26px rgba(124, 58, 237, 0.48);
+            filter: brightness(1.05);
+            color: #ffffff !important;
+        }
+
+        .btn-converti-rinfresco:active {
+            transform: translateY(3px);
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.25),
+                0 1px 0 #5b21b6,
+                0 4px 8px rgba(124, 58, 237, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="header-3d">
+            <h1>Modifica Ordine #{{ o.id }}</h1>
+            <div class="header-badge">Aggiornamento Scheda Ordine</div>
+        </div>
+
+        <!-- PULSANTE TRASFORMA IN RINFRESCO SOTTO IL BANNER -->
+        <div class="converti-rinfresco-container">
+            <a href="{{ url_for('modifica_rinfresco', id=o.id) }}" class="btn-converti-rinfresco" title="Fai diventare questo ordine un Rinfresco">
+                <span>Trasforma in Rinfresco</span>
+            </a>
+        </div>
+
+        <form action="{{ url_for('modifica_ordine_form', id=o.id) }}" method="POST" enctype="multipart/form-data">
+            
+            <div class="row">
+                <div>
+                    <label>Cliente</label>
+                    <input type="text" name="cliente" value="{{ o.cliente }}" required>
+                </div>
+                <div>
+                    <label>Telefono</label>
+                    <input type="text" name="telefono" value="{{ o.telefono }}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <label>Operatore</label>
+                    <input type="text" name="operatore" value="{{ o.operatore }}" required>
+                </div>
+                <div>
+                    <label>Preso Tramite</label>
+                    <select name="canale">
+                        <option value="Persona" {% if o.canale == 'Persona' %}selected{% endif %}>Di persona</option>
+                        <option value="Telefono" {% if o.canale == 'Telefono' %}selected{% endif %}>Telefono</option>
+                        <option value="Social" {% if o.canale == 'Social' %}selected{% endif %}>Social (WA/IG)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <label>Punto Vendita</label>
+                    <select name="negozio" id="negozioSelect">
+                        {% if is_schiavoni %}
+                        <option value="Palocco" {% if o.negozio == 'Palocco' %}selected{% endif %}>Palocco</option>
+                        {% endif %}
+                        <option value="Ostia" {% if o.negozio == 'Ostia' %}selected{% endif %}>Ostia</option>
+                        <option value="Altro" {% if o.negozio == 'Altro' %}selected{% endif %}>Altro</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Categoria</label>
+                    <select name="categoria">
+                        <option value="torta" {% if o.categoria == 'torta' %}selected{% endif %}>Torta</option>
+                        <option value="mignon" {% if o.categoria == 'mignon' %}selected{% endif %}>Mignon / Pasticceria</option>
+                        <option value="salato" {% if o.categoria == 'salato' %}selected{% endif %}>Salato</option>
+                        <option value="altro" {% if o.categoria == 'altro' %}selected{% endif %}>Altro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label>Tipo di Dolce / Prodotto</label>
+                <input type="text" name="tipo_dolce" value="{{ o.tipo_dolce }}" required>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label>Farcitura / Dettagli Interni</label>
+                <textarea name="farcitura" rows="2" placeholder="Crema, gocce di cioccolato, ecc...">{{ o.farcitura if o.farcitura else '' }}</textarea>
+            </div>
+
+            <div class="row">
+                <div>
+                    <label>Quantità</label>
+                    <input type="number" step="0.1" name="kg" value="{{ o.kg }}" required>
+                </div>
+                <div>
+                    <label>Unità di Misura</label>
+                    <select name="unita_misura">
+                        <option value="Kg" {% if o.unita_misura|lower == 'kg' %}selected{% endif %}>Kg</option>
+                        <option value="Pezzi" {% if o.unita_misura|lower == 'pezzi' %}selected{% endif %}>Pezzi</option>
+                        <option value="persone" {% if o.unita_misura|lower == 'persone' %}selected{% endif %}>Persone</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div style="flex: 1;">
+                    <label>Modalità di Ritiro</label>
+                    <select name="modalita" id="modalitaSelect" onchange="toggleIndirizzo()" style="border: 2px solid #10b981; font-weight: 700; color: #065f46; background-color: #f0fdf4;">
+                        <option value="Negozio" {% if o.modalita == 'Negozio' %}selected{% endif %}>Ritiro in Negozio</option>
+                        <option value="Consegna" {% if o.modalita == 'Consegna' %}selected{% endif %}>Consegna a Domicilio</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="campoIndirizzo" style="display: {% if o.modalita == 'Consegna' %}block{% else %}none{% endif %};">
+                <label style="color: #065f46; font-size: 0.85rem;">Indirizzo di Consegna a Domicilio</label>
+                <input type="text" name="indirizzo" value="{{ o.indirizzo or '' }}" placeholder="Via, Civico, Piano..." style="background: #ffffff;">
+            </div>
+
+            <div class="row">
+                <div>
+                    <label>Data Consegna</label>
+                    <input type="date" name="data_consegna" value="{{ o.data_consegna }}" required>
+                </div>
+                <div>
+                    <label>Orario</label>
+                    <input type="time" name="orario" value="{{ o.orario }}" required>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 22px;">
+                <label>Note Finali / Scritte</label>
+                <textarea name="descrizione" rows="2" placeholder="Scritta sulla torta o note extra...">{{ o.descrizione }}</textarea>
+            </div>
+
+            <!-- Sezione Allegato Foto e Descrizione Foto 3D -->
+            <div class="sezione-foto">
+                <label style="color: #6b21a8; font-weight: 800; margin-bottom: 12px; font-size: 0.85rem;">
+                    Allegato Foto & Descrizione Foto
+                </label>
+                <div class="row" style="margin-bottom: 0;">
+                    <div style="flex: 1;">
+                        <label style="color: #7e22ce;">Foto (Carica o Sostituisci)</label>
+                        <div class="file-input-wrap">
+                            <label class="file-input-3d" id="fotoLabel">
+                                <span>📎</span>
+                                <span>Scegli foto...</span>
+                                <span class="file-name" id="fotoNome"></span>
+                            </label>
+                            <input type="file" name="foto" id="fotoInput" accept="image/*" onchange="previewImage(event); aggiornaLabelFoto(this);">
+                        </div>
+                        
+                        <input type="hidden" name="rimuovi_foto" id="rimuoviFotoInput" value="0">
+                        
+                        <div id="fotoPreviewContainer" style="margin-top: 12px; text-align: center; position: relative; {% if not o.foto %}display: none;{% endif %}">
+                            <img id="fotoPreview" src="{{ o.foto if o.foto else '' }}" alt="Anteprima Foto">
+                            <br>
+                            <button type="button" onclick="removeImage()" class="btn-red-3d" style="margin-top: 10px;">Elimina foto</button>
+                        </div>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="color: #7e22ce;">Note sulla Foto</label>
+                        <textarea name="foto_descrizione" rows="4" placeholder="Note specifiche sulla foto..." style="background: white;">{{ o.foto_descrizione if o.foto_descrizione else '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sezione Pagamento 3D -->
+            <div class="campo-pagamento">
+                <div class="row">
+                    <div>
+                        <label>Stato Pagamento <span id="saldato-check" style="display: none; color: #16a34a; font-weight: bold;">SALDATO</span></label>
+                        <select name="pagamento_tipo" id="pagamento_tipo" onchange="gestisciPagamento()">
+                             <option value="Da Pagare" {% if o.pagamento_tipo == 'Da Pagare' %}selected{% endif %}>Da Pagare</option>
+                            <option value="Acconto" {% if o.pagamento_tipo == 'Acconto' %}selected{% endif %}>Acconto</option>
+                            <option value="Saldato" {% if o.pagamento_tipo == 'Saldato' or o.pagamento_tipo == 'Saldo' %}selected{% endif %}>Saldato</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Importo (€)</label>
+                        <input type="number" name="pagamento_importo" id="pagamento_importo" step="0.01" value="{{ o.pagamento_importo or 0.00 }}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pulsante Tattile 3D Aggiorna -->
+            <button type="submit" class="btn-3d btn-green-3d">
+                AGGIORNA ORDINE
+            </button>
+            
+            <div style="margin-top: 24px; border-top: 2px dashed #e2e8f0; padding-top: 18px; text-align: center;">
+                <a href="/giorno/{{ o.data_consegna }}" class="btn-cancel-3d">Annulla e Torna al Giorno</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const previewContainer = document.getElementById('fotoPreviewContainer');
+            const previewImg = document.getElementById('fotoPreview');
+            const rimuoviInput = document.getElementById('rimuoviFotoInput');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    rimuoviInput.value = '0';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImage() {
+            const input = document.getElementById('fotoInput');
+            const previewContainer = document.getElementById('fotoPreviewContainer');
+            const previewImg = document.getElementById('fotoPreview');
+            const rimuoviInput = document.getElementById('rimuoviFotoInput');
+            input.value = '';
+            previewImg.src = '';
+            previewContainer.style.display = 'none';
+            rimuoviInput.value = '1';
+            const nomeEl = document.getElementById('fotoNome');
+            if (nomeEl) nomeEl.textContent = '';
+        }
+
+        function aggiornaLabelFoto(input) {
+            const nomeEl = document.getElementById('fotoNome');
+            if (nomeEl && input.files && input.files[0]) {
+                nomeEl.textContent = input.files[0].name;
+            }
+        }
+
+        function toggleIndirizzo() {
+            var selectModalita = document.getElementById("modalitaSelect");
+            var selectNegozio = document.getElementById("negozioSelect");
+            var campoIndirizzo = document.getElementById("campoIndirizzo");
+
+            if (selectModalita.value === "Consegna") {
+                campoIndirizzo.style.display = "block";
+                selectNegozio.value = "Altro";
+                selectNegozio.dispatchEvent(new Event('change'));
+            } else {
+                campoIndirizzo.style.display = "none";
+            }
+        }
+
+        function gestisciPagamento() {
+            const tipoPagamento = document.getElementById('pagamento_tipo');
+            const importoPagamento = document.getElementById('pagamento_importo');
+            const check = document.getElementById('saldato-check');
+
+            if (tipoPagamento.value === 'Saldato') {
+                importoPagamento.disabled = true;
+                importoPagamento.style.background = '#e2e8f0';
+                importoPagamento.style.color = '#64748b';
+                check.style.display = 'inline';
+            } else {
+                importoPagamento.disabled = false;
+                importoPagamento.style.background = '#ffffff';
+                importoPagamento.style.color = 'inherit';
+                check.style.display = 'none';
+            }
+        }
+
+        // Esegui al caricamento della pagina
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleIndirizzo();
+            gestisciPagamento();
+        });
+    </script>
+</body>
+</html>

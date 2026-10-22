@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stampa Vassoio Salato - {{ o.cliente if o else '' }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0284c7;
+            --card-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 20px 35px -10px rgba(15, 23, 42, 0.18), 0 40px 70px -20px rgba(15, 23, 42, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @page {
+            size: 80mm;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 24px 14px 60px;
+            color: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .no-print-toolbar {
+            width: 100%;
+            max-width: 440px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 16px 20px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.2),
+                0 6px 0 #020617,
+                0 16px 25px -4px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-3d {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.92rem;
+            padding: 12px 20px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.4),
+                inset 0 -2px 0 rgba(0,0,0,0.2),
+                0 4px 0 #047857,
+                0 8px 16px rgba(16,185,129,0.35);
+        }
+        .btn-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.5),
+                inset 0 -2px 0 rgba(0,0,0,0.2),
+                0 6px 0 #047857,
+                0 12px 20px rgba(16,185,129,0.45);
+            filter: brightness(1.05);
+        }
+        .btn-print:active {
+            transform: translateY(3px);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 1px 0 #047857;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+            color: #1e293b;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,1),
+                inset 0 -2px 0 rgba(0,0,0,0.1),
+                0 4px 0 #94a3b8,
+                0 8px 16px rgba(0,0,0,0.1);
+        }
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,1),
+                inset 0 -2px 0 rgba(0,0,0,0.1),
+                0 6px 0 #94a3b8,
+                0 12px 20px rgba(0,0,0,0.15);
+            filter: brightness(1.02);
+        }
+        .btn-back:active {
+            transform: translateY(3px);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 0 #94a3b8;
+        }
+
+        .container-ticket {
+            width: 100%;
+            max-width: 440px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px 22px;
+            box-shadow: var(--card-shadow), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -3px 0 rgba(0,0,0,0.04);
+            border: 1px solid rgba(255,255,255,0.9);
+        }
+
+        .ticket-header-3d {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            padding: 16px 18px;
+            margin: -24px -22px 18px -22px;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            text-align: center;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.4),
+                inset 0 -2px 0 rgba(0,0,0,0.15),
+                0 4px 0 #0369a1;
+        }
+
+        .ticket-header-3d h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .ticket-field {
+            margin-bottom: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px 14px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        .ticket-field:last-child { margin-bottom: 0; }
+
+        .field-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .field-value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .field-value.large-time {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0284c7;
+        }
+
+        .field-value.product-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #000000;
+            line-height: 1.25;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .badge-negozio-3d {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-ostia {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 0 #075985;
+        }
+
+        .badge-palocco {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 0 #991b1b;
+        }
+
+        .badge-qta {
+            display: inline-block;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 2px solid #fecaca;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 1.15rem;
+        }
+
+        @media print {
+            .no-print-toolbar { display: none !important; }
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 78mm !important;
+                display: block !important;
+                font-family: monospace, sans-serif !important;
+                color: #000 !important;
+            }
+            .container-ticket {
+                width: 78mm !important;
+                max-width: 78mm !important;
+                background: transparent !important;
+                border: none !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                padding: 2mm 3mm !important;
+            }
+            .ticket-header-3d {
+                background: transparent !important;
+                color: #000 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border-bottom: 2px solid #000 !important;
+                padding: 1mm 0 2mm 0 !important;
+                margin: 0 0 2mm 0 !important;
+            }
+            .ticket-header-3d h1 {
+                font-size: 14pt !important;
+                font-family: monospace, sans-serif !important;
+                color: #000 !important;
+            }
+            .ticket-field {
+                background: transparent !important;
+                border: none !important;
+                border-bottom: 1px dashed #000 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                padding: 2mm 0 !important;
+                margin-bottom: 2mm !important;
+            }
+            .field-label { color: #000 !important; font-size: 9pt !important; font-family: monospace, sans-serif !important; }
+            .field-value { color: #000 !important; font-size: 12pt !important; font-family: monospace, sans-serif !important; }
+            .field-value.large-time { font-size: 16pt !important; }
+            .field-value.product-title { font-size: 13pt !important; }
+            .badge-negozio-3d, .badge-qta {
+                background: transparent !important;
+                color: #000 !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                font-size: 12pt !important;
+            }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+
+    <div class="no-print-toolbar">
+        <button class="btn-3d btn-print" onclick="window.print()">STAMPA</button>
+        <button class="btn-3d btn-back" onclick="tornaIndietro()">INDIETRO</button>
+    </div>
+
+    <div class="container-ticket">
+        <div class="ticket-header-3d">
+            <h1>Salato</h1>
+        </div>
+
+        <div class="ticket-field">
+            <span class="field-label">Orario:</span>
+            <span class="field-value large-time">{{ o.orario | string | truncate(5, True, '') }}</span>
+        </div>
+
+        <div class="ticket-field">
+            <span class="field-label">Cliente:</span>
+            <span class="field-value">{{ o.cliente }}</span>
+        </div>
+        
+        <div class="ticket-field">
+            <span class="field-label">Negozio:</span>
+            <span class="badge-negozio-3d {% if o.negozio|lower == 'palocco' %}badge-palocco{% else %}badge-ostia{% endif %}">
+                {{ o.negozio }}
+            </span>
+        </div>
+
+        <div class="ticket-field">
+            <span class="field-label">Prodotti:</span>
+            <div class="field-value product-title">
+                {{ o.tipo_dolce }}
+                {% if o.descrizione and o.descrizione.strip() %}
+                <br><span style="font-size: 1rem; font-weight:600; color:#334155;">{{ o.descrizione.replace('SALATO:', '').strip() }}</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="ticket-field">
+            <span class="field-label">Quantità:</span>
+            <span class="badge-qta">{{ o.kg }} {{ o.unita_misura }}</span>
+        </div>
+    </div>
+
+    <script>
+        function tornaIndietro() {
+            window.close();
+            setTimeout(function() {
+                if (!window.closed) {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        {% if o and o.data_consegna %}
+                        window.location.href = "{{ url_for('gestione_giorno', data=o.data_consegna) }}";
+                        {% else %}
+                        window.close();
+                        {% endif %}
+                    }
+                }
+            }, 150);
+        }
+    </script>
+
+</body>
+</html>

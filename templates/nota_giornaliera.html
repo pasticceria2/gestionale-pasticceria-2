@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota Giornaliera - {{ data_it | formato_data }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            color: #1e293b;
+            line-height: 1.4;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 60%, #6d28d9 100%);
+            color: white;
+            padding: 20px 28px;
+            border-radius: 18px;
+            margin-bottom: 24px;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.3),
+                0 6px 0 #5b21b6,
+                0 12px 24px -4px rgba(139,92,246,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .page-header .data-badge {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 10px;
+            padding: 6px 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .no-print { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        .btn {
+            padding: 12px 22px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn:active { transform: translateY(4px); box-shadow: none !important; }
+        .btn-print {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #5b21b6, 0 6px 10px rgba(139,92,246,0.3);
+        }
+        .btn-print:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #5b21b6, 0 8px 15px rgba(139,92,246,0.4); }
+        .btn-back {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #334155, 0 6px 10px rgba(100,116,139,0.3);
+        }
+        .btn-back:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #334155, 0 8px 15px rgba(100,116,139,0.4); }
+
+        .table-wrap {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow-x: auto;
+            box-shadow:
+                inset 0 2px 0 rgba(255,255,255,0.9),
+                inset 0 -3px 0 rgba(0,0,0,0.03),
+                0 4px 6px -1px rgba(15,23,42,0.06),
+                0 10px 15px -3px rgba(15,23,42,0.08);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+        thead th {
+            color: white;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        tbody tr { border-bottom: 1px solid #f1f5f9; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #faf5ff; }
+        tbody td { padding: 12px 16px; vertical-align: top; }
+
+        .td-ora { font-weight: 800; font-size: 1rem; color: #10b981; white-space: nowrap; }
+        .td-prodotto { font-weight: 700; font-size: 0.95rem; text-transform: uppercase; }
+        .td-cat { font-size: 0.78rem; color: #64748b; margin-top: 2px; }
+        .td-gusto { font-size: 0.83rem; color: #334155; margin-top: 3px; }
+        .td-qta { font-weight: 700; color: #0369a1; }
+        .td-cliente-nome { font-weight: 700; font-size: 0.95rem; }
+        .td-cliente-tel { font-size: 0.82rem; color: #64748b; margin-top: 2px; }
+
+        .sede-palocco { font-weight: 700; color: #ef4444; }
+        .sede-ostia { font-weight: 700; color: #1e3a8a; }
+        .sede-consegna { font-weight: 700; color: #16a34a; }
+
+        .note-rinfresco { font-size: 0.83rem; line-height: 1.4; color: #334155; }
+        .note-desc { font-size: 0.83rem; color: #475569; margin-bottom: 3px; }
+        .note-indirizzo { font-size: 0.82rem; color: #15803d; font-weight: 600; margin-top: 3px; }
+        .note-foto { font-size: 0.8rem; color: #6b21a8; margin-top: 3px; }
+        .badge-saldo { font-size: 0.78rem; font-weight: 700; margin-top: 4px; }
+        .badge-saldato { color: #166534; }
+        .badge-acconto { color: #854d0e; }
+        .badge-altro { color: #475569; }
+
+        .footer-row {
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: #94a3b8;
+        }
+
+        /* ===== MOBILE CARDS ===== */
+        .mobile-cards-container { display: none; }
+
+        .mobile-count {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 0 #5b21b6, 0 8px 16px rgba(139,92,246,0.25);
+        }
+
+        .ng-mobile-card {
+            background: white;
+            border-radius: 18px;
+            margin-bottom: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07), 0 8px 24px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+        }
+
+        .ng-card-top {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #faf5ff, #f3e8ff);
+            border-bottom: 1px solid #e9d5ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ng-card-prodotto {
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #4c1d95;
+            flex: 1;
+            line-height: 1.2;
+        }
+
+        .ng-card-ora {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #10b981;
+            white-space: nowrap;
+            background: #f0fdf4;
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .ng-card-body {
+            padding: 12px 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .ng-field {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .ng-field-full { grid-column: 1 / -1; }
+
+        .ng-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #94a3b8;
+        }
+
+        .ng-value {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .ng-qta-val {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #0369a1;
+            background: #eff6ff;
+            border-radius: 8px;
+            padding: 3px 10px;
+            display: inline-block;
+        }
+
+        .ng-badge-sede {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .ng-badge-palocco { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; box-shadow: 0 2px 0 #991b1b; }
+        .ng-badge-ostia { background: linear-gradient(135deg, #1d4ed8, #1e40af); color: white; box-shadow: 0 2px 0 #1e3a8a; }
+        .ng-badge-consegna { background: linear-gradient(135deg, #16a34a, #15803d); color: white; box-shadow: 0 2px 0 #166534; }
+
+        .ng-card-notes {
+            padding: 10px 16px 12px;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.85rem;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .ng-badge-saldo {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .ng-saldato { background: #dcfce7; color: #166534; }
+        .ng-acconto { background: #fef9c3; color: #854d0e; }
+        .ng-altro-pag { background: #f1f5f9; color: #475569; }
+
+        @media screen and (max-width: 768px) {
+            body { padding: 12px 12px 40px; }
+            .table-wrap { display: none; }
+            .mobile-cards-container { display: block; }
+            .page-header h1 { font-size: 1.1rem; }
+            .no-print { gap: 8px; }
+            .btn { font-size: 0.8rem; padding: 10px 14px; }
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { padding: 0 !important; background: white !important; font-size: 9pt; }
+            .page-header {
+                background: #7c3aed !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border-radius: 8px !important;
+                box-shadow: none !important;
+            }
+            .table-wrap { 
+                display: block !important; 
+                box-shadow: none !important; 
+                border: 1px solid #e2e8f0 !important; 
+                overflow: visible !important; 
+            }
+            table { 
+                display: table !important; 
+                width: 100% !important; 
+                border-collapse: collapse !important;
+                page-break-inside: auto; 
+            }
+            thead { display: table-header-group !important; }
+            tbody { display: table-row-group !important; }
+            thead tr { background: #1e293b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr { page-break-inside: avoid; page-break-after: auto; display: table-row !important; }
+            td, th { display: table-cell !important; }
+            tbody td { padding: 6px 10px !important; }
+            .mobile-cards-container { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        function tornaIndietro(fallbackUrl) {
+            window.close();
+            setTimeout(function() {
+                if (!window.closed) {
+                    if (window.history.length > 1) { window.history.back(); }
+                    else if (fallbackUrl) { window.location.href = fallbackUrl; }
+                }
+            }, 150);
+        }
+    </script>
+
+    <div class="no-print">
+        <a href="javascript:window.print()" class="btn btn-print">STAMPA NOTA GIORNALIERA</a>
+        <button onclick="tornaIndietro('{{ url_for("gestione_giorno", data=data_it) }}')" class="btn btn-back">TORNA INDIETRO</button>
+    </div>
+
+    <div class="page-header">
+        <h1>NOTA GIORNALIERA ORDINI</h1>
+        <span class="data-badge">{{ data_it | formato_data }}</span>
+    </div>
+
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th style="width:10%;">Orario</th>
+                <th style="width:14%;">Ritiro / Sede</th>
+                <th style="width:16%;">Cliente</th>
+                <th style="width:24%;">Prodotto / Ordine</th>
+                <th style="width:10%;">Quantità</th>
+                <th style="width:26%;">Note / Dettagli</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for o in ordini %}
+            <tr>
+                <td class="td-ora">{{ o.orario }}</td>
+
+                <td>
+                    {% if o.modalita == 'Consegna' %}
+                        <span class="sede-consegna">Consegna</span>
+                    {% else %}
+                        <span class="{% if o.negozio|lower == 'palocco' %}sede-palocco{% else %}sede-ostia{% endif %}">
+                            {{ o.negozio|replace('Negozio', '')|trim }}
+                        </span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <div class="td-cliente-nome">{{ o.cliente }}</div>
+                    {% if o.telefono %}
+                    <div class="td-cliente-tel">{{ o.telefono }}</div>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <div class="td-prodotto">
+                        {% if o.categoria == 'Rinfresco' %}Rinfresco completo{% else %}{{ o.tipo_dolce }}{% endif %}
+                    </div>
+                    {% if o.categoria and o.categoria != 'Altro' and o.categoria != 'Rinfresco' and o.categoria != o.tipo_dolce %}
+                    <div class="td-cat">Cat: {{ o.categoria }}</div>
+                    {% endif %}
+                    {% if o.farcitura and o.categoria != 'Rinfresco' %}
+                    <div class="td-gusto"><strong>Gusto:</strong> {{ o.farcitura }}</div>
+                    {% endif %}
+                </td>
+
+                <td class="td-qta">
+                    {% if o.categoria != 'Rinfresco' and o.kg %}
+                        {{ o.kg }}{% if o.unita_misura and o.unita_misura != 'None' %} {{ o.unita_misura }}{% endif %}
+                    {% else %}--{% endif %}
+                </td>
+
+                <td>
+                    {% if o.categoria == 'Rinfresco' %}
+                        <div class="note-rinfresco">
+                            {{ o.descrizione.replace('LABORATORIO:', 'LAB: ').replace('SALATO:', 'SALATO: ').replace('ALTRO:', 'ALTRO: ').replace('|', '<br>').replace('\n', '<br>') | safe }}
+                        </div>
+                    {% else %}
+                        {% if o.descrizione %}
+                        <div class="note-desc">{{ o.descrizione }}</div>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if o.modalita == 'Consegna' and o.indirizzo %}
+                    <div class="note-indirizzo">Indirizzo: {{ o.indirizzo }}</div>
+                    {% endif %}
+
+                    {% if o.foto_descrizione %}
+                    <div class="note-foto">Foto: {{ o.foto_descrizione }}</div>
+                    {% endif %}
+
+                    {% if o.pagamento_tipo %}
+                    <div class="badge-saldo {% if o.pagamento_tipo in ['Saldato', 'Saldo'] %}badge-saldato{% elif o.pagamento_tipo == 'Acconto' %}badge-acconto{% else %}badge-altro{% endif %}">
+                        {% if o.pagamento_tipo in ['Saldato', 'Saldo'] %}[Saldato]
+                        {% elif o.pagamento_tipo == 'Acconto' %}[Acconto: € {{ o.pagamento_importo }}]
+                        {% else %}[{{ o.pagamento_tipo }}]{% endif %}
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align:center; padding:30px; color:#64748b;">
+                    Nessun ordine presente per questa data.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <div class="footer-row">
+        <div><strong>Totale ordini:</strong> {{ ordini|length }}</div>
+        <div>Stampato il: {{ now }}</div>
+    </div>
+
+    <!-- VERSIONE MOBILE - CARDS -->
+    <div class="mobile-cards-container">
+        <div class="mobile-count">
+            <span>🗒️ NOTA GIORNALIERA</span>
+            <span>{{ ordini|length }} ordini</span>
+        </div>
+        {% for o in ordini %}
+        <div class="ng-mobile-card">
+            <div class="ng-card-top">
+                <span class="ng-card-prodotto">
+                    {% if o.categoria == 'Rinfresco' %}Rinfresco completo{% else %}{{ o.tipo_dolce }}{% endif %}
+                </span>
+                <span class="ng-card-ora">🕒 {{ o.orario }}</span>
+            </div>
+            <div class="ng-card-body">
+                <div class="ng-field">
+                    <span class="ng-label">👤 Cliente</span>
+                    <span class="ng-value">{{ o.cliente }}</span>
+                    {% if o.telefono %}<span style="font-size:0.8rem;color:#64748b;">{{ o.telefono }}</span>{% endif %}
+                </div>
+                <div class="ng-field">
+                    <span class="ng-label">📍 Sede / Ritiro</span>
+                    {% if o.modalita == 'Consegna' %}
+                        <span class="ng-badge-sede ng-badge-consegna">Consegna</span>
+                    {% else %}
+                        <span class="ng-badge-sede {% if o.negozio|lower == 'palocco' %}ng-badge-palocco{% else %}ng-badge-ostia{% endif %}">
+                            {{ o.negozio|replace('Negozio', '')|trim }}
+                        </span>
+                    {% endif %}
+                </div>
+                {% if o.categoria != 'Rinfresco' and o.kg %}
+                <div class="ng-field">
+                    <span class="ng-label">⚖️ Quantità</span>
+                    <span class="ng-qta-val">{{ o.kg }}{% if o.unita_misura and o.unita_misura != 'None' %} {{ o.unita_misura }}{% endif %}</span>
+                </div>
+                {% endif %}
+                {% if o.farcitura and o.categoria != 'Rinfresco' %}
+                <div class="ng-field">
+                    <span class="ng-label">🍰 Gusto</span>
+                    <span class="ng-value">{{ o.farcitura }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% set has_notes = (o.descrizione or (o.modalita == 'Consegna' and o.indirizzo) or o.foto_descrizione or o.pagamento_tipo) %}
+            {% if has_notes %}
+            <div class="ng-card-notes">
+                {% if o.categoria == 'Rinfresco' and o.descrizione %}
+                    {{ o.descrizione.replace('LABORATORIO:', 'LAB: ').replace('SALATO:', 'SALATO: ').replace('ALTRO:', 'ALTRO: ').replace('|', '<br>').replace('\n', '<br>') | safe }}
+                {% elif o.descrizione %}
+                    📝 {{ o.descrizione }}
+                {% endif %}
+                {% if o.modalita == 'Consegna' and o.indirizzo %}
+                    <div style="color:#15803d;font-weight:600;margin-top:4px;">📬 {{ o.indirizzo }}</div>
+                {% endif %}
+                {% if o.foto_descrizione %}
+                    <div style="color:#6b21a8;margin-top:4px;">📸 Foto: {{ o.foto_descrizione }}</div>
+                {% endif %}
+                {% if o.pagamento_tipo %}
+                    {% if o.pagamento_tipo in ['Saldato', 'Saldo'] %}
+                        <span class="ng-badge-saldo ng-saldato">✅ Saldato</span>
+                    {% elif o.pagamento_tipo == 'Acconto' %}
+                        <span class="ng-badge-saldo ng-acconto">💰 Acconto: € {{ o.pagamento_importo }}</span>
+                    {% else %}
+                        <span class="ng-badge-saldo ng-altro-pag">{{ o.pagamento_tipo }}</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:30px;color:#64748b;font-weight:600;">Nessun ordine presente.</div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
