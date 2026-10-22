@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Utenti - Pasticceria Schiavoni</title>
+    <title>Gestione Utenti</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -372,7 +372,7 @@
         }
         .toggle-pwd-btn:hover { color: #0f172a; }
 
-        /* SCHIAVONI BANNER BOX */
+        /* PERMISSIONS BANNER BOX */
         .schiavoni-box {
             margin-bottom: 16px;
             padding: 12px 14px;
@@ -620,12 +620,11 @@
         <!-- HEADER 3D -->
         <header class="header-3d">
             <div class="header-left">
-                <img src="{{ url_for('static', filename='images/icon.png') }}" alt="Logo Pasticceria Schiavoni" class="header-logo">
                 <div class="header-title-wrap">
                     <h1>Pannello Gestione Utenti</h1>
                     <div class="header-subtitle">
                         <i class="fa-solid fa-shield-halved"></i>
-                        <span>Area Amministrazione &bull; Pasticceria Schiavoni</span>
+                        <span>Area Amministrazione</span>
                     </div>
                 </div>
             </div>
@@ -689,8 +688,8 @@
                             <input type="checkbox" name="is_schiavoni" checked id="new_is_schiavoni">
                             <div>
                                 <i class="fa-solid fa-store" style="color:#10b981; margin-right:4px;"></i>
-                                <span>Utente Pasticceria Schiavoni</span>
-                                <small>(Deseleziona per utenze esterne: logo, turni Palocco e marchio saranno nascosti)</small>
+                                <span>Abilitazione Completa Funzioni</span>
+                                <small>(Abilita tutte le funzionalità e turni per questa utenza)</small>
                             </div>
                         </label>
                     </div>
@@ -785,8 +784,8 @@
                                         </span>
                                     {% else %}
                                         {% if perms.get('is_schiavoni', True) %}
-                                            <span class="role-badge schiavoni">
-                                                <i class="fa-solid fa-store"></i> Schiavoni
+                                            <span class="role-badge standard" style="background: rgba(16,185,129,0.15); color: #059669; border: 1px solid rgba(16,185,129,0.3);">
+                                                <i class="fa-solid fa-user-check"></i> Standard
                                             </span>
                                         {% else %}
                                             <span class="role-badge esterno">
@@ -852,9 +851,9 @@
                                 <input type="checkbox" name="is_schiavoni" {% if perms.get('is_schiavoni', True) %}checked{% endif %}>
                                 <div>
                                     <span>
-                                        <i class="fa-solid fa-store" style="color:#f59e0b;"></i> Utente Pasticceria Schiavoni
+                                        <i class="fa-solid fa-store" style="color:#f59e0b;"></i> Abilitazione Completa Funzioni
                                     </span>
-                                    <small style="color:#64748b; font-weight:500; display:block; margin-top:2px;">(Deseleziona per utenze esterne: nessun logo, niente Palocco, nessun marchio)</small>
+                                    <small style="color:#64748b; font-weight:500; display:block; margin-top:2px;">(Deseleziona per utenze esterne con interfaccia ridotta)</small>
                                 </div>
                             </label>
                         </div>

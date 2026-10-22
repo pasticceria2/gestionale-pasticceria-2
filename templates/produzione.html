@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario Schiavoni</title>
+    <title>Calendario Ordini</title>
     <link rel="manifest" href="/static/manifest.json">
     <meta name="theme-color" content="#1e293b"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
@@ -1025,14 +1025,7 @@
 <body>
     <header class="top-header">
         <div class="header-brand-banner" style="display: flex; align-items: center; gap: 15px;">
-            {% if is_schiavoni %}
-            <img src="{{ url_for('static', filename='images/icon.png') }}" alt="Logo Pasticceria Schiavoni" style="width: 50px; height: 50px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.3); background: #ffffff; object-fit: contain; padding: 2px;">
-            <h1 class="header-title">
-                <span class="t-past">Pasticceria</span> <span class="t-schiav">Schiavoni</span>
-            </h1>
-            {% else %}
             <h1 class="header-title">📋 Gestionale Ordini</h1>
-            {% endif %}
         </div>
         <div class="month-nav">
             <a href="?mese={{ prev_mese }}&anno={{ prev_anno }}" class="nav-arrow">❮</a>
@@ -1053,25 +1046,9 @@
         <div class="action-buttons">
             <div class="button-group-left">
                 <div class="desktop-brand">
-                    {% if is_schiavoni %}
-                    <div class="brand-slide brand-slide-1">
-                        <img src="{{ url_for('static', filename='images/icon.png') }}" alt="Logo Pasticceria Schiavoni" class="desktop-brand-logo">
-                        <div class="desktop-brand-text">
-                            <span class="desktop-brand-past">Pasticceria</span>
-                            <span class="desktop-brand-schiav">Schiavoni</span>
-                        </div>
-                    </div>
-                    <div class="brand-slide brand-slide-2">
-                        <div class="desktop-brand-slogan-wrap">
-                            <span class="desktop-brand-slogan-sub">La tua pasticceria</span>
-                            <span class="desktop-brand-slogan-main">dal 1969</span>
-                        </div>
-                    </div>
-                    {% else %}
                     <div class="desktop-brand-text">
                         <span class="desktop-brand-past" style="font-size:1.1rem; font-weight:800;">📋 Gestionale Ordini</span>
                     </div>
-                    {% endif %}
                 </div>
             </div>
             <div class="button-group-center">
@@ -1110,7 +1087,7 @@
                     </div>
                     <div class="desktop-right-bottom">
                         <a href="{{ url_for('turni_settimanali') }}" class="btn-secondary">TURNI MESE OSTIA</a>
-                        <a href="{{ url_for('turni_palocco') }}" class="btn-secondary">TURNI MESE PALOCCO</a>
+                        <a href="{{ url_for('turni_palocco') }}" class="btn-secondary">TURNI MESE SECONDO NEGOZIO</a>
                         <a href="{{ url_for('piano_ferie') }}" class="btn-secondary" id="pianFerieBtnDesktop" style="position:relative;">
                             <span class="btn-ferie-text">
                                 <span class="btn-ferie-top">FERIE • CAMBI TURNO</span>
@@ -1138,7 +1115,7 @@
                     </a>
                     <div class="mobile-sec-row">
                         <a href="{{ url_for('turni_settimanali') }}" class="btn-secondary">TURNI MESE OSTIA</a>
-                        <a href="{{ url_for('turni_palocco') }}" class="btn-secondary">TURNI MESE PALOCCO</a>
+                        <a href="{{ url_for('turni_palocco') }}" class="btn-secondary">TURNI MESE SECONDO NEGOZIO</a>
                     </div>
                     <div class="mobile-sec-row">
                         {% if session.get('permissions', {}).get('can_view_anagrafica', True) %}

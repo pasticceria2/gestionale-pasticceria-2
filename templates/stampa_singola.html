@@ -72,15 +72,12 @@
 
 <div class="ticket-container">
     <div class="header">
-        {% if is_schiavoni %}
-        <img src="{{ url_for('static', filename='images/icon.png') }}" alt="Logo Pasticceria" class="logo-img">
-        {% endif %}
         <div class="shop-row">
-           <div class="shop-sub" style="color: {% if o.negozio|lower == 'palocco' %}#ef4444{% elif 'consegna' in o.negozio|lower or o.modalita|lower == 'consegna' %}#10b981{% else %}#000000{% endif %};">
+           <div class="shop-sub" style="color: {% if o.negozio|lower in ['palocco', 'secondo negozio'] %}#ef4444{% elif 'consegna' in o.negozio|lower or o.modalita|lower == 'consegna' %}#10b981{% else %}#000000{% endif %};">
                 {% if 'consegna' in o.negozio|lower or o.modalita|lower == 'consegna' %}
                     ALTRO CONSEGNA
-                {% elif o.negozio|lower == 'palocco' %}
-                    PALOCCO
+                {% elif o.negozio|lower in ['palocco', 'secondo negozio'] %}
+                    SECONDO NEGOZIO
                 {% else %}
                     {{ o.negozio|replace('Negozio', '')|replace('negozio', '')|trim }}
                 {% endif %}

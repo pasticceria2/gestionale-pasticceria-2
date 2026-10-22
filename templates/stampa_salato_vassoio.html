@@ -310,8 +310,8 @@
         
         <div class="ticket-field">
             <span class="field-label">Negozio:</span>
-            <span class="badge-negozio-3d {% if o.negozio|lower == 'palocco' %}badge-palocco{% else %}badge-ostia{% endif %}">
-                {{ o.negozio }}
+            <span class="badge-negozio-3d {% if o.negozio|lower in ['palocco', 'secondo negozio'] %}badge-palocco{% else %}badge-ostia{% endif %}">
+                {% if o.negozio|lower == 'palocco' %}Secondo negozio{% else %}{{ o.negozio }}{% endif %}
             </span>
         </div>
 

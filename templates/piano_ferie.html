@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Piano Ferie - Pasticceria Schiavoni</title>
+    <title>Piano Ferie</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -1249,10 +1249,8 @@
     <!-- Top Header 3D -->
     <header class="top-header">
         <div class="header-brand-wrap">
-            <img src="/static/images/icon.png" alt="Logo Pasticceria Schiavoni">
             <div class="header-title">
                 <span>Piano Ferie</span>
-                <small>Pasticceria Schiavoni</small>
             </div>
         </div>
 
@@ -1298,7 +1296,7 @@
         <div class="stat-card-3d">
             <div class="stat-icon icon-palocco"></div>
             <div class="stat-content">
-                <span class="stat-label">Palocco</span>
+                <span class="stat-label">Secondo negozio</span>
                 <span class="stat-number">{{ conteggio_palocco }} <small style="font-size:0.75rem; font-weight:600; color:#64748b;">confermati</small></span>
             </div>
         </div>
@@ -1323,7 +1321,7 @@
                     <div class="filter-tabs" style="margin-top: 4px;">
                         <a href="?mese={{ mese }}&anno={{ anno }}&sede=tutte" class="filter-tab {% if filtro_sede == 'tutte' %}active{% endif %}">Tutte</a>
                         <a href="?mese={{ mese }}&anno={{ anno }}&sede=ostia" class="filter-tab tab-ostia {% if filtro_sede == 'ostia' %}active{% endif %}">Ostia</a>
-                        <a href="?mese={{ mese }}&anno={{ anno }}&sede=palocco" class="filter-tab tab-palocco {% if filtro_sede == 'palocco' %}active{% endif %}">Palocco</a>
+                        <a href="?mese={{ mese }}&anno={{ anno }}&sede=palocco" class="filter-tab tab-palocco {% if filtro_sede in ['palocco', 'secondo negozio'] %}active{% endif %}">Secondo negozio</a>
                     </div>
                 </div>
             </div>
@@ -1454,7 +1452,7 @@
                             </span>
                             {% else %}
                             <span class="badge-sede-palocco">
-                                <i class="fa-solid fa-location-dot"></i> Palocco
+                                <i class="fa-solid fa-location-dot"></i> Secondo negozio
                             </span>
                             {% endif %}
                         </td>
@@ -1589,9 +1587,9 @@
                         </div>
                     </label>
                     <label class="sede-option sede-option-palocco">
-                        <input type="radio" name="sede" value="Palocco">
+                        <input type="radio" name="sede" value="Secondo negozio">
                         <div class="sede-btn-3d">
-                            Palocco
+                            Secondo negozio
                         </div>
                     </label>
                 </div>
@@ -1708,9 +1706,9 @@
                         </div>
                     </label>
                     <label class="sede-option sede-option-palocco">
-                        <input type="radio" name="sede" value="Palocco" id="editSedePalocco">
+                        <input type="radio" name="sede" value="Secondo negozio" id="editSedePalocco">
                         <div class="sede-btn-3d">
-                            Palocco
+                            Secondo negozio
                         </div>
                     </label>
                 </div>

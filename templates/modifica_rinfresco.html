@@ -588,10 +588,8 @@
             <div>
                 <label>Negozio</label>
                 <select name="negozio" id="negozioSelect">
+                    <option value="Secondo negozio" {% if o.negozio in ['Palocco', 'Secondo negozio'] %}selected{% endif %}>Secondo negozio</option>
                     <option value="Ostia" {% if o.negozio == 'Ostia' %}selected{% endif %}>Ostia</option>
-                    {% if is_schiavoni %}
-                    <option value="Palocco" {% if o.negozio == 'Palocco' %}selected{% endif %}>Palocco</option>
-                    {% endif %}
                     <option value="Altro" {% if o.negozio == 'Altro' %}selected{% endif %}>Altro</option>
                 </select>
             </div>

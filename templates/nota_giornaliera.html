@@ -344,8 +344,8 @@
                     {% if o.modalita == 'Consegna' %}
                         <span class="sede-consegna">Consegna</span>
                     {% else %}
-                        <span class="{% if o.negozio|lower == 'palocco' %}sede-palocco{% else %}sede-ostia{% endif %}">
-                            {{ o.negozio|replace('Negozio', '')|trim }}
+                        <span class="{% if o.negozio|lower in ['palocco', 'secondo negozio'] %}sede-palocco{% else %}sede-ostia{% endif %}">
+                            {% if o.negozio|lower == 'palocco' %}Secondo negozio{% else %}{{ o.negozio|replace('Negozio', '')|trim }}{% endif %}
                         </span>
                     {% endif %}
                 </td>
@@ -444,8 +444,8 @@
                     {% if o.modalita == 'Consegna' %}
                         <span class="ng-badge-sede ng-badge-consegna">Consegna</span>
                     {% else %}
-                        <span class="ng-badge-sede {% if o.negozio|lower == 'palocco' %}ng-badge-palocco{% else %}ng-badge-ostia{% endif %}">
-                            {{ o.negozio|replace('Negozio', '')|trim }}
+                        <span class="ng-badge-sede {% if o.negozio|lower in ['palocco', 'secondo negozio'] %}ng-badge-palocco{% else %}ng-badge-ostia{% endif %}">
+                            {% if o.negozio|lower == 'palocco' %}Secondo negozio{% else %}{{ o.negozio|replace('Negozio', '')|trim }}{% endif %}
                         </span>
                     {% endif %}
                 </div>

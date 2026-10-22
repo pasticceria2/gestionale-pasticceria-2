@@ -470,8 +470,8 @@
                     <td class="td-prodotto">{{ o.tipo_dolce }}</td>
                     <td class="td-qta">{{ o.kg if o.kg else '—' }}</td>
                     <td>
-                        <span class="badge-negozio-3d {% if o.negozio|lower == 'palocco' %}neg-palocco{% else %}neg-ostia{% endif %}">
-                            {{ o.negozio }}
+                        <span class="badge-negozio-3d {% if o.negozio|lower in ['palocco', 'secondo negozio'] %}neg-palocco{% else %}neg-ostia{% endif %}">
+                            {% if o.negozio|lower == 'palocco' %}Secondo negozio{% else %}{{ o.negozio }}{% endif %}
                         </span>
                     </td>
                 </tr>
@@ -509,8 +509,8 @@
                 </div>
                 <div class="mobile-card-field" style="grid-column: 1 / -1;">
                     <span class="mobile-card-label">📍 Punto Vendita</span>
-                    <span class="mobile-badge-neg {% if o.negozio|lower == 'palocco' %}mobile-badge-palocco{% else %}mobile-badge-ostia{% endif %}">
-                        {{ o.negozio }}
+                    <span class="mobile-badge-neg {% if o.negozio|lower in ['palocco', 'secondo negozio'] %}mobile-badge-palocco{% else %}mobile-badge-ostia{% endif %}">
+                        {% if o.negozio|lower == 'palocco' %}Secondo negozio{% else %}{{ o.negozio }}{% endif %}
                     </span>
                 </div>
             </div>

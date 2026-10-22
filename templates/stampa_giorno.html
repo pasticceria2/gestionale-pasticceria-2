@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista Palocco - {{ data_it | formato_data }}</title>
+    <title>Lista Secondo Negozio - {{ data_it | formato_data }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         @page { size: A4 portrait; margin: 12mm; }
@@ -312,12 +312,12 @@
     </script>
 
     <div class="no-print">
-        <button class="btn btn-print" onclick="window.print()">STAMPA LISTA PALOCCO</button>
+        <button class="btn btn-print" onclick="window.print()">STAMPA LISTA SECONDO NEGOZIO</button>
         <button class="btn btn-back" onclick="tornaIndietro('{{ url_for("gestione_giorno", data=data_it) }}')">TORNA INDIETRO</button>
     </div>
 
     <div class="page-header">
-        <h1>LISTA ORDINI PALOCCO</h1>
+        <h1>LISTA ORDINI SECONDO NEGOZIO</h1>
         <span class="data-badge">{{ data_it | formato_data }}</span>
     </div>
 
@@ -372,13 +372,13 @@
     <!-- VERSIONE MOBILE - CARDS VERTICALI -->
     <div class="mobile-cards-container">
         <div class="mobile-count">
-            <span>📋 LISTA PALOCCO</span>
+            <span>📋 LISTA SECONDO NEGOZIO</span>
             <span>{{ ordini|length }} ordini</span>
         </div>
         {% for o in ordini %}
         <div class="mobile-palocco-card">
             <div class="mobile-card-top-bar {% if o.modalita == 'Consegna' %}is-consegna{% endif %}">
-                <span>{% if o.modalita == 'Consegna' %}🚚 CONSEGNA{% else %}🔴 PALOCCO{% endif %}</span>
+                <span>{% if o.modalita == 'Consegna' %}🚚 CONSEGNA{% else %}🔴 SECONDO NEGOZIO{% endif %}</span>
                 <span>🕒 {{ o.orario if o.orario else '--:--' }}</span>
             </div>
             <div class="mobile-card-main">
@@ -415,7 +415,7 @@
     </div>
     {% else %}
     <div class="table-wrap" style="text-align: center; padding: 40px 20px; color: #64748b; font-weight: 600;">
-        Nessun ordine presente per Palocco in questa data.
+        Nessun ordine presente per Secondo Negozio in questa data.
     </div>
     {% endif %}
 

@@ -1019,7 +1019,7 @@ def nota_giornaliera(data):
 def lista_totale(data):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM ordini WHERE data_consegna = %s AND negozio = 'Palocco' ORDER BY orario ASC", (data,))
+    cur.execute("SELECT * FROM ordini WHERE data_consegna = %s AND (negozio = 'Palocco' OR negozio = 'Secondo negozio') ORDER BY orario ASC", (data,))
     ordini = cur.fetchall()
     cur.close()
     conn.close()
@@ -1705,7 +1705,7 @@ def send_email_notification_async(testo_nota, username):
         # 3. Invio notifica Push immediata gratuita su Ntfy
         try:
             import urllib.request
-            ntfy_url = "https://ntfy.sh/gestionale_pasticceria_schiavoni_note"
+            ntfy_url = "https://ntfy.sh/gestionale_secondo_negozio_note"
             ntfy_msg = f"Utente: {username}\nData: {data_ora_str}\n\nNota:\n{testo_nota}".encode('utf-8')
             ntfy_req = urllib.request.Request(
                 ntfy_url,
@@ -1860,8 +1860,8 @@ def piano_ferie():
     cur.close()
     conn.close()
 
-    if filtro_sede in ['ostia', 'palocco']:
-        ferie_filtrate = [f for f in ferie_all if f['sede'].strip().lower() == filtro_sede]
+    if filtro_sede in ['ostia', 'palocco', 'secondo negozio']:
+        ferie_filtrate = [f for f in ferie_all if (f['sede'].strip().lower() in ['palocco', 'secondo negozio'] if filtro_sede in ['palocco', 'secondo negozio'] else f['sede'].strip().lower() == filtro_sede)]
     else:
         ferie_filtrate = ferie_all
 
@@ -1882,7 +1882,7 @@ def piano_ferie():
         for g in sett:
             g_ferie = [f for f in ferie_filtrate if f['data_inizio'] <= g <= f['data_fine']]
             ostia_count = sum(1 for f in g_ferie if f['sede'].strip().lower() == 'ostia' and f.get('confermato'))
-            palocco_count = sum(1 for f in g_ferie if f['sede'].strip().lower() == 'palocco' and f.get('confermato'))
+            palocco_count = sum(1 for f in g_ferie if f['sede'].strip().lower() in ['palocco', 'secondo negozio'] and f.get('confermato'))
             # Non contare i rifiutati nel contatore "In Attesa"
             attesa_count = sum(1 for f in g_ferie if not f.get('confermato') and not f.get('rifiutato'))
             
@@ -1916,7 +1916,7 @@ def piano_ferie():
                         conteggio_in_attesa_mese.add((f['id'], f['nome']))
                     elif f['sede'].strip().lower() == 'ostia':
                         conteggio_ostia_mese.add((f['id'], f['nome']))
-                    elif f['sede'].strip().lower() == 'palocco':
+                    elif f['sede'].strip().lower() in ['palocco', 'secondo negozio']:
                         conteggio_palocco_mese.add((f['id'], f['nome']))
 
             settimana_list.append({
@@ -1995,8 +1995,8 @@ def salva_piano_ferie():
         flash("Inserire il nome del dipendente.", "danger")
         return redirect(url_for('piano_ferie', mese=mese_ritorno, anno=anno_ritorno))
 
-    if sede.lower() not in ['ostia', 'palocco']:
-        flash("Selezionare la sede (Ostia o Palocco).", "danger")
+    if sede.lower() not in ['ostia', 'palocco', 'secondo negozio']:
+        flash("Selezionare la sede (Ostia o Secondo negozio).", "danger")
         return redirect(url_for('piano_ferie', mese=mese_ritorno, anno=anno_ritorno))
 
     try:
@@ -2011,7 +2011,7 @@ def salva_piano_ferie():
         return redirect(url_for('piano_ferie', mese=mese_ritorno, anno=anno_ritorno))
 
     nome_norm = nome.title()
-    sede_norm = 'Ostia' if sede.lower() == 'ostia' else 'Palocco'
+    sede_norm = 'Ostia' if sede.lower() == 'ostia' else 'Secondo negozio'
     username = session.get('username', 'Utente')
     is_admin = username.strip().lower() in ['roberto', 'emanuele']
     
@@ -2093,7 +2093,7 @@ def conferma_piano_ferie(id):
         WHERE id = %s
     """, (username, now_italy(), id))
 
-    if f and (f['sede'] or '').lower() in ('ostia', 'palocco'):
+    if f and (f['sede'] or '').lower() in ('ostia', 'palocco', 'secondo negozio'):
         _sincronizza_turni_da_piano_ferie(cur, f['data_inizio'], f['data_fine'])
 
     conn.commit()
@@ -2146,7 +2146,7 @@ def rifiuta_piano_ferie(id):
     """, (username, now_italy(), id))
 
     # Ri-sincronizza i turni (rimuove l'impatto di questa richiesta)
-    if f and (f.get('sede') or '').lower() in ('ostia', 'palocco'):
+    if f and (f.get('sede') or '').lower() in ('ostia', 'palocco', 'secondo negozio'):
         _sincronizza_turni_da_piano_ferie(cur, f['data_inizio'], f['data_fine'])
 
     conn.commit()
@@ -2182,7 +2182,7 @@ def sospendi_piano_ferie(id):
         SET confermato = FALSE, confermato_da = NULL, confermato_il = NULL,
             rifiutato = FALSE, rifiutato_da = NULL, rifiutato_il = NULL
         WHERE id = %s""", (id,))
-    if f and (f.get('sede') or '').lower() in ('ostia', 'palocco'):
+    if f and (f.get('sede') or '').lower() in ('ostia', 'palocco', 'secondo negozio'):
         _sincronizza_turni_da_piano_ferie(cur, f['data_inizio'], f['data_fine'])
     conn.commit()
     cur.close()
@@ -2206,7 +2206,7 @@ def modifica_piano_ferie(id):
     mese_ritorno = request.form.get('mese_ritorno')
     anno_ritorno = request.form.get('anno_ritorno')
 
-    if not nome or sede.lower() not in ['ostia', 'palocco']:
+    if not nome or sede.lower() not in ['ostia', 'palocco', 'secondo negozio']:
         flash("Dati inseriti non validi.", "danger")
         return redirect(url_for('piano_ferie', mese=mese_ritorno, anno=anno_ritorno))
 
@@ -2222,7 +2222,7 @@ def modifica_piano_ferie(id):
         return redirect(url_for('piano_ferie', mese=mese_ritorno, anno=anno_ritorno))
 
     nome_norm = nome.title()
-    sede_norm = 'Ostia' if sede.lower() == 'ostia' else 'Palocco'
+    sede_norm = 'Ostia' if sede.lower() == 'ostia' else 'Secondo negozio'
 
     conn = get_db_connection()
     cur = conn.cursor()
@@ -2299,7 +2299,7 @@ def elimina_piano_ferie(id):
         return redirect(url_for('piano_ferie', mese=mese_ritorno, anno=anno_ritorno))
 
     cur.execute("DELETE FROM piano_ferie WHERE id = %s", (id,))
-    if f and (f.get('sede') or '').lower() in ('ostia', 'palocco') and f.get('confermato'):
+    if f and (f.get('sede') or '').lower() in ('ostia', 'palocco', 'secondo negozio') and f.get('confermato'):
         _sincronizza_turni_da_piano_ferie(cur, f['data_inizio'], f['data_fine'])
     conn.commit()
     cur.close()
@@ -3104,7 +3104,7 @@ def _sincronizza_turni_da_piano_ferie(cur, data_inizio, data_fine):
             cur.execute("""
                 SELECT nome, data_inizio, data_fine, tipo_evento, orario_richiesto 
                 FROM piano_ferie 
-                WHERE LOWER(TRIM(sede)) = 'palocco' 
+                WHERE LOWER(TRIM(sede)) IN ('palocco', 'secondo negozio') 
                   AND (confermato = TRUE OR tipo_evento = 'malattia')
                   AND data_inizio <= %s 
                   AND data_fine >= %s
@@ -3759,7 +3759,7 @@ def turni_palocco():
             if cand_k not in already_on:
                 cur.execute("""
                     SELECT COUNT(*) AS c FROM piano_ferie 
-                    WHERE LOWER(TRIM(sede)) = 'palocco' 
+                    WHERE LOWER(TRIM(sede)) IN ('palocco', 'secondo negozio') 
                       AND (confermato = TRUE OR tipo_evento = 'malattia')
                       AND data_inizio <= %s AND data_fine >= %s
                       AND (LOWER(TRIM(nome)) = %s OR LOWER(TRIM(nome)) LIKE %s || '%%')
@@ -3881,7 +3881,7 @@ def turni_palocco_genera():
     cur.execute("""
         SELECT nome, data_inizio, data_fine, tipo_evento, orario_richiesto 
         FROM piano_ferie 
-        WHERE LOWER(TRIM(sede)) = 'palocco' 
+        WHERE LOWER(TRIM(sede)) IN ('palocco', 'secondo negozio') 
           AND (confermato = TRUE OR tipo_evento = 'malattia')
           AND data_inizio <= %s 
           AND data_fine >= %s
@@ -3999,7 +3999,7 @@ def turni_palocco_aggiorna_slot():
                 cur.close(); conn.close()
                 return jsonify({
                     'ok': False,
-                    'error': f"Marisa è già in turno ad Ostia il {d_str} ({row_ostia['lbl']}) e non può essere a Palocco."
+                    'error': f"Marisa è già in turno ad Ostia il {d_str} ({row_ostia['lbl']}) e non può essere a Secondo negozio."
                 }), 400
 
         cur.execute("""
@@ -4061,7 +4061,7 @@ def turni_palocco_aggiungi_slot():
             cur.close(); conn.close()
             return jsonify({
                 'ok': False,
-                'error': f"Marisa è già in turno ad Ostia il {d_str} ({row_ostia['lbl']}) e non può essere a Palocco."
+                'error': f"Marisa è già in turno ad Ostia il {d_str} ({row_ostia['lbl']}) e non può essere a Secondo negozio."
             }), 400
 
     # Rimuovi la persona dal vecchio turno nello stesso giorno (elimina preimpostato se presente)

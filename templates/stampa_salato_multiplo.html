@@ -384,8 +384,8 @@
 
             <div class="ticket-field">
                 <span class="field-label">Punto Vendita:</span>
-                <span class="badge-negozio-3d {% if v.negozio|lower == 'palocco' %}badge-palocco{% else %}badge-ostia{% endif %}">
-                    {{ v.negozio }}
+                <span class="badge-negozio-3d {% if v.negozio|lower in ['palocco', 'secondo negozio'] %}badge-palocco{% else %}badge-ostia{% endif %}">
+                    {% if v.negozio|lower == 'palocco' %}Secondo negozio{% else %}{{ v.negozio }}{% endif %}
                 </span>
             </div>
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turni Mese Palocco – Pasticceria Schiavoni</title>
+    <title>Turni Mese Secondo Negozio</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -202,10 +202,9 @@
     <!-- HEADER -->
     <header class="top-header">
         <div class="header-brand">
-            <img src="/static/images/icon.png" alt="Logo">
             <div>
-                <div class="header-brand-title">Turni Mese Palocco</div>
-                <div class="header-brand-title"><small>Pasticceria Schiavoni – Sede Palocco</small></div>
+                <div class="header-brand-title">Turni Mese Secondo Negozio</div>
+                <div class="header-brand-title"><small>Sede Secondo Negozio</small></div>
             </div>
         </div>
 
@@ -251,7 +250,7 @@
 
     <!-- LEGENDA -->
     <div class="legend-card">
-        <span class="legend-title">Dipendenti Palocco</span>
+        <span class="legend-title">Dipendenti Secondo Negozio</span>
         {% for nome in staff_nomi %}
         <span class="legend-chip chip-{{ nome }}">
             <span class="dot dot-{{ nome }}"></span>{{ nome }}
@@ -465,7 +464,7 @@
         </div>
         <div class="modal-info">
             <strong id="addModalDay"></strong>
-            <span style="font-size:0.82rem;color:#64748b;">Aggiungi una persona / turno aggiuntivo per questo giorno (Palocco)</span>
+            <span style="font-size:0.82rem;color:#64748b;">Aggiungi una persona / turno aggiuntivo per questo giorno (Secondo Negozio)</span>
         </div>
         
         <label class="form-label">Orario / Fascia Turno</label>
@@ -707,7 +706,7 @@
 
     function autoGenera(){
         const ma=document.getElementById('toggleMartedi').checked;
-        if(!confirm('Auto-genera i turni Palocco per {{ mese_nome }} {{ anno }}?\nLe modifiche manuali esistenti saranno sovrascritte.')) return;
+        if(!confirm('Auto-genera i turni Secondo Negozio per {{ mese_nome }} {{ anno }}?\nLe modifiche manuali esistenti saranno sovrascritte.')) return;
         const btn=document.getElementById('btnGenera');
         btn.disabled=true;
         btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Generazione...';
@@ -721,7 +720,7 @@
     }
 
     function resetMese(){
-        if(!confirm('Sei sicuro di voler resettare tutti i turni Palocco per {{ mese_nome }} {{ anno }}?\nTutti i turni assegnati per questo mese verranno cancellati.')) return;
+        if(!confirm('Sei sicuro di voler resettare tutti i turni Secondo Negozio per {{ mese_nome }} {{ anno }}?\nTutti i turni assegnati per questo mese verranno cancellati.')) return;
         const btn=document.getElementById('btnReset');
         btn.disabled=true;
         btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Reset...';

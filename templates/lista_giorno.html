@@ -228,8 +228,8 @@
             {% for o in ordini %}
             <tr>
                 <td class="col-ritiro">
-                    <span class="{% if o.negozio|lower == 'palocco' %}neg-p{% else %}neg-o{% endif %}">
-                        {{ o.negozio }}
+                    <span class="{% if o.negozio|lower in ['palocco', 'secondo negozio'] %}neg-p{% else %}neg-o{% endif %}">
+                        {% if o.negozio|lower == 'palocco' %}Secondo negozio{% else %}{{ o.negozio }}{% endif %}
                     </span>
                 </td>
                 <td>{{ o.cliente }}</td>
@@ -255,9 +255,9 @@
         </div>
         {% for o in ordini %}
         <div class="mobile-lab-card">
-            <!-- Striscia colorata: PALOCCO=rosso, OSTIA=blu -->
-            <div class="card-top-bar {% if o.negozio|lower == 'palocco' %}bar-palocco{% else %}bar-ostia{% endif %}">
-                <span class="card-negozio-label">📍 {{ o.negozio }}</span>
+            <!-- Striscia colorata: SECONDO NEGOZIO=rosso, OSTIA=blu -->
+            <div class="card-top-bar {% if o.negozio|lower in ['palocco', 'secondo negozio'] %}bar-palocco{% else %}bar-ostia{% endif %}">
+                <span class="card-negozio-label">📍 {% if o.negozio|lower == 'palocco' %}Secondo negozio{% else %}{{ o.negozio }}{% endif %}</span>
                 <span class="card-orario">🕒 {{ o.orario }}</span>
             </div>
             <!-- Nome torta in grande -->

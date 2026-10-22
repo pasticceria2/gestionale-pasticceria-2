@@ -46,7 +46,7 @@
 {% for torta in torte %}
 {% set highlight_color = '#000000' %} {# Default black #}
 {% set highlight_bg = '#f8fafc' %}   {# Default light gray #}
-{% if o.negozio|lower == 'palocco' %}
+{% if o.negozio|lower in ['palocco', 'secondo negozio'] %}
     {% set highlight_color = '#ef4444' %} {# Red #}
     {% set highlight_bg = '#fee2e2' %}    {# Light Red #}
 {% elif o.modalita|lower == 'consegna' %}
