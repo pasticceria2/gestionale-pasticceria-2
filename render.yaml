@@ -6,4 +6,4 @@ services:
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn app:app"
 
-# Force redeploy: 2026-10-22T12:28
+# Force redeploy: 2026-10-22T13:03

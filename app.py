@@ -47,7 +47,7 @@ def process_uploaded_image(file_obj):
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'una-chiave-segreta-molto-sicura-da-cambiare')
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'Pasticceria26@')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin')
 
 @app.context_processor
 def inject_user_context():
@@ -138,14 +138,28 @@ def init_db():
             """)
             cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS permissions JSONB DEFAULT '{\"can_edit\": true, \"can_delete\": true, \"can_manage_users\": false, \"can_view_anagrafica\": true}'::jsonb;")
 
-            # Aggiunta utente admin di default se non esistono utenti
-            cur.execute("SELECT id FROM users LIMIT 1;")
+            # Tabella per migrazioni di sistema e reset una-tantum
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS system_migrations (
+                    name TEXT PRIMARY KEY,
+                    executed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                );
+            """)
+
+            # Reset utenze: elimina tutte le utenze e crea solo utente admin / admin
+            cur.execute("SELECT name FROM system_migrations WHERE name = 'reset_users_admin_v1';")
             if cur.fetchone() is None:
-                default_username = 'admin'
-                default_password = 'Pasticceria26@'
-                password_hash = generate_password_hash(default_password)
-                admin_perms = '{"can_edit": true, "can_delete": true, "can_manage_users": true, "can_view_anagrafica": true}'
-                cur.execute("INSERT INTO users (username, password_hash, permissions) VALUES (%s, %s, %s)", (default_username, password_hash, admin_perms))
+                cur.execute("DELETE FROM users;")
+                admin_hash = generate_password_hash('admin')
+                admin_perms = '{"can_edit": true, "can_delete": true, "can_manage_users": true, "can_view_anagrafica": true, "is_schiavoni": true}'
+                cur.execute("INSERT INTO users (username, password_hash, permissions) VALUES (%s, %s, %s)", ('admin', admin_hash, admin_perms))
+                cur.execute("INSERT INTO system_migrations (name) VALUES ('reset_users_admin_v1');")
+            else:
+                cur.execute("SELECT id FROM users LIMIT 1;")
+                if cur.fetchone() is None:
+                    admin_hash = generate_password_hash('admin')
+                    admin_perms = '{"can_edit": true, "can_delete": true, "can_manage_users": true, "can_view_anagrafica": true, "is_schiavoni": true}'
+                    cur.execute("INSERT INTO users (username, password_hash, permissions) VALUES (%s, %s, %s)", ('admin', admin_hash, admin_perms))
 
             cur.execute("CREATE TABLE IF NOT EXISTS clienti (id SERIAL PRIMARY KEY, nome TEXT, telefono TEXT UNIQUE, email TEXT, foto TEXT);")
             cur.execute("ALTER TABLE clienti ADD COLUMN IF NOT EXISTS email TEXT;")
@@ -251,9 +265,26 @@ except Exception as _e:
 def fix_db_route():
     try:
         init_db()
-        return "✅ Database aggiornato con successo! Le colonne 'foto' e 'foto_descrizione' sono pronte. Puoi salvare ordini e rinfreschi.", 200
+        return "✅ Database aggiornato con successo!", 200
     except Exception as e:
         return f"❌ Errore aggiornamento DB: {e}", 500
+
+@app.route('/reset_users')
+def reset_users_route():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM users;")
+        admin_hash = generate_password_hash('admin')
+        admin_perms = '{"can_edit": true, "can_delete": true, "can_manage_users": true, "can_view_anagrafica": true, "is_schiavoni": true}'
+        cur.execute("INSERT INTO users (username, password_hash, permissions) VALUES (%s, %s, %s)", ('admin', admin_hash, admin_perms))
+        cur.execute("INSERT INTO system_migrations (name) VALUES ('reset_users_admin_v1') ON CONFLICT (name) DO NOTHING;")
+        conn.commit()
+        cur.close()
+        conn.close()
+        return "✅ Tutte le utenze sono state resettate! È presente solo: username 'admin' con password 'admin'. Ora puoi creare le nuove utenze.", 200
+    except Exception as e:
+        return f"❌ Errore reset utenze: {e}", 500
 
 # --- ROTTE DI AUTENTICAZIONE ---
 @app.route('/login', methods=['GET', 'POST'])
@@ -295,7 +326,7 @@ def require_login():
             init_db()
         except Exception as e:
             print(f"Errore init_db in before_request: {e}")
-    allowed_routes = ['login', 'static', 'verifica_admin', 'fix_db']
+    allowed_routes = ['login', 'static', 'verifica_admin', 'fix_db', 'reset_users']
     if request.endpoint not in allowed_routes and 'user_id' not in session:
         return redirect(url_for('login'))
     
