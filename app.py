@@ -146,20 +146,20 @@ def init_db():
                 );
             """)
 
-            # Reset utenze: elimina tutte le utenze e crea solo utente admin / admin
-            cur.execute("SELECT name FROM system_migrations WHERE name = 'reset_users_admin_v1';")
+            # Reset utenze: elimina tutte le utenze e crea utente Emanuele con tutti i permessi
+            cur.execute("SELECT name FROM system_migrations WHERE name = 'reset_users_emanuele_v2';")
             if cur.fetchone() is None:
                 cur.execute("DELETE FROM users;")
-                admin_hash = generate_password_hash('admin')
-                admin_perms = '{"can_edit": true, "can_delete": true, "can_manage_users": true, "can_view_anagrafica": true, "is_schiavoni": true}'
-                cur.execute("INSERT INTO users (username, password_hash, permissions) VALUES (%s, %s, %s)", ('admin', admin_hash, admin_perms))
-                cur.execute("INSERT INTO system_migrations (name) VALUES ('reset_users_admin_v1');")
+                emanuele_hash = generate_password_hash('Emanuele26@')
+                emanuele_perms = '{"can_edit": true, "can_delete": true, "can_manage_users": true, "can_view_anagrafica": true, "is_schiavoni": true}'
+                cur.execute("INSERT INTO users (username, password_hash, permissions) VALUES (%s, %s, %s)", ('Emanuele', emanuele_hash, emanuele_perms))
+                cur.execute("INSERT INTO system_migrations (name) VALUES ('reset_users_emanuele_v2');")
             else:
                 cur.execute("SELECT id FROM users LIMIT 1;")
                 if cur.fetchone() is None:
-                    admin_hash = generate_password_hash('admin')
-                    admin_perms = '{"can_edit": true, "can_delete": true, "can_manage_users": true, "can_view_anagrafica": true, "is_schiavoni": true}'
-                    cur.execute("INSERT INTO users (username, password_hash, permissions) VALUES (%s, %s, %s)", ('admin', admin_hash, admin_perms))
+                    emanuele_hash = generate_password_hash('Emanuele26@')
+                    emanuele_perms = '{"can_edit": true, "can_delete": true, "can_manage_users": true, "can_view_anagrafica": true, "is_schiavoni": true}'
+                    cur.execute("INSERT INTO users (username, password_hash, permissions) VALUES (%s, %s, %s)", ('Emanuele', emanuele_hash, emanuele_perms))
 
             cur.execute("CREATE TABLE IF NOT EXISTS clienti (id SERIAL PRIMARY KEY, nome TEXT, telefono TEXT UNIQUE, email TEXT, foto TEXT);")
             cur.execute("ALTER TABLE clienti ADD COLUMN IF NOT EXISTS email TEXT;")
@@ -275,14 +275,14 @@ def reset_users_route():
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("DELETE FROM users;")
-        admin_hash = generate_password_hash('admin')
-        admin_perms = '{"can_edit": true, "can_delete": true, "can_manage_users": true, "can_view_anagrafica": true, "is_schiavoni": true}'
-        cur.execute("INSERT INTO users (username, password_hash, permissions) VALUES (%s, %s, %s)", ('admin', admin_hash, admin_perms))
-        cur.execute("INSERT INTO system_migrations (name) VALUES ('reset_users_admin_v1') ON CONFLICT (name) DO NOTHING;")
+        emanuele_hash = generate_password_hash('Emanuele26@')
+        emanuele_perms = '{"can_edit": true, "can_delete": true, "can_manage_users": true, "can_view_anagrafica": true, "is_schiavoni": true}'
+        cur.execute("INSERT INTO users (username, password_hash, permissions) VALUES (%s, %s, %s)", ('Emanuele', emanuele_hash, emanuele_perms))
+        cur.execute("INSERT INTO system_migrations (name) VALUES ('reset_users_emanuele_v2') ON CONFLICT (name) DO NOTHING;")
         conn.commit()
         cur.close()
         conn.close()
-        return "✅ Tutte le utenze sono state resettate! È presente solo: username 'admin' con password 'admin'. Ora puoi creare le nuove utenze.", 200
+        return "✅ Tutte le utenze sono state resettate! È presente solo: username 'Emanuele' con password 'Emanuele26@'. Ora puoi creare le nuove utenze.", 200
     except Exception as e:
         return f"❌ Errore reset utenze: {e}", 500
 
