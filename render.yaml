@@ -1,9 +1,8 @@
-
 services:
   - type: web
-    name: gestionale-pasticceria
+    name: gestionale-pasticceria-2
     env: python
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn app:app"
 
-# Force redeploy: 2026-10-22T13:03
+# Force redeploy: 2026-10-26T16:35

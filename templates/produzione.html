@@ -666,7 +666,7 @@
                 flex-direction: column;
                 gap: 4px;
                 justify-content: stretch;
-                min-width: 105px;
+                min-width: 165px;
             }
             .desktop-col-utility .btn-secondary {
                 flex: 1;
@@ -1081,9 +1081,12 @@
                 <div class="desktop-right-wrapper">
                     <div class="desktop-right-top">
                         <div class="desktop-col-utility">
-                            {% if session.get('permissions', {}).get('can_view_anagrafica', True) %}
-                            <a href="{{ url_for('anagrafica') }}" class="btn-secondary">ANAGRAFICA</a>
-                            {% endif %}
+                            <div style="display: flex; gap: 4px; flex: 1; width: 100%;">
+                                {% if session.get('permissions', {}).get('can_view_anagrafica', True) %}
+                                <a href="{{ url_for('anagrafica') }}" class="btn-secondary" style="flex: 1;">ANAGRAFICA</a>
+                                {% endif %}
+                                <a href="{{ url_for('allergeni_index') }}" class="btn-secondary" style="flex: 1;">ALLERGENI</a>
+                            </div>
                             <a href="{{ url_for('supporto') }}" class="btn-secondary">SUPPORTO</a>
                         </div>
                         <div class="digital-clock">
@@ -1131,6 +1134,7 @@
                         {% if session.get('permissions', {}).get('can_view_anagrafica', True) %}
                         <a href="{{ url_for('anagrafica') }}" class="btn-secondary">ANAGRAFICA</a>
                         {% endif %}
+                        <a href="{{ url_for('allergeni_index') }}" class="btn-secondary">ALLERGENI</a>
                         <a href="{{ url_for('supporto') }}" class="btn-secondary">SUPPORTO</a>
                     </div>
                 </div>
@@ -1214,9 +1218,13 @@
         updateClock();
         setInterval(updateClock, 1000);
 
-        // --- Polling notifiche ferie in attesa ---
+        // --- Notifiche ferie in attesa: controllo una sola volta al giorno alle ore 10:00 ---
         (function() {
             var lastCount = {{ ferie_in_attesa_count|default(0) }};
+            var nowInit = new Date();
+            // Se la pagina viene aperta/ricaricata dopo le 10:00, i dati sono già aggiornati dal rendering del server
+            var lastPingDate = (nowInit.getHours() >= 10) ? nowInit.toDateString() : null;
+            var timerId = null;
 
             function updateFerieNotifDot(count) {
                 var dots = document.querySelectorAll('.ferie-notif-dot');
@@ -1232,6 +1240,9 @@
             }
 
             function pollFerieNotifiche() {
+                var todayStr = new Date().toDateString();
+                lastPingDate = todayStr;
+
                 fetch('/api/piano-ferie/notifiche', { credentials: 'same-origin' })
                     .then(function(r) { return r.json(); })
                     .then(function(data) {
@@ -1252,8 +1263,40 @@
                     .catch(function() { /* ignora errori di rete */ });
             }
 
-            // Polling ogni 30 secondi
-            setInterval(pollFerieNotifiche, 30000);
+            function planNextPingAt10() {
+                if (timerId) clearTimeout(timerId);
+
+                var now = new Date();
+                var target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0, 0);
+
+                // Se sono passate le 10:00 di oggi, pianifica per le 10:00 di domani
+                if (now.getTime() >= target.getTime()) {
+                    target.setDate(target.getDate() + 1);
+                }
+
+                var delay = target.getTime() - now.getTime();
+
+                timerId = setTimeout(function() {
+                    pollFerieNotifiche();
+                    planNextPingAt10();
+                }, delay);
+            }
+
+            // Pianifica il ping giornaliero alle ore 10:00
+            planNextPingAt10();
+
+            // Se il dispositivo/scheda torna attivo da standby/sleep
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    var now = new Date();
+                    var todayStr = now.toDateString();
+                    // Se sono passate le ore 10:00 e per oggi il ping delle 10 non è stato ancora eseguito
+                    if (now.getHours() >= 10 && lastPingDate !== todayStr) {
+                        pollFerieNotifiche();
+                    }
+                    planNextPingAt10();
+                }
+            });
         })();
 
         if ('serviceWorker' in navigator) {

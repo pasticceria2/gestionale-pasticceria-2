@@ -23,10 +23,11 @@ def now_italy():
             pass
     return datetime.now()
 
+import json
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
 import psycopg2
-from psycopg2.extras import RealDictCursor
+from psycopg2.extras import RealDictCursor, Json
 from werkzeug.security import generate_password_hash, check_password_hash
 
 def process_uploaded_image(file_obj):
@@ -246,6 +247,20 @@ def init_db():
                     UNIQUE (data, turno_id)
                 );
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS allergeni_prodotti (
+                    id SERIAL PRIMARY KEY,
+                    titolo TEXT NOT NULL,
+                    ingredienti TEXT DEFAULT '',
+                    allergeni JSONB DEFAULT '[]'::jsonb,
+                    tracce TEXT DEFAULT '',
+                    note TEXT DEFAULT '',
+                    creato_il TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                    aggiornato_il TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+            cur.execute("ALTER TABLE allergeni_prodotti ADD COLUMN IF NOT EXISTS tracce TEXT DEFAULT '';")
+            cur.execute("ALTER TABLE allergeni_prodotti ADD COLUMN IF NOT EXISTS note TEXT DEFAULT '';")
             conn.commit()
             _db_initialized = True
         except Exception as e: 
@@ -3793,6 +3808,203 @@ def turni_palocco_config_route():
         (anno, mese, marti))
     conn.commit(); cur.close(); conn.close()
     return jsonify({'ok': True})
+
+
+
+# ==============================================================
+# GESTIONE REGISTRO ALLERGENI
+# ==============================================================
+
+ALLERGENI_DEFINIZIONI = [
+    {"id": "glutine", "nome": "Cereali con Glutine", "dettaglio": "Grano, segale, orzo, avena, farro, kamut", "icon": "fa-wheat-awn", "badge_color": "#d97706"},
+    {"id": "crostacei", "nome": "Crostacei", "dettaglio": "Gamberi, scampi, aragoste, granchi", "icon": "fa-shrimp", "badge_color": "#ef4444"},
+    {"id": "uova", "nome": "Uova", "dettaglio": "Uova e prodotti a base di uova", "icon": "fa-egg", "badge_color": "#eab308"},
+    {"id": "pesce", "nome": "Pesce", "dettaglio": "Pesce e prodotti a base di pesce", "icon": "fa-fish", "badge_color": "#0284c7"},
+    {"id": "arachidi", "nome": "Arachidi", "dettaglio": "Arachidi e prodotti a base di arachidi", "icon": "fa-cubes-stacked", "badge_color": "#b45309"},
+    {"id": "soia", "nome": "Soia", "dettaglio": "Soia e prodotti a base di soia", "icon": "fa-seedling", "badge_color": "#16a34a"},
+    {"id": "latte", "nome": "Latte e Lattosio", "dettaglio": "Latte, formaggi, burro, yogurt, panna", "icon": "fa-glass-water", "badge_color": "#2563eb"},
+    {"id": "frutta_guscio", "nome": "Frutta a Guscio", "dettaglio": "Mandorle, nocciole, noci, pistacchi, anacardi", "icon": "fa-tree", "badge_color": "#78350f"},
+    {"id": "sedano", "nome": "Sedano", "dettaglio": "Sedano e prodotti a base di sedano", "icon": "fa-leaf", "badge_color": "#65a30d"},
+    {"id": "senape", "nome": "Senape", "dettaglio": "Senape e prodotti a base di senape", "icon": "fa-jar", "badge_color": "#ca8a04"},
+    {"id": "sesamo", "nome": "Semi di Sesamo", "dettaglio": "Semi di sesamo e prodotti a base di sesamo", "icon": "fa-circle-dot", "badge_color": "#a16207"},
+    {"id": "solfiti", "nome": "Solfiti", "dettaglio": "Anidride solforosa e solfiti > 10 mg/kg", "icon": "fa-wine-bottle", "badge_color": "#9333ea"},
+    {"id": "lupini", "nome": "Lupini", "dettaglio": "Lupini e prodotti a base di lupini", "icon": "fa-spa", "badge_color": "#ca8a04"},
+    {"id": "molluschi", "nome": "Molluschi", "dettaglio": "Polpi, seppie, calamari, cozze, vongole", "icon": "fa-water", "badge_color": "#0d9488"}
+]
+
+ALLERGENI_DICT = {a['id']: a for a in ALLERGENI_DEFINIZIONI}
+
+@app.route('/allergeni')
+def allergeni_index():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS allergeni_prodotti (
+                id SERIAL PRIMARY KEY,
+                titolo TEXT NOT NULL,
+                ingredienti TEXT DEFAULT '',
+                allergeni JSONB DEFAULT '[]'::jsonb,
+                tracce TEXT DEFAULT '',
+                note TEXT DEFAULT '',
+                creato_il TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                aggiornato_il TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        conn.commit()
+        cur.execute("SELECT * FROM allergeni_prodotti ORDER BY LOWER(titolo) ASC")
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        prodotti = []
+        for r in rows:
+            p = dict(r)
+            raw_all = p.get('allergeni')
+            if isinstance(raw_all, str):
+                try:
+                    all_list = json.loads(raw_all)
+                except Exception:
+                    all_list = []
+            elif isinstance(raw_all, list):
+                all_list = raw_all
+            else:
+                all_list = []
+            p['allergeni_list'] = all_list
+            p['allergeni_dettagli'] = [ALLERGENI_DICT[aid] for aid in all_list if aid in ALLERGENI_DICT]
+            p['allergeni_count'] = len(p['allergeni_dettagli'])
+            prodotti.append(p)
+        return render_template('allergeni.html', prodotti=prodotti, totale=len(prodotti))
+    except Exception as e:
+        print(f"Errore caricamento allergeni: {e}")
+        flash("Errore nel caricamento del registro allergeni.", "danger")
+        return render_template('allergeni.html', prodotti=[], totale=0)
+
+@app.route('/allergeni/crea', methods=['POST'])
+def allergeni_crea():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    titolo = (request.form.get('titolo') or '').strip()
+    if not titolo:
+        flash("Inserisci il nome del prodotto (es. Pan di spagna).", "warning")
+        return redirect(url_for('allergeni_index'))
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO allergeni_prodotti (titolo, ingredienti, allergeni, tracce, note, creato_il, aggiornato_il)
+            VALUES (%s, '', '[]'::jsonb, '', '', NOW(), NOW())
+            RETURNING id;
+        """, (titolo,))
+        new_row = cur.fetchone()
+        new_id = new_row['id']
+        conn.commit()
+        cur.close()
+        conn.close()
+        flash(f"Prodotto '{titolo}' creato! Ora puoi inserire gli allergeni e gli ingredienti.", "success")
+        return redirect(url_for('allergeni_scheda', id=new_id))
+    except Exception as e:
+        print(f"Errore creazione allergene: {e}")
+        flash("Errore durante la creazione del prodotto.", "danger")
+        return redirect(url_for('allergeni_index'))
+
+@app.route('/allergeni/scheda/<int:id>')
+def allergeni_scheda(id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM allergeni_prodotti WHERE id = %s", (id,))
+        p = cur.fetchone()
+        cur.close()
+        conn.close()
+        if not p:
+            flash("Scheda prodotto non trovata.", "warning")
+            return redirect(url_for('allergeni_index'))
+        
+        p = dict(p)
+        raw_all = p.get('allergeni')
+        if isinstance(raw_all, str):
+            try:
+                selected_ids = set(json.loads(raw_all))
+            except Exception:
+                selected_ids = set()
+        elif isinstance(raw_all, list):
+            selected_ids = set(raw_all)
+        else:
+            selected_ids = set()
+
+        allergeni_view = []
+        for a in ALLERGENI_DEFINIZIONI:
+            item = dict(a)
+            item['attivo'] = (a['id'] in selected_ids)
+            allergeni_view.append(item)
+
+        return render_template('allergeni_scheda.html', p=p, allergeni=allergeni_view, allergeni_def=ALLERGENI_DEFINIZIONI)
+    except Exception as e:
+        print(f"Errore lettura scheda allergene: {e}")
+        flash("Errore nel caricamento della scheda.", "danger")
+        return redirect(url_for('allergeni_index'))
+
+@app.route('/allergeni/salva/<int:id>', methods=['POST'])
+def allergeni_salva(id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    titolo = (request.form.get('titolo') or '').strip()
+    ingredienti = (request.form.get('ingredienti') or '').strip()
+    tracce = (request.form.get('tracce') or '').strip()
+    note = (request.form.get('note') or '').strip()
+    allergeni_scelti = request.form.getlist('allergeni')
+
+    if not titolo:
+        flash("Il nome del prodotto non può essere vuoto.", "warning")
+        return redirect(url_for('allergeni_scheda', id=id))
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE allergeni_prodotti 
+            SET titolo = %s,
+                ingredienti = %s,
+                allergeni = %s,
+                tracce = %s,
+                note = %s,
+                aggiornato_il = NOW()
+            WHERE id = %s
+        """, (titolo, ingredienti, Json(allergeni_scelti), tracce, note, id))
+        conn.commit()
+        cur.close()
+        conn.close()
+        flash(f"Scheda '{titolo}' salvata con successo!", "success")
+        return redirect(url_for('allergeni_scheda', id=id))
+    except Exception as e:
+        print(f"Errore salvataggio scheda allergene: {e}")
+        flash("Errore durante il salvataggio della scheda.", "danger")
+        return redirect(url_for('allergeni_scheda', id=id))
+
+@app.route('/allergeni/elimina/<int:id>', methods=['POST', 'GET'])
+def allergeni_elimina(id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT titolo FROM allergeni_prodotti WHERE id = %s", (id,))
+        row = cur.fetchone()
+        titolo = row['titolo'] if row else 'Prodotto'
+        cur.execute("DELETE FROM allergeni_prodotti WHERE id = %s", (id,))
+        conn.commit()
+        cur.close()
+        conn.close()
+        flash(f"Scheda '{titolo}' eliminata con successo.", "success")
+    except Exception as e:
+        print(f"Errore eliminazione allergene: {e}")
+        flash("Errore durante l'eliminazione della scheda.", "danger")
+    return redirect(url_for('allergeni_index'))
 
 
 if __name__ == '__main__':

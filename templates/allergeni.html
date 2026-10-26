@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Registro Allergeni - Pasticceria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); 
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .container { 
+            max-width: 1100px; 
+            margin: 0 auto; 
+        }
+
+        /* Flash Message 3D */
+        .alert-3d {
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .alert-warning {
+            background: #fffbe8;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        /* 3D Header Principale */
+        .top-header { 
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 60%, #075985 100%);
+            color: white; 
+            padding: 1.2rem 1.6rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap;
+            gap: 14px;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.35),
+                0 6px 0 #0c4a6e,
+                0 14px 25px -4px rgba(2, 132, 199, 0.4);
+            border-radius: 20px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.2);
+        }
+
+        .top-header h1 { 
+            font-family: 'Inter', sans-serif; 
+            font-weight: 900;
+            margin: 0; 
+            font-size: 1.6rem; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+            letter-spacing: -0.02em;
+        }
+
+        .top-header p {
+            margin: 2px 0 0 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Pulsante 3D Ritorno */
+        .btn-3d {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 800;
+            border-radius: 12px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.1s ease-in-out;
+            font-size: 0.9rem;
+            padding: 10px 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            user-select: none;
+        }
+
+        .btn-back-3d { 
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%); 
+            color: white; 
+            box-shadow: 0 4px 0 #334155, 0 6px 10px rgba(0,0,0,0.2); 
+        }
+        .btn-back-3d:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #334155;
+        }
+
+        /* Card 3D per Creazione Nuovo Prodotto */
+        .create-card-3d {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 18px 22px;
+            margin-bottom: 24px;
+            box-shadow: 
+                0 4px 0 #cbd5e1,
+                0 10px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .create-form-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .create-input-wrapper {
+            flex: 1;
+            min-width: 260px;
+            position: relative;
+        }
+
+        .create-input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .create-input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.2s;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        .create-input:focus {
+            border-color: #0284c7;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+
+        .btn-create-3d {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 0 #047857, 0 8px 15px rgba(16, 185, 129, 0.3);
+            white-space: nowrap;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+        }
+
+        .btn-create-3d:hover {
+            filter: brightness(1.05);
+        }
+
+        .btn-create-3d:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #047857;
+        }
+
+        /* Barra di ricerca e conteggio */
+        .search-bar-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 9px 14px 9px 38px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: #ffffff;
+            outline: none;
+        }
+        .search-input:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.12);
+        }
+
+        .count-pill {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            border: 1px solid #bae6fd;
+        }
+
+        /* Griglia dei Pulsanti 3D dei Prodotti */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        /* Singolo Pulsante Prodotto 3D */
+        .product-btn-card {
+            background: #ffffff;
+            border-radius: 18px;
+            border: 2px solid #e2e8f0;
+            box-shadow: 
+                0 6px 0 #cbd5e1,
+                0 12px 20px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .product-btn-card:hover {
+            transform: translateY(-3px);
+            border-color: #38bdf8;
+            box-shadow: 
+                0 9px 0 #94a3b8,
+                0 16px 25px rgba(2, 132, 199, 0.12);
+        }
+
+        .product-btn-card:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #94a3b8;
+        }
+
+        .product-btn-card-header {
+            padding: 16px 18px 12px 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .product-avatar {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            color: #b45309;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(245, 158, 11, 0.15);
+        }
+
+        .product-title-wrap {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-title {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: #0f172a;
+            margin: 0 0 4px 0;
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        .product-subtitle {
+            font-size: 0.78rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .product-allergens-body {
+            padding: 0 18px 14px 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            min-height: 42px;
+            align-content: flex-start;
+        }
+
+        .allergen-pill-mini {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        .allergen-pill-mini i {
+            font-size: 0.70rem;
+        }
+
+        .no-allergens-label {
+            font-size: 0.76rem;
+            color: #94a3b8;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .product-btn-footer {
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .enter-link-text {
+            color: #0284c7;
+            font-weight: 800;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .card-actions-mini {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-card-icon {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #64748b;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .btn-card-icon:hover {
+            color: #ef4444;
+            border-color: #f87171;
+            background: #fef2f2;
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 48px 20px;
+            text-align: center;
+            border: 2px dashed #cbd5e1;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0 0 6px 0;
+        }
+
+        @media (max-width: 640px) {
+            .top-header {
+                padding: 1rem;
+            }
+            .top-header h1 {
+                font-size: 1.3rem;
+            }
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            .create-form-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-create-3d {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert-3d alert-{{ category }}">
+              {% if category == 'success' %}
+                  <i class="fa-solid fa-circle-check"></i>
+              {% elif category == 'danger' %}
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+              {% else %}
+                  <i class="fa-solid fa-circle-info"></i>
+              {% endif %}
+              <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Header 3D -->
+    <header class="top-header">
+        <div class="header-title-box">
+            <div class="header-icon">
+                <i class="fa-solid fa-wheat-awn"></i>
+            </div>
+            <div>
+                <h1>Registro Allergeni</h1>
+                <p>Schede tecniche, ingredienti e allergeni per prodotto</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('produzione') }}" class="btn-3d btn-back-3d">
+                <i class="fa-solid fa-arrow-left"></i> Calendario
+            </a>
+        </div>
+    </header>
+
+    <!-- Card 3D: Crea Nuovo Allergene / Prodotto -->
+    <div class="create-card-3d">
+        <form action="{{ url_for('allergeni_crea') }}" method="POST" class="create-form-row">
+            <div class="create-input-wrapper">
+                <i class="fa-solid fa-cake-candles"></i>
+                <input type="text" name="titolo" id="newProdottoTitolo" class="create-input" 
+                       placeholder="Scrivi il nome del prodotto (es. Pan di spagna, Pasta frolla, Crema...)" 
+                       required autocomplete="off" autofocus>
+            </div>
+            <button type="submit" class="btn-3d btn-create-3d">
+                <i class="fa-solid fa-plus"></i> Crea Scheda Allergene
+            </button>
+        </form>
+    </div>
+
+    <!-- Barra di Ricerca & Contatore -->
+    <div class="search-bar-row">
+        <div class="search-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="filterInput" class="search-input" placeholder="Cerca prodotto..." oninput="filterProducts()">
+        </div>
+        <div class="count-pill">
+            <i class="fa-solid fa-list-check"></i> <span id="countDisplay">{{ totale }}</span> Prodotti Registrati
+        </div>
+    </div>
+
+    <!-- Griglia dei Pulsanti 3D -->
+    <div class="products-grid" id="productsGrid">
+        {% for p in prodotti %}
+        <div class="product-btn-card" data-title="{{ p.titolo|lower }}" onclick="location.href='{{ url_for('allergeni_scheda', id=p.id) }}'">
+            <div class="product-btn-card-header">
+                <div class="product-avatar">
+                    <i class="fa-solid fa-cookie-bite"></i>
+                </div>
+                <div class="product-title-wrap">
+                    <h2 class="product-title">{{ p.titolo }}</h2>
+                    <div class="product-subtitle">
+                        {% if p.allergeni_count > 0 %}
+                            <span style="color:#b45309;font-weight:700;">{{ p.allergeni_count }} allergen{{ 'e' if p.allergeni_count == 1 else 'i' }} presente</span>
+                        {% else %}
+                            <span style="color:#64748b;">Nessun allergene segnato</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-allergens-body">
+                {% if p.allergeni_dettagli %}
+                    {% for a in p.allergeni_dettagli[:4] %}
+                    <span class="allergen-pill-mini" style="border-left: 3px solid {{ a.badge_color }};">
+                        <i class="fa-solid {{ a.icon }}" style="color: {{ a.badge_color }};"></i> {{ a.nome }}
+                    </span>
+                    {% endfor %}
+                    {% if p.allergeni_dettagli|length > 4 %}
+                    <span class="allergen-pill-mini" style="font-weight:800; background:#e2e8f0;">
+                        +{{ p.allergeni_dettagli|length - 4 }} altri
+                    </span>
+                    {% endif %}
+                {% else %}
+                    <div class="no-allergens-label">
+                        <i class="fa-regular fa-pen-to-square"></i> Clicca per compilare la scheda
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="product-btn-footer">
+                <span class="enter-link-text">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Apri e Stampa
+                </span>
+                <div class="card-actions-mini" onclick="event.stopPropagation();">
+                    <a href="{{ url_for('allergeni_elimina', id=p.id) }}" class="btn-card-icon" title="Elimina scheda" 
+                       data-title="{{ p.titolo }}"
+                       onclick="return confirm('Vuoi davvero eliminare la scheda allergeni di ' + this.getAttribute('data-title') + '?');">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-clipboard-question"></i>
+            <h3>Nessun prodotto creato finora</h3>
+            <p>Scrivi il nome di un prodotto nel riquadro in alto (es. <strong>Pan di spagna</strong>) e clicca su <strong>Crea Scheda Allergene</strong> per iniziare.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    function filterProducts() {
+        const query = document.getElementById('filterInput').value.toLowerCase().trim();
+        const cards = document.querySelectorAll('#productsGrid .product-btn-card');
+        let visibleCount = 0;
+        cards.forEach(card => {
+            const title = card.getAttribute('data-title') || '';
+            if (title.includes(query)) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        const countDisplay = document.getElementById('countDisplay');
+        if (countDisplay) {
+            countDisplay.textContent = visibleCount;
+        }
+    }
+</script>
+
+</body>
+</html>
