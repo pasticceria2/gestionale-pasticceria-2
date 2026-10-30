@@ -512,6 +512,145 @@
             opacity: 1;
         }
 
+        /* SEZIONE EVIDENZIATA: RICHIESTE IN ATTESA */
+        .pending-requests-card-3d {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 18px;
+            padding: 16px 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 6px 0 #d97706, 0 10px 20px rgba(245, 158, 11, 0.15);
+        }
+        .pending-requests-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .pending-pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: #d97706;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 rgba(217, 119, 6, 0.4);
+            animation: pulseWarning 1.5s infinite;
+        }
+        @keyframes pulseWarning {
+            0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(217, 119, 6, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+        }
+        .pending-requests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        .pending-item-card-3d {
+            background: #ffffff;
+            border: 1px solid #fde68a;
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 3px 0 #fcd34d;
+        }
+        .pending-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+        .pending-item-name {
+            font-size: 1rem;
+            color: #0f172a;
+        }
+        .pending-item-month-badge {
+            font-size: 0.72rem;
+            font-weight: 800;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 7px;
+            border-radius: 6px;
+            border: 1px solid #fde68a;
+        }
+        .pending-item-body {
+            font-size: 0.82rem;
+            color: #475569;
+            margin-bottom: 10px;
+        }
+        .pending-item-type {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 3px;
+        }
+        .pending-item-dates {
+            font-weight: 600;
+            color: #0369a1;
+            margin-bottom: 4px;
+        }
+        .pending-item-note {
+            font-style: italic;
+            color: #64748b;
+            font-size: 0.78rem;
+            margin-bottom: 2px;
+        }
+        .pending-item-author {
+            font-size: 0.70rem;
+            color: #94a3b8;
+        }
+        .pending-item-actions {
+            display: flex;
+            gap: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #f1f5f9;
+        }
+        .table-filter-pills {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .tbl-filter-pill {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .tbl-filter-pill:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .tbl-filter-pill.active {
+            background: #0284c7;
+            border-color: #0369a1;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);
+        }
+        .tbl-filter-pill .pill-count {
+            background: rgba(0,0,0,0.1);
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 0.70rem;
+        }
+        .tbl-filter-pill.active .pill-count {
+            background: rgba(255,255,255,0.25);
+        }
+        .row-in-attesa {
+            background-color: #fffbeb !important;
+            border-left: 4px solid #f59e0b !important;
+        }
+
         /* Riepilogo Lista Ferie Mese 3D */
         .summary-card {
             background: #ffffff;
@@ -1249,8 +1388,10 @@
     <!-- Top Header 3D -->
     <header class="top-header">
         <div class="header-brand-wrap">
+            <img src="/static/images/icon.png" alt="Logo Pasticceria Schiavoni">
             <div class="header-title">
                 <span>Piano Ferie</span>
+                <small>Pasticceria Schiavoni</small>
             </div>
         </div>
 
@@ -1296,12 +1437,12 @@
         <div class="stat-card-3d">
             <div class="stat-icon icon-palocco"></div>
             <div class="stat-content">
-                <span class="stat-label">Secondo negozio</span>
+                <span class="stat-label">Palocco</span>
                 <span class="stat-number">{{ conteggio_palocco }} <small style="font-size:0.75rem; font-weight:600; color:#64748b;">confermati</small></span>
             </div>
         </div>
 
-        <div class="stat-card-3d">
+        <div class="stat-card-3d" onclick="focusPendingRequests()" style="cursor: pointer;" title="Clicca per visualizzare le richieste in attesa">
             <div class="stat-icon icon-pending">
                 <i class="fa-solid fa-clock"></i>
             </div>
@@ -1321,12 +1462,75 @@
                     <div class="filter-tabs" style="margin-top: 4px;">
                         <a href="?mese={{ mese }}&anno={{ anno }}&sede=tutte" class="filter-tab {% if filtro_sede == 'tutte' %}active{% endif %}">Tutte</a>
                         <a href="?mese={{ mese }}&anno={{ anno }}&sede=ostia" class="filter-tab tab-ostia {% if filtro_sede == 'ostia' %}active{% endif %}">Ostia</a>
-                        <a href="?mese={{ mese }}&anno={{ anno }}&sede=palocco" class="filter-tab tab-palocco {% if filtro_sede in ['palocco', 'secondo negozio'] %}active{% endif %}">Secondo negozio</a>
+                        <a href="?mese={{ mese }}&anno={{ anno }}&sede=palocco" class="filter-tab tab-palocco {% if filtro_sede == 'palocco' %}active{% endif %}">Palocco</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- SEZIONE EVIDENZIATA: RICHIESTE IN ATTESA DI APPROVAZIONE -->
+    {% if richieste_in_attesa and richieste_in_attesa|length > 0 %}
+    <div class="pending-requests-card-3d" id="pendingSectionTop">
+        <div class="pending-requests-header">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span class="pending-pulse-dot"></span>
+                <h3 style="margin:0; font-size:1.1rem; font-weight:800; color:#92400e; display:flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Richieste in Attesa di Approvazione ({{ richieste_in_attesa|length }})
+                </h3>
+            </div>
+            <a href="#vacationTableCard" style="font-size:0.82rem; font-weight:700; color:#b45309; text-decoration:none;" onclick="focusPendingRequests(); return false;">
+                Vedi tutte nella lista &darr;
+            </a>
+        </div>
+        <div class="pending-requests-grid">
+            {% for r in richieste_in_attesa %}
+            <div class="pending-item-card-3d">
+                <div class="pending-item-top">
+                    <div>
+                        <strong class="pending-item-name">{{ r.nome }}</strong>
+                        <span class="badge-sede-{{ r.sede|lower }} mini" style="display:inline-block; margin-left:6px; font-size:0.70rem; padding:2px 6px; border-radius:6px; font-weight:700;">{{ r.sede }}</span>
+                    </div>
+                    <span class="pending-item-month-badge">{{ r.mese_anno_label }}</span>
+                </div>
+                <div class="pending-item-body">
+                    <div class="pending-item-type">
+                        {% if r.tipo_evento == 'giorno_libero' %}
+                            <i class="fa-solid fa-clock" style="color:#d97706;"></i> Giorno con Orario {% if r.orario_richiesto %}<strong>({{ r.orario_richiesto }})</strong>{% endif %}
+                        {% elif r.tipo_evento == 'malattia' %}
+                            <i class="fa-solid fa-head-side-cough" style="color:#c2410c;"></i> Malattia
+                        {% else %}
+                            <i class="fa-solid fa-umbrella-beach" style="color:#0284c7;"></i> Ferie
+                        {% endif %}
+                    </div>
+                    <div class="pending-item-dates">
+                        <i class="fa-regular fa-calendar" style="color:#0284c7;"></i> {{ r.data_inizio_it }} {% if r.data_inizio_it != r.data_fine_it %}&rarr; {{ r.data_fine_it }}{% endif %}
+                    </div>
+                    {% if r.note %}
+                    <div class="pending-item-note">"{{ r.note }}"</div>
+                    {% endif %}
+                    {% if r.creato_da %}
+                    <div class="pending-item-author">Inserito da: {{ r.creato_da }}</div>
+                    {% endif %}
+                </div>
+                {% if can_manage_ferie %}
+                <div class="pending-item-actions">
+                    <a href="{{ url_for('conferma_piano_ferie', id=r.id, mese=mese, anno=anno) }}" 
+                       class="btn-action-3d btn-action-confirm" style="flex:1; justify-content:center; text-decoration:none;" title="Approva richiesta">
+                        <i class="fa-solid fa-check"></i> Approva
+                    </a>
+                    <a href="{{ url_for('rifiuta_piano_ferie', id=r.id, mese=mese, anno=anno) }}" 
+                       class="btn-action-3d btn-action-deny" style="flex:1; justify-content:center; text-decoration:none;" title="Non Approvare"
+                       onclick="return confirm('Segnare come NON APPROVATO la richiesta di {{ r.nome }}?');">
+                        <i class="fa-solid fa-xmark"></i> Non Approvato
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Calendario Ferie 3D -->
     <div class="calendar-card">
@@ -1391,16 +1595,40 @@
         </div>
     </div>
 
-    <!-- Riepilogo Tabella / Elenco Ferie del Mese -->
-    <div class="summary-card">
+    <!-- Riepilogo Tabella / Registro Richieste Completo -->
+    <div class="summary-card" id="vacationTableCard">
         <div class="summary-header">
-            <h3 class="summary-title">
-                <i class="fa-solid fa-calendar-check" style="color: #0284c7;"></i>
-                Elenco Ferie di {{ mese_nome }} {{ anno }}
-            </h3>
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8;"></i>
-                <input type="text" id="vacationSearch" placeholder="Cerca dipendente, sede o stato..." onkeyup="filterVacations()">
+            <div>
+                <h3 class="summary-title">
+                    <i class="fa-solid fa-list-check" style="color: #0284c7;"></i>
+                    Registro Richieste (Ferie, Cambi Turno, Malattia)
+                </h3>
+                <span style="font-size: 0.8rem; color: #64748b; font-weight: 600;">
+                    Tutte le richieste registrate su qualsiasi mese • Le richieste in attesa sono in cima
+                </span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <div class="table-filter-pills">
+                    <button type="button" class="tbl-filter-pill active" onclick="filterByStatus('all', this)">
+                        Tutte <span class="pill-count">{{ elenco_ferie_mese|length }}</span>
+                    </button>
+                    <button type="button" class="tbl-filter-pill pill-warning" onclick="filterByStatus('attesa', this)">
+                        In Attesa <span class="pill-count">{{ richieste_in_attesa|length }}</span>
+                    </button>
+                    <button type="button" class="tbl-filter-pill pill-month" onclick="filterByStatus('mese-corrente', this)">
+                        Mese di {{ mese_nome }}
+                    </button>
+                    <button type="button" class="tbl-filter-pill pill-success" onclick="filterByStatus('confermato', this)">
+                        Confermate
+                    </button>
+                    <button type="button" class="tbl-filter-pill pill-danger" onclick="filterByStatus('rifiutato', this)">
+                        Non Approvate
+                    </button>
+                </div>
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8;"></i>
+                    <input type="text" id="vacationSearch" placeholder="Cerca dipendente, sede o stato..." onkeyup="filterVacations()">
+                </div>
             </div>
         </div>
 
@@ -1423,7 +1651,11 @@
                     {% set can_delete = can_manage_ferie or (curr_username and curr_username == f_creator) or not f_creator %}
                     {% set is_gl = f.tipo_evento == 'giorno_libero' %}
                     {% set is_malattia = f.tipo_evento == 'malattia' %}
-                    <tr class="v-row" data-search="{{ f.nome|lower }} {{ f.sede|lower }} {{ 'giorno con orario' if is_gl else ('malattia' if is_malattia else 'ferie') }} {{ 'confermato' if f.confermato else 'attesa' }} {{ f.note|lower if f.note else '' }}">
+                    {% set status_code = 'rifiutato' if f.rifiutato else ('confermato' if f.confermato else 'attesa') %}
+                    <tr class="v-row {% if status_code == 'attesa' %}row-in-attesa{% endif %}" 
+                        data-status="{{ status_code }}"
+                        data-in-mese="{{ 'true' if f.in_mese_corrente else 'false' }}"
+                        data-search="{{ f.nome|lower }} {{ f.sede|lower }} {{ f.mese_nome|lower }} {{ f.data_inizio_it }} {{ f.data_fine_it }} {{ 'giorno con orario' if is_gl else ('malattia' if is_malattia else 'ferie') }} {{ status_code }} {{ f.note|lower if f.note else '' }}">
                         <td data-label="Dipendente">
                             <strong style="color: #0f172a; font-size: 0.95rem;">{{ f.nome }}</strong>
                             {% if f.creato_da %}
@@ -1452,13 +1684,20 @@
                             </span>
                             {% else %}
                             <span class="badge-sede-palocco">
-                                <i class="fa-solid fa-location-dot"></i> Secondo negozio
+                                <i class="fa-solid fa-location-dot"></i> Palocco
                             </span>
                             {% endif %}
                         </td>
                         <td data-label="Periodo">
-                            <i class="fa-regular fa-calendar" style="color: #64748b; margin-right: 4px;"></i>
-                            {{ f.data_inizio_it }} &rarr; {{ f.data_fine_it }}
+                            <div style="font-weight:700; color:#1e293b;">
+                                <i class="fa-regular fa-calendar" style="color: #64748b; margin-right: 4px;"></i>
+                                {{ f.data_inizio_it }}{% if f.data_inizio_it != f.data_fine_it %} &rarr; {{ f.data_fine_it }}{% endif %}
+                            </div>
+                            {% if f.mese_anno_label %}
+                            <span class="badge-mese-richiesta" style="font-size:0.72rem; font-weight:700; color:#475569; background:#f1f5f9; padding:2px 6px; border-radius:4px; display:inline-block; margin-top:2px;">
+                                {{ f.mese_anno_label }}
+                            </span>
+                            {% endif %}
                         </td>
                         <td data-label="Stato">
                             {% if f.rifiutato %}
@@ -1526,10 +1765,10 @@
                         </td>
                     </tr>
                     {% else %}
-                    <tr>
+                    <tr class="empty-row">
                         <td colspan="7" style="text-align: center; color: #94a3b8; padding: 24px;">
                             <i class="fa-solid fa-umbrella-beach" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
-                            Nessuna richiesta registrata in questo mese. Clicca su un giorno o su "+ Inserisci Richiesta" per aggiungere.
+                            Nessuna richiesta registrata. Clicca su un giorno o su "+ Inserisci Richiesta" per aggiungere.
                         </td>
                     </tr>
                     {% endfor %}
@@ -1587,9 +1826,9 @@
                         </div>
                     </label>
                     <label class="sede-option sede-option-palocco">
-                        <input type="radio" name="sede" value="Secondo negozio">
+                        <input type="radio" name="sede" value="Palocco">
                         <div class="sede-btn-3d">
-                            Secondo negozio
+                            Palocco
                         </div>
                     </label>
                 </div>
@@ -1706,9 +1945,9 @@
                         </div>
                     </label>
                     <label class="sede-option sede-option-palocco">
-                        <input type="radio" name="sede" value="Secondo negozio" id="editSedePalocco">
+                        <input type="radio" name="sede" value="Palocco" id="editSedePalocco">
                         <div class="sede-btn-3d">
-                            Secondo negozio
+                            Palocco
                         </div>
                     </label>
                 </div>
@@ -2002,13 +2241,58 @@
         }
     });
 
+    let currentStatusFilter = 'all';
+
+    function filterByStatus(status, btn) {
+        currentStatusFilter = status;
+        document.querySelectorAll('.tbl-filter-pill').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        applyCombinedFilter();
+    }
+
     function filterVacations() {
-        const query = document.getElementById('vacationSearch').value.toLowerCase().trim();
+        applyCombinedFilter();
+    }
+
+    function applyCombinedFilter() {
+        const query = (document.getElementById('vacationSearch')?.value || '').toLowerCase().trim();
         const rows = document.querySelectorAll('#vacationTable tbody tr.v-row');
+        let visibleCount = 0;
+
         rows.forEach(r => {
             const text = r.getAttribute('data-search') || '';
-            r.style.display = text.includes(query) ? '' : 'none';
+            const status = r.getAttribute('data-status') || '';
+            const inMese = r.getAttribute('data-in-mese') === 'true';
+
+            let matchesStatus = true;
+            if (currentStatusFilter === 'attesa') {
+                matchesStatus = (status === 'attesa');
+            } else if (currentStatusFilter === 'confermato') {
+                matchesStatus = (status === 'confermato');
+            } else if (currentStatusFilter === 'rifiutato') {
+                matchesStatus = (status === 'rifiutato');
+            } else if (currentStatusFilter === 'mese-corrente') {
+                matchesStatus = inMese;
+            }
+
+            const matchesQuery = !query || text.includes(query);
+
+            if (matchesStatus && matchesQuery) {
+                r.style.display = '';
+                visibleCount++;
+            } else {
+                r.style.display = 'none';
+            }
         });
+    }
+
+    function focusPendingRequests() {
+        const tableCard = document.getElementById('vacationTableCard');
+        if (tableCard) {
+            tableCard.scrollIntoView({ behavior: 'smooth' });
+            const attesaBtn = document.querySelector('.tbl-filter-pill.pill-warning');
+            if (attesaBtn) filterByStatus('attesa', attesaBtn);
+        }
     }
 </script>
 

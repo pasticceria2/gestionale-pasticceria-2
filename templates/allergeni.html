@@ -521,6 +521,7 @@
     </header>
 
     <!-- Card 3D: Crea Nuovo Allergene / Prodotto -->
+    {% if can_edit_allergeni %}
     <div class="create-card-3d">
         <form action="{{ url_for('allergeni_crea') }}" method="POST" class="create-form-row">
             <div class="create-input-wrapper">
@@ -534,6 +535,7 @@
             </button>
         </form>
     </div>
+    {% endif %}
 
     <!-- Barra di Ricerca & Contatore -->
     <div class="search-bar-row">
@@ -587,8 +589,9 @@
 
             <div class="product-btn-footer">
                 <span class="enter-link-text">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Apri e Stampa
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> {% if can_edit_allergeni %}Modifica e Stampa{% else %}Visualizza e Stampa{% endif %}
                 </span>
+                {% if can_delete_allergeni %}
                 <div class="card-actions-mini" onclick="event.stopPropagation();">
                     <a href="{{ url_for('allergeni_elimina', id=p.id) }}" class="btn-card-icon" title="Elimina scheda" 
                        data-title="{{ p.titolo }}"
@@ -596,13 +599,18 @@
                         <i class="fa-solid fa-trash"></i>
                     </a>
                 </div>
+                {% endif %}
             </div>
         </div>
         {% else %}
         <div class="empty-state">
             <i class="fa-solid fa-clipboard-question"></i>
             <h3>Nessun prodotto creato finora</h3>
+            {% if can_edit_allergeni %}
             <p>Scrivi il nome di un prodotto nel riquadro in alto (es. <strong>Pan di spagna</strong>) e clicca su <strong>Crea Scheda Allergene</strong> per iniziare.</p>
+            {% else %}
+            <p>Al momento non ci sono schede registrate nel catalogo allergeni.</p>
+            {% endif %}
         </div>
         {% endfor %}
     </div>

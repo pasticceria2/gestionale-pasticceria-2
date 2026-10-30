@@ -374,6 +374,21 @@
             color: #ffffff;
         }
 
+        .allergen-toggle-btn.is-readonly {
+            cursor: default;
+            pointer-events: none;
+        }
+        .allergen-toggle-btn.is-readonly:hover {
+            transform: none;
+            box-shadow: 0 3px 0 #cbd5e1;
+            border-color: #cbd5e1;
+        }
+        .allergen-toggle-btn.is-readonly.is-active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 #d97706;
+            border-color: #f59e0b;
+        }
+
         /* Footer Salva */
         .form-footer-actions {
             display: flex;
@@ -571,7 +586,7 @@
             </div>
             <div>
                 <h1>{{ p.titolo }}</h1>
-                <p>Compila gli allergeni e gli ingredienti, poi stampa la scheda</p>
+                <p>{% if can_edit_allergeni %}Compila gli allergeni e gli ingredienti, poi stampa la scheda{% else %}Visualizzazione scheda tecnica allergeni e ingredienti{% endif %}</p>
             </div>
         </div>
         <div class="header-actions">
@@ -639,6 +654,14 @@
         <span>Stampato il: <script>document.write(new Date().toLocaleDateString('it-IT'))</script></span>
     </div>
 
+    <!-- Banner sola lettura se non autorizzato a modificare -->
+    {% if not can_edit_allergeni %}
+    <div class="alert-3d alert-warning no-print" style="margin-bottom: 20px;">
+        <i class="fa-solid fa-lock"></i>
+        <span><strong>Modalità sola lettura:</strong> Chiedi all'amministratore del sistema. Puoi consultare i dettagli o stampare la scheda.</span>
+    </div>
+    {% endif %}
+
     <!-- FORM DI MODIFICA INTERATTIVO (A Schermo) -->
     <form action="{{ url_for('allergeni_salva', id=p.id) }}" method="POST" id="allergeniForm" class="no-print">
         
@@ -647,16 +670,19 @@
                 <h2 class="section-title">
                     <i class="fa-solid fa-pen-to-square" style="color:#0284c7;"></i> Nome del Prodotto
                 </h2>
+                {% if can_delete_allergeni %}
                 <a href="{{ url_for('allergeni_elimina', id=p.id) }}" class="btn-3d btn-del-3d" 
                    onclick="return confirm('Eliminare definitivamente questa scheda prodotto?');">
                     <i class="fa-solid fa-trash"></i> Elimina Scheda
                 </a>
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label class="form-label" for="titoloInput">Titolo / Nome Dolce o Preparazione:</label>
                 <input type="text" name="titolo" id="titoloInput" class="form-input form-input-lg" 
-                       value="{{ p.titolo }}" required autocomplete="off">
+                       value="{{ p.titolo }}" required autocomplete="off"
+                       {% if not can_edit_allergeni %}readonly style="background:#f1f5f9; cursor:default;"{% endif %}>
             </div>
         </div>
 
@@ -666,18 +692,22 @@
                     <h2 class="section-title">
                         <i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b;"></i> I 14 Allergeni (Regolamento UE 1169/2011)
                     </h2>
-                    <span style="font-size:0.82rem; color:#64748b;">Clicca sui pulsanti per attivare o disattivare gli allergeni contenuti</span>
+                    <span style="font-size:0.82rem; color:#64748b;">
+                        {% if can_edit_allergeni %}Clicca sui pulsanti per attivare o disattivare gli allergeni contenuti{% else %}Allergeni evidenziati se presenti nel prodotto{% endif %}
+                    </span>
                 </div>
+                {% if can_edit_allergeni %}
                 <button type="button" class="btn-3d" style="background:#e0f2fe;color:#0369a1;padding:6px 12px;font-size:0.75rem;" onclick="resetAllergeni()">
                     Deseleziona Tutti
                 </button>
+                {% endif %}
             </div>
 
             <div class="allergens-selection-grid">
                 {% for a in allergeni %}
-                <label class="allergen-toggle-btn {% if a.attivo %}is-active{% endif %}" id="btn_allergen_{{ a.id }}">
+                <label class="allergen-toggle-btn {% if a.attivo %}is-active{% endif %} {% if not can_edit_allergeni %}is-readonly{% endif %}" id="btn_allergen_{{ a.id }}">
                     <input type="checkbox" name="allergeni" value="{{ a.id }}" {% if a.attivo %}checked{% endif %} 
-                           onchange="handleToggle(this, 'btn_allergen_{{ a.id }}')">
+                           {% if can_edit_allergeni %}onchange="handleToggle(this, 'btn_allergen_{{ a.id }}')"{% else %}disabled{% endif %}>
                     
                     <div class="allergen-icon-box">
                         <i class="fa-solid {{ a.icon }}"></i>
@@ -705,34 +735,43 @@
 
             <div class="form-group">
                 <label class="form-label" for="ingredientiInput">Elenco Completo degli Ingredienti:</label>
-                <textarea name="ingredienti" id="ingredientiInput" class="form-textarea" style="min-height: 130px;" 
+                <textarea name="ingredienti" id="ingredientiInput" class="form-textarea" style="min-height: 130px;{% if not can_edit_allergeni %} background:#f1f5f9; cursor:default;{% endif %}" 
+                          {% if not can_edit_allergeni %}readonly{% endif %}
                           placeholder="Es. Farina di grano tenero tipo 00, uova fresche pastorizzate, zucchero semolato, fecola di patate, lievito in polvere, aromi naturali (vaniglia, limone)...">{{ p.ingredienti }}</textarea>
-                <small style="color:#64748b;font-size:0.78rem;">Consiglio: elenca gli ingredienti in ordine decrescente di peso come previsto per legge.</small>
+                {% if can_edit_allergeni %}<small style="color:#64748b;font-size:0.78rem;">Consiglio: elenca gli ingredienti in ordine decrescente di peso come previsto per legge.</small>{% endif %}
             </div>
 
             <div class="form-group">
                 <label class="form-label" for="tracceInput">Possibili Tracce di Allergeni (Contaminazione Crociata):</label>
-                <textarea name="tracce" id="tracceInput" class="form-textarea" style="min-height: 70px;" 
+                <textarea name="tracce" id="tracceInput" class="form-textarea" style="min-height: 70px;{% if not can_edit_allergeni %} background:#f1f5f9; cursor:default;{% endif %}" 
+                          {% if not can_edit_allergeni %}readonly{% endif %}
                           placeholder="Es. Prodotto in un laboratorio che fa uso di frutta a guscio, sesamo, soia e derivati del latte...">{{ p.tracce }}</textarea>
             </div>
 
             <div class="form-group" style="margin-bottom: 24px;">
                 <label class="form-label" for="noteInput">Note Aggiuntive / Modalità di Conservazione:</label>
-                <textarea name="note" id="noteInput" class="form-textarea" style="min-height: 70px;" 
+                <textarea name="note" id="noteInput" class="form-textarea" style="min-height: 70px;{% if not can_edit_allergeni %} background:#f1f5f9; cursor:default;{% endif %}" 
+                          {% if not can_edit_allergeni %}readonly{% endif %}
                           placeholder="Es. Conservare in luogo fresco e asciutto. Consumare entro 3 giorni dalla produzione...">{{ p.note }}</textarea>
             </div>
 
             <div class="form-footer-actions">
                 <a href="{{ url_for('allergeni_index') }}" class="btn-3d btn-back-3d">
-                    <i class="fa-solid fa-xmark"></i> Annulla
+                    <i class="fa-solid fa-arrow-left"></i> {% if can_edit_allergeni %}Annulla{% else %}Torna all'Elenco{% endif %}
                 </a>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    {% if can_edit_allergeni %}
                     <button type="button" class="btn-3d btn-print-3d" onclick="saveAndPrint()">
                         <i class="fa-solid fa-print"></i> Salva e Stampa
                     </button>
                     <button type="submit" class="btn-3d btn-save-3d">
                         <i class="fa-solid fa-floppy-disk"></i> Salva Scheda
                     </button>
+                    {% else %}
+                    <button type="button" class="btn-3d btn-print-3d" onclick="window.print()">
+                        <i class="fa-solid fa-print"></i> Stampa Scheda
+                    </button>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -56,6 +56,9 @@ def inject_user_context():
     # Default is_schiavoni è True se non specificato altrimenti
     is_schiavoni = perms.get('is_schiavoni', True)
     ferie_in_attesa_count = 0
+    curr_username = (session.get('username') or '').strip().lower()
+    can_edit_allergeni = curr_username in ['claudia', 'emanuele']
+    can_delete_allergeni = curr_username == 'emanuele'
     if 'user_id' in session:
         try:
             conn = get_db_connection()
@@ -68,7 +71,14 @@ def inject_user_context():
                 ferie_in_attesa_count = row['c'] or 0
         except Exception:
             pass
-    return dict(is_schiavoni=is_schiavoni, user_permissions=perms, ferie_in_attesa_count=ferie_in_attesa_count)
+    return dict(
+        is_schiavoni=is_schiavoni,
+        user_permissions=perms,
+        ferie_in_attesa_count=ferie_in_attesa_count,
+        curr_username=curr_username,
+        can_edit_allergeni=can_edit_allergeni,
+        can_delete_allergeni=can_delete_allergeni
+    )
 
 # --- DECORATORI E FUNZIONI DI UTILITÀ PER L'AUTENTICAZIONE ---
 
@@ -1899,6 +1909,21 @@ def piano_ferie():
     """, (max_date, min_date))
     ferie_all = cur.fetchall()
 
+    # Query TUTTE le richieste da mostrare nell'elenco
+    cur.execute("""
+        SELECT * FROM piano_ferie 
+        ORDER BY 
+            CASE WHEN NOT COALESCE(confermato, FALSE) AND NOT COALESCE(rifiutato, FALSE) THEN 0 ELSE 1 END,
+            data_inizio DESC,
+            nome ASC
+    """)
+    tutte_ferie_raw = cur.fetchall()
+
+    # Conteggio totale richieste in attesa (su tutti i mesi)
+    cur.execute("SELECT COUNT(*) AS c FROM piano_ferie WHERE confermato = FALSE AND COALESCE(rifiutato, FALSE) = FALSE")
+    row_attesa = cur.fetchone()
+    conteggio_attesa_totale = (row_attesa['c'] or 0) if row_attesa else 0
+
     cur.execute("SELECT DISTINCT nome FROM piano_ferie ORDER BY nome ASC")
     dipendenti_rows = cur.fetchall()
     dipendenti_suggeriti = [r['nome'] for r in dipendenti_rows if r.get('nome')]
@@ -1981,10 +2006,17 @@ def piano_ferie():
 
     first_day_month = date(anno, mese, 1)
     last_day_month = date(anno, mese, calendar.monthrange(anno, mese)[1])
-    ferie_mese_raw = [f for f in ferie_all if not (f['data_fine'] < first_day_month or f['data_inizio'] > last_day_month)]
-    
-    ferie_mese_list = []
-    for f in ferie_mese_raw:
+
+    mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]
+
+    if filtro_sede in ['ostia', 'palocco', 'secondo negozio']:
+        elenco_raw = [f for f in tutte_ferie_raw if (f['sede'].strip().lower() in ['palocco', 'secondo negozio'] if filtro_sede in ['palocco', 'secondo negozio'] else f['sede'].strip().lower() == filtro_sede)]
+    else:
+        elenco_raw = tutte_ferie_raw
+
+    elenco_richieste = []
+    richieste_in_attesa = []
+    for f in elenco_raw:
         f_dict = dict(f)
         f_dict['confermato'] = bool(f.get('confermato', False))
         f_dict['confermato_da'] = f.get('confermato_da') or ''
@@ -1997,9 +2029,24 @@ def piano_ferie():
         f_dict['orario_richiesto'] = f.get('orario_richiesto') or ''
         f_dict['rifiutato'] = bool(f.get('rifiutato', False))
         f_dict['rifiutato_da'] = f.get('rifiutato_da') or ''
-        ferie_mese_list.append(f_dict)
+        
+        d_start = f['data_inizio']
+        d_end = f['data_fine']
+        f_dict['in_mese_corrente'] = not (d_end < first_day_month or d_start > last_day_month)
+        if hasattr(d_start, 'month'):
+            f_dict['mese_nome'] = mesi[d_start.month - 1]
+            f_dict['mese_anno_label'] = f"{mesi[d_start.month - 1]} {d_start.year}"
+            f_dict['richiesta_mese'] = d_start.month
+            f_dict['richiesta_anno'] = d_start.year
+        else:
+            f_dict['mese_nome'] = ''
+            f_dict['mese_anno_label'] = ''
+            f_dict['richiesta_mese'] = mese
+            f_dict['richiesta_anno'] = anno
 
-    mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]
+        elenco_richieste.append(f_dict)
+        if not f_dict['confermato'] and not f_dict['rifiutato']:
+            richieste_in_attesa.append(f_dict)
 
     return render_template(
         'piano_ferie.html',
@@ -2015,8 +2062,10 @@ def piano_ferie():
         filtro_sede=filtro_sede,
         conteggio_ostia=len(conteggio_ostia_mese),
         conteggio_palocco=len(conteggio_palocco_mese),
-        conteggio_attesa=len(conteggio_in_attesa_mese),
-        elenco_ferie_mese=ferie_mese_list,
+        conteggio_attesa=conteggio_attesa_totale,
+        elenco_ferie_mese=elenco_richieste,
+        elenco_richieste=elenco_richieste,
+        richieste_in_attesa=richieste_in_attesa,
         dipendenti_suggeriti=dipendenti_suggeriti,
         can_manage_ferie=can_manage_ferie,
         curr_username=curr_username
@@ -3838,6 +3887,9 @@ ALLERGENI_DICT = {a['id']: a for a in ALLERGENI_DEFINIZIONI}
 def allergeni_index():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    curr_user = (session.get('username') or '').strip().lower()
+    can_edit_allergeni = curr_user in ['claudia', 'emanuele']
+    can_delete_allergeni = curr_user == 'emanuele'
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -3876,16 +3928,24 @@ def allergeni_index():
             p['allergeni_dettagli'] = [ALLERGENI_DICT[aid] for aid in all_list if aid in ALLERGENI_DICT]
             p['allergeni_count'] = len(p['allergeni_dettagli'])
             prodotti.append(p)
-        return render_template('allergeni.html', prodotti=prodotti, totale=len(prodotti))
+        return render_template('allergeni.html', prodotti=prodotti, totale=len(prodotti),
+                               can_edit_allergeni=can_edit_allergeni,
+                               can_delete_allergeni=can_delete_allergeni)
     except Exception as e:
         print(f"Errore caricamento allergeni: {e}")
         flash("Errore nel caricamento del registro allergeni.", "danger")
-        return render_template('allergeni.html', prodotti=[], totale=0)
+        return render_template('allergeni.html', prodotti=[], totale=0,
+                               can_edit_allergeni=can_edit_allergeni,
+                               can_delete_allergeni=can_delete_allergeni)
 
 @app.route('/allergeni/crea', methods=['POST'])
 def allergeni_crea():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    curr_user = (session.get('username') or '').strip().lower()
+    if curr_user not in ['claudia', 'emanuele']:
+        flash("Non hai i permessi per creare o modificare gli allergeni. Solo Claudia ed Emanuele possono farlo.", "danger")
+        return redirect(url_for('allergeni_index'))
     titolo = (request.form.get('titolo') or '').strip()
     if not titolo:
         flash("Inserisci il nome del prodotto (es. Pan di spagna).", "warning")
@@ -3914,6 +3974,9 @@ def allergeni_crea():
 def allergeni_scheda(id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    curr_user = (session.get('username') or '').strip().lower()
+    can_edit_allergeni = curr_user in ['claudia', 'emanuele']
+    can_delete_allergeni = curr_user == 'emanuele'
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -3943,7 +4006,9 @@ def allergeni_scheda(id):
             item['attivo'] = (a['id'] in selected_ids)
             allergeni_view.append(item)
 
-        return render_template('allergeni_scheda.html', p=p, allergeni=allergeni_view, allergeni_def=ALLERGENI_DEFINIZIONI)
+        return render_template('allergeni_scheda.html', p=p, allergeni=allergeni_view, allergeni_def=ALLERGENI_DEFINIZIONI,
+                               can_edit_allergeni=can_edit_allergeni,
+                               can_delete_allergeni=can_delete_allergeni)
     except Exception as e:
         print(f"Errore lettura scheda allergene: {e}")
         flash("Errore nel caricamento della scheda.", "danger")
@@ -3953,6 +4018,11 @@ def allergeni_scheda(id):
 def allergeni_salva(id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    curr_user = (session.get('username') or '').strip().lower()
+    if curr_user not in ['claudia', 'emanuele']:
+        flash("Non hai i permessi per modificare le schede allergeni. Solo Claudia ed Emanuele possono farlo.", "danger")
+        return redirect(url_for('allergeni_scheda', id=id))
+
     titolo = (request.form.get('titolo') or '').strip()
     ingredienti = (request.form.get('ingredienti') or '').strip()
     tracce = (request.form.get('tracce') or '').strip()
@@ -3990,6 +4060,10 @@ def allergeni_salva(id):
 def allergeni_elimina(id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    curr_user = (session.get('username') or '').strip().lower()
+    if curr_user != 'emanuele':
+        flash("Non hai i permessi per eliminare le schede allergeni. Solo l'utente Emanuele può farlo.", "danger")
+        return redirect(url_for('allergeni_index'))
     try:
         conn = get_db_connection()
         cur = conn.cursor()
