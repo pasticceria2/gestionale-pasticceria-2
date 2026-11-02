@@ -174,7 +174,95 @@
             animation: slideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* PANNELLO 3D: FOTO ALLEGATA */
+        /* PANNELLO 3D: FOTO ALLEGATA (TENDINA) */
+        .sezione-foto-container {
+            margin-bottom: 22px;
+        }
+        .foto-tendina-toggle {
+            background: linear-gradient(145deg, #faf5ff 0%, #f3e8ff 100%);
+            border: 2px solid #d8b4fe;
+            border-radius: 16px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 0.9),
+                0 4px 0 #c084fc,
+                0 6px 14px rgba(168, 85, 247, 0.14);
+            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .foto-tendina-toggle:hover {
+            transform: translateY(-2px);
+            border-color: #c084fc;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255, 255, 255, 1),
+                0 6px 0 #c084fc,
+                0 10px 18px rgba(168, 85, 247, 0.22);
+        }
+        .foto-tendina-toggle:active {
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 3px rgba(0,0,0,0.1), 0 1px 0 #c084fc;
+        }
+        .foto-tendina-toggle.is-open {
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+            box-shadow: inset 0 2px 2px rgba(0,0,0,0.04), 0 2px 0 #c084fc;
+        }
+        .foto-tendina-toggle .toggle-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            color: #6b21a8;
+            font-size: 0.96rem;
+            font-family: 'Outfit', 'Inter', sans-serif;
+        }
+        .foto-tendina-toggle .toggle-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.84rem;
+            color: #7e22ce;
+        }
+        .foto-tendina-toggle .toggle-action i {
+            transition: transform 0.25s ease;
+        }
+        .foto-tendina-toggle.is-open .toggle-action i {
+            transform: rotate(180deg);
+        }
+        .foto-badge-attached {
+            background: #10b981;
+            color: #ffffff;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            letter-spacing: 0.02em;
+        }
+        .sezione-foto-collapsible {
+            background: linear-gradient(145deg, #faf5ff 0%, #f3e8ff 100%);
+            border: 2px solid #d8b4fe;
+            border-top: none;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+            padding: 18px;
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.8),
+                0 4px 0 #c084fc,
+                0 10px 20px -3px rgba(168, 85, 247, 0.16);
+            animation: slideDownFade 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes slideDownFade {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .sezione-foto {
             background: linear-gradient(145deg, #faf5ff 0%, #f3e8ff 100%); 
             padding: 18px; 
@@ -612,7 +700,8 @@
                 flex-direction: column;
                 gap: 12px;
             }
-            .sezione-foto .row {
+            .sezione-foto .row,
+            .sezione-foto-collapsible .row {
                 flex-direction: column !important;
             }
             .sezione-pagamento .row {
@@ -748,31 +837,47 @@
                 <textarea name="descrizione" rows="2" placeholder="Es: Scritta 'Buon Compleanno Marco' in cioccolato fondente"></textarea>
             </div>
 
-            <!-- Sezione Allegato Foto e Descrizione Foto 3D -->
-            <div class="sezione-foto">
-                <label style="color: #6b21a8; font-weight: 800; margin-bottom: 12px; font-size: 0.85rem;">
-                    Allegato Foto & Descrizione Decorazione
-                </label>
-                <div class="row" style="margin-bottom: 0;">
-                    <div style="flex: 1;">
-                        <label style="color: #7e22ce;">Carica Foto</label>
-                        <div class="file-input-wrap">
-                            <label class="file-input-3d" id="fotoLabel">
-                                <span>📎</span>
-                                <span>Scegli foto...</span>
-                                <span class="file-name" id="fotoNome"></span>
-                            </label>
-                            <input type="file" name="foto" id="fotoInput" accept="image/*" onchange="previewImage(event); aggiornaLabelFoto(this);">
-                        </div>
-                        <div id="fotoPreviewContainer" style="margin-top: 12px; display: none; text-align: center; position: relative;">
-                            <img id="fotoPreview" src="" alt="Anteprima Foto">
-                            <br>
-                            <button type="button" onclick="clearImagePreview()" class="btn-red-3d" style="margin-top: 10px;">Rimuovi foto</button>
-                        </div>
+            <!-- Sezione Allegato Foto e Descrizione Foto 3D (Menu a tendina) -->
+            <div class="sezione-foto-container">
+                <div class="foto-tendina-toggle" onclick="toggleFotoSection()" id="fotoToggleBtn">
+                    <div class="toggle-title">
+                        <i class="fa-solid fa-camera" style="color: #9333ea; font-size: 1.15rem;"></i>
+                        <span>Foto & Descrizione</span>
+                        <span id="fotoToggleBadge" class="foto-badge-attached" style="display: none;">
+                            <i class="fa-solid fa-check"></i> Foto inserita
+                        </span>
                     </div>
-                    <div style="flex: 1;">
-                        <label style="color: #7e22ce;">Note sulla Foto</label>
-                        <textarea name="foto_descrizione" rows="4" placeholder="Note specifiche sulla foto (es: riferimento decorazione, colori torta, dettagli logo)..." style="background: #ffffff;"></textarea>
+                    <div class="toggle-action">
+                        <span id="fotoToggleLabelText">Inserisci foto e descrizione</span>
+                        <i class="fa-solid fa-chevron-down" id="fotoChevron"></i>
+                    </div>
+                </div>
+
+                <div class="sezione-foto-collapsible" id="sezioneFotoCorpo" style="display: none;">
+                    <label style="color: #6b21a8; font-weight: 800; margin-bottom: 12px; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-camera-retro"></i> Inserisci foto e descrizione
+                    </label>
+                    <div class="row" style="margin-bottom: 0;">
+                        <div style="flex: 1;">
+                            <label style="color: #7e22ce;">Carica Foto</label>
+                            <div class="file-input-wrap">
+                                <label class="file-input-3d" id="fotoLabel">
+                                    <span>📎</span>
+                                    <span>Scegli foto...</span>
+                                    <span class="file-name" id="fotoNome"></span>
+                                </label>
+                                <input type="file" name="foto" id="fotoInput" accept="image/*" onchange="previewImage(event); aggiornaLabelFoto(this);">
+                            </div>
+                            <div id="fotoPreviewContainer" style="margin-top: 12px; display: none; text-align: center; position: relative;">
+                                <img id="fotoPreview" src="" alt="Anteprima Foto">
+                                <br>
+                                <button type="button" onclick="clearImagePreview()" class="btn-red-3d" style="margin-top: 10px;">Rimuovi foto</button>
+                            </div>
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="color: #7e22ce;">Note sulla Foto</label>
+                            <textarea name="foto_descrizione" rows="4" placeholder="Note specifiche sulla foto (es: riferimento decorazione, colori torta, dettagli logo)..." style="background: #ffffff;"></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -830,6 +935,22 @@
     </div>
 
     <script>
+        function toggleFotoSection() {
+            const corpo = document.getElementById('sezioneFotoCorpo');
+            const btn = document.getElementById('fotoToggleBtn');
+            const label = document.getElementById('fotoToggleLabelText');
+            if (!corpo) return;
+            if (corpo.style.display === 'none' || corpo.style.display === '') {
+                corpo.style.display = 'block';
+                if (btn) btn.classList.add('is-open');
+                if (label) label.textContent = 'Chiudi';
+            } else {
+                corpo.style.display = 'none';
+                if (btn) btn.classList.remove('is-open');
+                if (label) label.textContent = 'Inserisci foto e descrizione';
+            }
+        }
+
         function previewImage(event) {
             const input = event.target;
             const previewContainer = document.getElementById('fotoPreviewContainer');
@@ -841,6 +962,8 @@
                     previewContainer.style.display = 'block';
                 }
                 reader.readAsDataURL(input.files[0]);
+                const badge = document.getElementById('fotoToggleBadge');
+                if (badge) badge.style.display = 'inline-flex';
             }
         }
 
@@ -853,6 +976,8 @@
             previewContainer.style.display = 'none';
             const nomeEl = document.getElementById('fotoNome');
             if (nomeEl) nomeEl.textContent = '';
+            const badge = document.getElementById('fotoToggleBadge');
+            if (badge) badge.style.display = 'none';
         }
 
         function aggiornaLabelFoto(input) {
