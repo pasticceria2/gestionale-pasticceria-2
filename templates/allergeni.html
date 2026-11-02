@@ -478,11 +478,78 @@
                 width: 100%;
             }
         }
-    </style>
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 1.2cm;
+            }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+            }
+            .container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .top-header,
+            .create-card-3d,
+            .search-bar-row,
+            .no-print,
+            .alert-3d,
+            .btn-card-icon,
+            .btn-3d {
+                display: none !important;
+            }
+            .print-only-header {
+                display: block !important;
+                text-align: center;
+                border-bottom: 2px solid #000;
+                padding-bottom: 12px;
+                margin-bottom: 20px;
+            }
+            .print-pasticceria-title {
+                font-size: 18pt;
+                font-weight: 800;
+                letter-spacing: 2px;
+                margin: 0 0 4px 0;
+            }
+            .print-pasticceria-sub {
+                font-size: 10pt;
+                color: #444;
+                margin: 0;
+            }
+            .products-grid {
+                display: block !important;
+            }
+            .product-btn-card {
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+                background: #fff !important;
+                margin-bottom: 12px !important;
+                page-break-inside: avoid !important;
+                transform: none !important;
+                cursor: default !important;
+            }
+            .product-btn-card-footer,
+            .product-btn-footer,
+            .no-allergens-label,
+            .enter-link-text,
+            .card-actions-mini {
+                display: none !important;
+            }
+        }    </style>
 </head>
 <body>
 
 <div class="container">
+
+    <!-- Print-only Header -->
+    <div class="print-only-header" style="display:none;">
+        <p class="print-pasticceria-title">PASTICCERIA</p>
+        <p class="print-pasticceria-sub">Registro Allergeni</p>
+    </div>
 
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -514,7 +581,11 @@
             </div>
         </div>
         <div class="header-actions">
-            <a href="{{ url_for('produzione') }}" class="btn-3d btn-back-3d">
+            <button type="button" class="btn-3d btn-print-3d no-print" onclick="window.print()"
+                style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; box-shadow: 0 4px 0 #b45309;">
+                <i class="fa-solid fa-print"></i> Stampa Elenco
+            </button>
+            <a href="{{ url_for('produzione') }}" class="btn-3d btn-back-3d no-print">
                 <i class="fa-solid fa-arrow-left"></i> Calendario
             </a>
         </div>
