@@ -1100,7 +1100,7 @@
                     </div>
                     <div class="desktop-right-bottom">
                         <a href="{{ url_for('turni_settimanali') }}" class="btn-secondary">TURNI MESE OSTIA</a>
-                        <a href="{{ url_for('turni_palocco') }}" class="btn-secondary">TURNI MESE SECONDO NEGOZIO</a>
+                        <span class="btn-secondary" style="opacity:0.45; cursor:not-allowed; pointer-events:none; filter:grayscale(1);">TURNI MESE SECONDO NEGOZIO</span>
                         <a href="{{ url_for('piano_ferie') }}" class="btn-secondary" id="pianFerieBtnDesktop" style="position:relative;">
                             <span class="btn-ferie-text">
                                 <span class="btn-ferie-top">FERIE • CAMBI TURNO</span>
@@ -1128,7 +1128,7 @@
                     </a>
                     <div class="mobile-sec-row">
                         <a href="{{ url_for('turni_settimanali') }}" class="btn-secondary">TURNI MESE OSTIA</a>
-                        <a href="{{ url_for('turni_palocco') }}" class="btn-secondary">TURNI MESE SECONDO NEGOZIO</a>
+                        <span class="btn-secondary" style="opacity:0.45; cursor:not-allowed; pointer-events:none; filter:grayscale(1);">TURNI MESE SECONDO NEGOZIO</span>
                     </div>
                     <div class="mobile-sec-row">
                         {% if session.get('permissions', {}).get('can_view_anagrafica', True) %}

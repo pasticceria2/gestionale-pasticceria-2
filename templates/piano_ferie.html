@@ -1437,7 +1437,7 @@
         <div class="stat-card-3d">
             <div class="stat-icon icon-palocco"></div>
             <div class="stat-content">
-                <span class="stat-label">Palocco</span>
+                <span class="stat-label">Secondo negozio</span>
                 <span class="stat-number">{{ conteggio_palocco }} <small style="font-size:0.75rem; font-weight:600; color:#64748b;">confermati</small></span>
             </div>
         </div>
@@ -1462,7 +1462,7 @@
                     <div class="filter-tabs" style="margin-top: 4px;">
                         <a href="?mese={{ mese }}&anno={{ anno }}&sede=tutte" class="filter-tab {% if filtro_sede == 'tutte' %}active{% endif %}">Tutte</a>
                         <a href="?mese={{ mese }}&anno={{ anno }}&sede=ostia" class="filter-tab tab-ostia {% if filtro_sede == 'ostia' %}active{% endif %}">Ostia</a>
-                        <a href="?mese={{ mese }}&anno={{ anno }}&sede=palocco" class="filter-tab tab-palocco {% if filtro_sede == 'palocco' %}active{% endif %}">Palocco</a>
+                        <span class="filter-tab tab-palocco" style="opacity:0.45; cursor:not-allowed; pointer-events:none; filter:grayscale(1);">Secondo negozio</span>
                     </div>
                 </div>
             </div>
@@ -1684,7 +1684,7 @@
                             </span>
                             {% else %}
                             <span class="badge-sede-palocco">
-                                <i class="fa-solid fa-location-dot"></i> Palocco
+                                <i class="fa-solid fa-location-dot"></i> Secondo negozio
                             </span>
                             {% endif %}
                         </td>
@@ -1825,10 +1825,10 @@
                             Ostia
                         </div>
                     </label>
-                    <label class="sede-option sede-option-palocco">
-                        <input type="radio" name="sede" value="Palocco">
+                    <label class="sede-option sede-option-palocco" style="opacity:0.45; cursor:not-allowed; pointer-events:none; filter:grayscale(1);" title="Non disponibile">
+                        <input type="radio" name="sede" value="Palocco" disabled>
                         <div class="sede-btn-3d">
-                            Palocco
+                            Secondo negozio
                         </div>
                     </label>
                 </div>
@@ -1944,10 +1944,10 @@
                             Ostia
                         </div>
                     </label>
-                    <label class="sede-option sede-option-palocco">
-                        <input type="radio" name="sede" value="Palocco" id="editSedePalocco">
+                    <label class="sede-option sede-option-palocco" style="opacity:0.45; cursor:not-allowed; pointer-events:none; filter:grayscale(1);" title="Non disponibile">
+                        <input type="radio" name="sede" value="Palocco" id="editSedePalocco" disabled>
                         <div class="sede-btn-3d">
-                            Palocco
+                            Secondo negozio
                         </div>
                     </label>
                 </div>
