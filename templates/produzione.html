@@ -1085,9 +1085,9 @@
                                 {% if session.get('permissions', {}).get('can_view_anagrafica', True) %}
                                 <a href="{{ url_for('anagrafica') }}" class="btn-secondary" style="flex: 1;">ANAGRAFICA</a>
                                 {% endif %}
-                                <a href="{{ url_for('allergeni_index') }}" class="btn-secondary" style="flex: 1;">ALLERGENI</a>
+                                <a href="{{ url_for('supporto') }}" class="btn-secondary" style="flex: 1;">SUPPORTO</a>
                             </div>
-                            <a href="{{ url_for('supporto') }}" class="btn-secondary">SUPPORTO</a>
+                            <a href="{{ url_for('allergeni_index') }}" class="btn-secondary">ALLERGENI</a>
                         </div>
                         <div class="digital-clock">
                             <span class="clock-date" id="clockDate"></span>
@@ -1134,8 +1134,8 @@
                         {% if session.get('permissions', {}).get('can_view_anagrafica', True) %}
                         <a href="{{ url_for('anagrafica') }}" class="btn-secondary">ANAGRAFICA</a>
                         {% endif %}
-                        <a href="{{ url_for('allergeni_index') }}" class="btn-secondary">ALLERGENI</a>
                         <a href="{{ url_for('supporto') }}" class="btn-secondary">SUPPORTO</a>
+                        <a href="{{ url_for('allergeni_index') }}" class="btn-secondary">ALLERGENI</a>
                     </div>
                 </div>
             </div>
