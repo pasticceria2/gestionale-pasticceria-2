@@ -187,7 +187,7 @@
 
         .create-input {
             width: 100%;
-            padding: 12px 16px 12px 42px;
+            padding: 12px 16px;
             font-size: 1rem;
             font-weight: 600;
             border: 2px solid #cbd5e1;
@@ -596,8 +596,7 @@
     <div class="create-card-3d">
         <form action="{{ url_for('allergeni_crea') }}" method="POST" class="create-form-row">
             <div class="create-input-wrapper">
-                <i class="fa-solid fa-cake-candles"></i>
-                <input type="text" name="titolo" id="newProdottoTitolo" class="create-input" 
+<input type="text" name="titolo" id="newProdottoTitolo" class="create-input" 
                        placeholder="Scrivi il nome del prodotto (es. Pan di spagna, Pasta frolla, Crema...)" 
                        required autocomplete="off" autofocus>
             </div>
@@ -615,7 +614,7 @@
             <input type="text" id="filterInput" class="search-input" placeholder="Cerca prodotto..." oninput="filterProducts()">
         </div>
         <div class="count-pill">
-            <i class="fa-solid fa-list-check"></i> <span id="countDisplay">{{ totale }}</span> Prodotti Registrati
+            <span id="countDisplay">{{ totale }}</span> Prodotti Registrati
         </div>
     </div>
 
@@ -624,10 +623,7 @@
         {% for p in prodotti %}
         <div class="product-btn-card" data-title="{{ p.titolo|lower }}" onclick="location.href='{{ url_for('allergeni_scheda', id=p.id) }}'">
             <div class="product-btn-card-header">
-                <div class="product-avatar">
-                    <i class="fa-solid fa-cookie-bite"></i>
-                </div>
-                <div class="product-title-wrap">
+<div class="product-title-wrap">
                     <h2 class="product-title">{{ p.titolo }}</h2>
                     <div class="product-subtitle">
                         {% if p.allergeni_count > 0 %}
@@ -643,7 +639,7 @@
                 {% if p.allergeni_dettagli %}
                     {% for a in p.allergeni_dettagli[:4] %}
                     <span class="allergen-pill-mini" style="border-left: 3px solid {{ a.badge_color }};">
-                        <i class="fa-solid {{ a.icon }}" style="color: {{ a.badge_color }};"></i> {{ a.nome }}
+                        {{ a.nome }}
                     </span>
                     {% endfor %}
                     {% if p.allergeni_dettagli|length > 4 %}
@@ -653,14 +649,14 @@
                     {% endif %}
                 {% else %}
                     <div class="no-allergens-label">
-                        <i class="fa-regular fa-pen-to-square"></i> Clicca per compilare la scheda
+                        Clicca per compilare la scheda
                     </div>
                 {% endif %}
             </div>
 
             <div class="product-btn-footer">
                 <span class="enter-link-text">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i> {% if can_edit_allergeni %}Modifica e Stampa{% else %}Visualizza e Stampa{% endif %}
+                    {% if can_edit_allergeni %}Modifica e Stampa{% else %}Visualizza e Stampa{% endif %}
                 </span>
                 {% if can_delete_allergeni %}
                 <div class="card-actions-mini" onclick="event.stopPropagation();">
@@ -675,8 +671,7 @@
         </div>
         {% else %}
         <div class="empty-state">
-            <i class="fa-solid fa-clipboard-question"></i>
-            <h3>Nessun prodotto creato finora</h3>
+<h3>Nessun prodotto creato finora</h3>
             {% if can_edit_allergeni %}
             <p>Scrivi il nome di un prodotto nel riquadro in alto (es. <strong>Pan di spagna</strong>) e clicca su <strong>Crea Scheda Allergene</strong> per iniziare.</p>
             {% else %}

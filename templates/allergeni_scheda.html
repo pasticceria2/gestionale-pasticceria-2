@@ -582,7 +582,7 @@
     <header class="top-header no-print">
         <div class="header-title-box">
             <div class="header-icon">
-                <i class="fa-solid fa-cookie-bite"></i>
+                <i class="fa-solid fa-wheat-awn"></i>
             </div>
             <div>
                 <h1>{{ p.titolo }}</h1>
@@ -614,12 +614,12 @@
     <!-- BOX ALLERGENI PRESENTI PER LA STAMPA -->
     {% set allergeni_attivi = allergeni|selectattr('attivo')|list %}
     <div class="print-only-header print-badge-allergeni-presenti">
-        <h3><i class="fa-solid fa-triangle-exclamation"></i> Allergeni Presenti nel Prodotto:</h3>
+        <h3>Allergeni Presenti nel Prodotto:</h3>
         {% if allergeni_attivi|length > 0 %}
         <div class="print-allergens-tags">
             {% for a in allergeni_attivi %}
             <span class="print-allergen-tag">
-                <i class="fa-solid {{ a.icon }}"></i> {{ a.nome }}
+                {{ a.nome }}
             </span>
             {% endfor %}
         </div>
@@ -657,8 +657,7 @@
     <!-- Banner sola lettura se non autorizzato a modificare -->
     {% if not can_edit_allergeni %}
     <div class="alert-3d alert-warning no-print" style="margin-bottom: 20px;">
-        <i class="fa-solid fa-lock"></i>
-        <span><strong>Modalità sola lettura:</strong> Chiedi all'amministratore del sistema. Puoi consultare i dettagli o stampare la scheda.</span>
+<span><strong>Modalità sola lettura:</strong> Chiedi all'amministratore del sistema. Puoi consultare i dettagli o stampare la scheda.</span>
     </div>
     {% endif %}
 
@@ -668,7 +667,7 @@
         <div class="card-panel-3d">
             <div class="section-header-3d">
                 <h2 class="section-title">
-                    <i class="fa-solid fa-pen-to-square" style="color:#0284c7;"></i> Nome del Prodotto
+                    Nome del Prodotto
                 </h2>
                 {% if can_delete_allergeni %}
                 <a href="{{ url_for('allergeni_elimina', id=p.id) }}" class="btn-3d btn-del-3d" 
@@ -690,7 +689,7 @@
             <div class="section-header-3d">
                 <div>
                     <h2 class="section-title">
-                        <i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b;"></i> I 14 Allergeni (Regolamento UE 1169/2011)
+                        I 14 Allergeni (Regolamento UE 1169/2011)
                     </h2>
                     <span style="font-size:0.82rem; color:#64748b;">
                         {% if can_edit_allergeni %}Clicca sui pulsanti per attivare o disattivare gli allergeni contenuti{% else %}Allergeni evidenziati se presenti nel prodotto{% endif %}
@@ -709,11 +708,7 @@
                     <input type="checkbox" name="allergeni" value="{{ a.id }}" {% if a.attivo %}checked{% endif %} 
                            {% if can_edit_allergeni %}onchange="handleToggle(this, 'btn_allergen_{{ a.id }}')"{% else %}disabled{% endif %}>
                     
-                    <div class="allergen-icon-box">
-                        <i class="fa-solid {{ a.icon }}"></i>
-                    </div>
-                    
-                    <div class="allergen-text-wrap">
+<div class="allergen-text-wrap">
                         <span class="allergen-name">{{ a.nome }}</span>
                         <span class="allergen-sub" title="{{ a.dettaglio }}">{{ a.dettaglio }}</span>
                     </div>
@@ -729,7 +724,7 @@
         <div class="card-panel-3d">
             <div class="section-header-3d">
                 <h2 class="section-title">
-                    <i class="fa-solid fa-list-check" style="color:#10b981;"></i> Ingredienti & Ricetta
+                    Ingredienti & Ricetta
                 </h2>
             </div>
 
