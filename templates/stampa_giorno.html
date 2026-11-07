@@ -6,7 +6,6 @@
     <title>Lista Secondo Negozio - {{ data_it | formato_data }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @page { size: A4 portrait; margin: 12mm; }
         * { box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -107,14 +106,13 @@
         tbody tr { border-bottom: 1px solid #f1f5f9; }
         tbody tr:last-child { border-bottom: none; }
         tbody tr.consegna-row { background: #f0fdf4; }
-        tbody td { padding: 12px 16px; vertical-align: top; }
+        tbody td { padding: 12px 16px; vertical-align: middle; }
 
         .td-ora { font-weight: 800; font-size: 0.95rem; color: #c53030; white-space: nowrap; }
         .td-cliente-nome { font-weight: 700; font-size: 0.92rem; }
         .td-cliente-tel { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
-        .td-prodotto-nome { font-weight: 700; font-size: 0.92rem; text-transform: uppercase; }
-        .td-prodotto-desc { font-size: 0.82rem; color: #475569; margin-top: 3px; white-space: pre-wrap; }
-        .td-qta { font-weight: 700; color: #991b1b; white-space: nowrap; }
+        .td-prodotto-nome { font-weight: 700; font-size: 0.92rem; text-transform: uppercase; color: #0f172a; }
+        .td-qta { font-weight: 800; color: #991b1b; white-space: nowrap; }
 
         .badge-palocco {
             display: inline-block;
@@ -132,12 +130,26 @@
             background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
             color: #166534;
             border: 1px solid #86efac;
-            padding: 3px 8px;
+            padding: 2px 7px;
             border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
+            font-size: 0.72rem;
+            font-weight: 800;
             text-transform: uppercase;
-            margin-top: 4px;
+            margin-top: 3px;
+        }
+        .consegna-indirizzo {
+            font-size: 0.78rem;
+            color: #15803d;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .footer-row {
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: #94a3b8;
         }
 
         /* ===== MOBILE CARDS VERTICALI ===== */
@@ -193,14 +205,7 @@
             text-transform: uppercase;
             color: #0f172a;
             line-height: 1.25;
-            margin-bottom: 4px;
-        }
-
-        .mobile-card-farcitura {
-            font-size: 0.85rem;
-            color: #475569;
-            margin-bottom: 12px;
-            font-weight: 500;
+            margin-bottom: 8px;
         }
 
         .mobile-card-rows {
@@ -244,17 +249,6 @@
             font-weight: 800;
         }
 
-        .mobile-card-note {
-            margin-top: 10px;
-            padding: 10px 12px;
-            background: #f8fafc;
-            border-radius: 10px;
-            border-left: 3px solid #cbd5e1;
-            font-size: 0.84rem;
-            color: #334155;
-            line-height: 1.4;
-        }
-
         @media screen and (max-width: 768px) {
             body { padding: 12px 12px 40px; }
             .table-wrap { display: none; }
@@ -264,36 +258,120 @@
             .btn { font-size: 0.82rem; padding: 10px 14px; }
         }
 
+        /* ===== STAMPA & VISUALIZZA STAMPA SUPER COMPATTA ===== */
         @media print {
+            @page { size: A4 portrait; margin: 8mm 10mm; }
             .no-print { display: none !important; }
-            body { padding: 0 !important; background: white !important; font-size: 9pt; }
-            .page-header {
-                background: #c53030 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                border-radius: 8px !important;
+            body { padding: 0 !important; background: white !important; font-size: 8pt; color: #000 !important; }
+
+            /* Nascondi header pesante e mobile cards */
+            .page-header { display: none !important; }
+            .mobile-cards-container { display: none !important; }
+            .footer-row { font-size: 7pt; color: #555 !important; margin-top: 6px; }
+
+            /* Tabella a tutta larghezza */
+            .table-wrap {
+                display: block !important;
                 box-shadow: none !important;
-            }
-            .table-wrap { 
-                display: block !important; 
-                box-shadow: none !important; 
-                border: 1px solid #e2e8f0 !important; 
+                border: none !important;
                 overflow: visible !important;
             }
-            table { 
-                display: table !important; 
-                width: 100% !important; 
+
+            /* Intestazione stampa pulita a riga singola */
+            .print-header {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: baseline;
+                border-bottom: 0.5mm solid #dc2626 !important;
+                margin-bottom: 3mm !important;
+                padding-bottom: 1.5mm !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .print-header-title {
+                font-size: 11pt !important;
+                font-weight: 800 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.04em !important;
+                color: #dc2626 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .print-header-date {
+                font-size: 9pt !important;
+                font-weight: 700 !important;
+                color: #000 !important;
+            }
+
+            table {
+                display: table !important;
+                width: 100% !important;
                 border-collapse: collapse !important;
+                page-break-inside: auto;
             }
             thead { display: table-header-group !important; }
             tbody { display: table-row-group !important; }
-            tr { display: table-row !important; page-break-inside: avoid !important; }
+
+            thead tr {
+                background: none !important;
+                border-bottom: 0.5mm solid #000 !important;
+            }
+            thead th {
+                color: #000 !important;
+                font-size: 7.5pt !important;
+                font-weight: 800 !important;
+                padding: 1.5mm 2mm !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.04em !important;
+                background: none !important;
+                border: none !important;
+            }
+
+            /* Ogni ordine diviso da una linea al massimo di 0.5mm */
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+                display: table-row !important;
+                border-bottom: 0.5mm solid #cbd5e1 !important;
+            }
+            tr:last-child { border-bottom: none !important; }
+
             td, th { display: table-cell !important; }
-            thead tr { background: #1e293b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            tbody td { padding: 6px 10px !important; }
-            .badge-palocco { background: #fee2e2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .badge-consegna { background: #dcfce7 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .mobile-cards-container { display: none !important; }
+
+            /* Celle super compatte per far entrare più ordini */
+            tbody td {
+                padding: 1.5mm 2mm !important;
+                vertical-align: middle !important;
+                font-size: 8pt !important;
+                line-height: 1.25 !important;
+                border: none !important;
+            }
+
+            .td-ora { font-weight: 800 !important; color: #dc2626 !important; font-size: 8.5pt !important; white-space: nowrap; width: 14% !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .td-nome { font-weight: 700 !important; font-size: 8pt !important; color: #000 !important; width: 32% !important; }
+            .td-cliente-nome { font-weight: 700 !important; font-size: 8pt !important; }
+            .td-prodotto { font-weight: 700 !important; font-size: 8pt !important; text-transform: uppercase; color: #000 !important; width: 38% !important; }
+            .td-prodotto-nome { font-weight: 700 !important; font-size: 8pt !important; text-transform: uppercase; color: #000 !important; }
+            .td-qta { font-weight: 800 !important; color: #000 !important; white-space: nowrap; width: 16% !important; }
+
+            .badge-consegna {
+                background: none !important;
+                border: none !important;
+                color: #16a34a !important;
+                font-size: 7.5pt !important;
+                font-weight: 800 !important;
+                padding: 0 !important;
+                display: inline-block !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .consegna-indirizzo {
+                font-size: 7.5pt !important;
+                color: #15803d !important;
+                font-weight: 600 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
         }
     </style>
 </head>
@@ -321,52 +399,56 @@
         <span class="data-badge">{{ data_it | formato_data }}</span>
     </div>
 
+    <!-- INTESTAZIONE SOLO STAMPA -->
+    <div class="print-header" style="display:none;">
+        <span class="print-header-title">Lista Ordini Secondo Negozio</span>
+        <span class="print-header-date">{{ data_it | formato_data }}</span>
+    </div>
+
     {% if ordini %}
     <div class="table-wrap">
         <table>
             <thead>
                 <tr>
-                    <th style="width: 9%;">Ora</th>
-                    <th style="width: 25%;">Cliente</th>
-                    <th style="width: 28%;">Prodotto</th>
-                    <th style="width: 12%;">Quantità</th>
-                    <th style="width: 26%;">Dettagli / Note</th>
+                    <th style="width: 14%;">Orario</th>
+                    <th style="width: 32%;">Nome</th>
+                    <th style="width: 38%;">Tipo di Dolce</th>
+                    <th style="width: 16%;">Quantità</th>
                 </tr>
             </thead>
             <tbody>
                 {% for o in ordini %}
                 <tr class="{% if o.modalita == 'Consegna' %}consegna-row{% endif %}">
                     <td class="td-ora">{{ o.orario if o.orario else '--:--' }}</td>
-                    <td>
+                    <td class="td-nome">
                         <div class="td-cliente-nome">{{ o.cliente }}</div>
-                        {% if o.telefono %}<div class="td-cliente-tel">{{ o.telefono }}</div>{% endif %}
+                        {% if o.telefono %}<div class="td-cliente-tel no-print">{{ o.telefono }}</div>{% endif %}
                         {% if o.modalita == 'Consegna' %}
                             <div class="badge-consegna">Consegna</div>
+                            {% if o.indirizzo %}
+                                <div class="consegna-indirizzo">Indirizzo: {{ o.indirizzo }}</div>
+                            {% endif %}
                         {% endif %}
                     </td>
-                    <td>
+                    <td class="td-prodotto">
                         <div class="td-prodotto-nome">{{ o.tipo_dolce }}</div>
-                        {% if o.farcitura %}
-                            <div style="font-size: 0.8rem; color: #64748b; margin-top: 2px;">{{ o.farcitura }}</div>
-                        {% endif %}
                     </td>
                     <td class="td-qta">
                         {% if o.kg %}
-                            {{ o.kg }} {{ o.unita_misura }}
+                            {{ o.kg }}{% if o.unita_misura and o.unita_misura != 'None' %} {{ o.unita_misura }}{% endif %}
                         {% else %}
                             --
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div class="td-prodotto-desc">{{ o.descrizione if o.descrizione else '-' }}</div>
-                        {% if o.indirizzo and o.modalita == 'Consegna' %}
-                            <div style="font-size: 0.8rem; color: #15803d; font-weight: 600; margin-top: 4px;">Indirizzo: {{ o.indirizzo }}</div>
                         {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+
+    <div class="footer-row no-print">
+        <div><strong>Totale ordini:</strong> {{ ordini|length }}</div>
+        <div>Stampato il: {{ data_it | formato_data }}</div>
     </div>
 
     <!-- VERSIONE MOBILE - CARDS VERTICALI -->
@@ -383,9 +465,6 @@
             </div>
             <div class="mobile-card-main">
                 <div class="mobile-card-prodotto">{{ o.tipo_dolce }}</div>
-                {% if o.farcitura %}
-                <div class="mobile-card-farcitura">🍰 Gusto: {{ o.farcitura }}</div>
-                {% endif %}
                 <div class="mobile-card-rows">
                     <div class="mobile-card-row">
                         <span class="mobile-card-label">👤 Cliente</span>
@@ -401,21 +480,13 @@
                     </div>
                     {% endif %}
                 </div>
-                {% if o.descrizione or (o.modalita == 'Consegna' and o.indirizzo) %}
-                <div class="mobile-card-note">
-                    {% if o.descrizione %}<div>📝 {{ o.descrizione }}</div>{% endif %}
-                    {% if o.modalita == 'Consegna' and o.indirizzo %}
-                    <div style="color:#15803d;font-weight:700;margin-top:4px;">📬 Indirizzo: {{ o.indirizzo }}</div>
-                    {% endif %}
-                </div>
-                {% endif %}
             </div>
         </div>
         {% endfor %}
     </div>
     {% else %}
     <div class="table-wrap" style="text-align: center; padding: 40px 20px; color: #64748b; font-weight: 600;">
-        Nessun ordine presente per Secondo Negozio in questa data.
+        Nessun ordine presente per il secondo negozio in questa data.
     </div>
     {% endif %}
 
