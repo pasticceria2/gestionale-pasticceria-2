@@ -103,12 +103,12 @@
         tbody td { padding: 12px 16px; vertical-align: top; }
 
         .td-ora { font-weight: 800; font-size: 1rem; color: #10b981; white-space: nowrap; }
+        .td-cliente-nome { font-weight: 700; font-size: 0.95rem; }
+        .td-cliente-tel { font-size: 0.82rem; color: #64748b; margin-top: 2px; }
         .td-prodotto { font-weight: 700; font-size: 0.95rem; text-transform: uppercase; }
         .td-cat { font-size: 0.78rem; color: #64748b; margin-top: 2px; }
         .td-gusto { font-size: 0.83rem; color: #334155; margin-top: 3px; }
         .td-qta { font-weight: 700; color: #0369a1; }
-        .td-cliente-nome { font-weight: 700; font-size: 0.95rem; }
-        .td-cliente-tel { font-size: 0.82rem; color: #64748b; margin-top: 2px; }
 
         .sede-palocco { font-weight: 700; color: #ef4444; }
         .sede-ostia { font-weight: 700; color: #1e3a8a; }
@@ -267,35 +267,97 @@
             .btn { font-size: 0.8rem; padding: 10px 14px; }
         }
 
+        /* ===== STAMPA & VISUALIZZA STAMPA ===== */
         @media print {
+            @page { size: A4 portrait; margin: 8mm 10mm; }
             .no-print { display: none !important; }
-            body { padding: 0 !important; background: white !important; font-size: 9pt; }
-            .page-header {
-                background: #7c3aed !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                border-radius: 8px !important;
+            body { padding: 0 !important; background: white !important; font-size: 8pt; color: #000 !important; }
+
+            /* Nascondi header colorato a schermo e mobile cards */
+            .page-header { display: none !important; }
+            .mobile-cards-container { display: none !important; }
+            .footer-row { font-size: 7pt; color: #555 !important; margin-top: 6px; }
+
+            /* Mostra tabella a tutta larghezza */
+            .table-wrap {
+                display: block !important;
                 box-shadow: none !important;
+                border: none !important;
+                overflow: visible !important;
             }
-            .table-wrap { 
-                display: block !important; 
-                box-shadow: none !important; 
-                border: 1px solid #e2e8f0 !important; 
-                overflow: visible !important; 
+
+            /* Intestazione pulita visibile in stampa */
+            .print-header {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: baseline;
+                border-bottom: 0.5mm solid #000 !important;
+                margin-bottom: 3mm !important;
+                padding-bottom: 1.5mm !important;
             }
-            table { 
-                display: table !important; 
-                width: 100% !important; 
+            .print-header-title {
+                font-size: 11pt !important;
+                font-weight: 800 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.04em !important;
+            }
+            .print-header-date {
+                font-size: 9pt !important;
+                font-weight: 700 !important;
+            }
+
+            table {
+                display: table !important;
+                width: 100% !important;
                 border-collapse: collapse !important;
-                page-break-inside: auto; 
+                page-break-inside: auto;
             }
             thead { display: table-header-group !important; }
             tbody { display: table-row-group !important; }
-            thead tr { background: #1e293b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            tr { page-break-inside: avoid; page-break-after: auto; display: table-row !important; }
+
+            thead tr {
+                background: none !important;
+                border-bottom: 0.5mm solid #000 !important;
+            }
+            thead th {
+                color: #000 !important;
+                font-size: 7.5pt !important;
+                font-weight: 800 !important;
+                padding: 1.5mm 2mm !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.04em !important;
+                background: none !important;
+                border: none !important;
+            }
+
+            /* Ogni ordine diviso da una linea al massimo di 0.5mm */
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+                display: table-row !important;
+                border-bottom: 0.5mm solid #cbd5e1 !important;
+            }
+            tr:last-child { border-bottom: none !important; }
+
             td, th { display: table-cell !important; }
-            tbody td { padding: 6px 10px !important; }
-            .mobile-cards-container { display: none !important; }
+
+            /* Celle compatte per far entrare più ordini */
+            tbody td {
+                padding: 1.5mm 2mm !important;
+                vertical-align: middle !important;
+                font-size: 8pt !important;
+                line-height: 1.25 !important;
+                border: none !important;
+            }
+
+            .td-ora { font-weight: 800 !important; color: #000 !important; font-size: 8.5pt !important; white-space: nowrap; width: 12% !important; }
+            .td-nome { font-weight: 700 !important; font-size: 8pt !important; color: #000 !important; width: 22% !important; }
+            .td-cliente-nome { font-weight: 700 !important; font-size: 8pt !important; }
+            .td-prodotto { font-weight: 700 !important; font-size: 8pt !important; text-transform: uppercase; color: #000 !important; width: 34% !important; }
+            .td-qta { font-weight: 800 !important; color: #000 !important; white-space: nowrap; width: 12% !important; }
+            .td-negozio { font-weight: 700 !important; font-size: 8pt !important; color: #000 !important; white-space: nowrap; width: 20% !important; }
+
+            .sede-palocco, .sede-ostia, .sede-consegna { font-size: 8pt !important; font-weight: 700 !important; color: #000 !important; }
         }
     </style>
 </head>
@@ -323,16 +385,22 @@
         <span class="data-badge">{{ data_it | formato_data }}</span>
     </div>
 
+    <!-- INTESTAZIONE SOLO STAMPA -->
+    <div class="print-header" style="display:none;">
+        <span class="print-header-title">Nota Giornaliera Ordini</span>
+        <span class="print-header-date">{{ data_it | formato_data }}</span>
+    </div>
+
     <div class="table-wrap">
     <table>
         <thead>
             <tr>
-                <th style="width:10%;">Orario</th>
-                <th style="width:14%;">Ritiro / Sede</th>
-                <th style="width:16%;">Cliente</th>
-                <th style="width:24%;">Prodotto / Ordine</th>
-                <th style="width:10%;">Quantità</th>
-                <th style="width:26%;">Note / Dettagli</th>
+                <th style="width:12%;">Orario</th>
+                <th style="width:20%;">Nome</th>
+                <th style="width:30%;">Tipo di Dolce</th>
+                <th style="width:12%;">Quantità</th>
+                <th style="width:16%;">Negozio</th>
+                <th class="col-note no-print" style="width:20%;">Note / Dettagli</th>
             </tr>
         </thead>
         <tbody>
@@ -340,32 +408,22 @@
             <tr>
                 <td class="td-ora">{{ o.orario }}</td>
 
-                <td>
-                    {% if o.modalita == 'Consegna' %}
-                        <span class="sede-consegna">Consegna</span>
-                    {% else %}
-                        <span class="{% if o.negozio|lower in ['palocco', 'secondo negozio'] %}sede-palocco{% else %}sede-ostia{% endif %}">
-                            {% if o.negozio|lower == 'palocco' %}Secondo negozio{% else %}{{ o.negozio|replace('Negozio', '')|trim }}{% endif %}
-                        </span>
-                    {% endif %}
-                </td>
-
-                <td>
+                <td class="td-nome">
                     <div class="td-cliente-nome">{{ o.cliente }}</div>
                     {% if o.telefono %}
-                    <div class="td-cliente-tel">{{ o.telefono }}</div>
+                    <div class="td-cliente-tel no-print">{{ o.telefono }}</div>
                     {% endif %}
                 </td>
 
-                <td>
-                    <div class="td-prodotto">
+                <td class="td-prodotto">
+                    <div class="td-prodotto-titolo">
                         {% if o.categoria == 'Rinfresco' %}Rinfresco completo{% else %}{{ o.tipo_dolce }}{% endif %}
                     </div>
                     {% if o.categoria and o.categoria != 'Altro' and o.categoria != 'Rinfresco' and o.categoria != o.tipo_dolce %}
-                    <div class="td-cat">Cat: {{ o.categoria }}</div>
+                    <div class="td-cat no-print">Cat: {{ o.categoria }}</div>
                     {% endif %}
                     {% if o.farcitura and o.categoria != 'Rinfresco' %}
-                    <div class="td-gusto"><strong>Gusto:</strong> {{ o.farcitura }}</div>
+                    <div class="td-gusto no-print"><strong>Gusto:</strong> {{ o.farcitura }}</div>
                     {% endif %}
                 </td>
 
@@ -375,10 +433,21 @@
                     {% else %}--{% endif %}
                 </td>
 
-                <td>
+                <td class="td-negozio">
+                    {% if o.modalita == 'Consegna' %}
+                        <span class="sede-consegna">Consegna</span>
+                    {% else %}
+                        <span class="{% if o.negozio|lower in ['palocco', 'secondo negozio'] %}sede-palocco{% else %}sede-ostia{% endif %}">
+                            {% if o.negozio|lower == 'palocco' %}Secondo negozio{% else %}{{ o.negozio|replace('Negozio', '')|trim }}{% endif %}
+                        </span>
+                    {% endif %}
+                </td>
+
+                <td class="col-note no-print">
                     {% if o.categoria == 'Rinfresco' %}
                         <div class="note-rinfresco">
-                            {{ o.descrizione.replace('LABORATORIO:', 'LAB: ').replace('SALATO:', 'SALATO: ').replace('ALTRO:', 'ALTRO: ').replace('|', '<br>').replace('\n', '<br>') | safe }}
+                            {{ o.descrizione.replace('LABORATORIO:', 'LAB: ').replace('SALATO:', 'SALATO: ').replace('ALTRO:', 'ALTRO: ').replace('|', '<br>').replace('
+', '<br>') | safe }}
                         </div>
                     {% else %}
                         {% if o.descrizione %}
@@ -466,7 +535,8 @@
             {% if has_notes %}
             <div class="ng-card-notes">
                 {% if o.categoria == 'Rinfresco' and o.descrizione %}
-                    {{ o.descrizione.replace('LABORATORIO:', 'LAB: ').replace('SALATO:', 'SALATO: ').replace('ALTRO:', 'ALTRO: ').replace('|', '<br>').replace('\n', '<br>') | safe }}
+                    {{ o.descrizione.replace('LABORATORIO:', 'LAB: ').replace('SALATO:', 'SALATO: ').replace('ALTRO:', 'ALTRO: ').replace('|', '<br>').replace('
+', '<br>') | safe }}
                 {% elif o.descrizione %}
                     📝 {{ o.descrizione }}
                 {% endif %}
