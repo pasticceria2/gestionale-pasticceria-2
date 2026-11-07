@@ -355,9 +355,12 @@
             .td-cliente-nome { font-weight: 700 !important; font-size: 8pt !important; }
             .td-prodotto { font-weight: 700 !important; font-size: 8pt !important; text-transform: uppercase; color: #000 !important; width: 34% !important; }
             .td-qta { font-weight: 800 !important; color: #000 !important; white-space: nowrap; width: 12% !important; }
-            .td-negozio { font-weight: 700 !important; font-size: 8pt !important; color: #000 !important; white-space: nowrap; width: 20% !important; }
+            .td-negozio { font-weight: 700 !important; font-size: 8pt !important; white-space: nowrap; width: 20% !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-            .sede-palocco, .sede-ostia, .sede-consegna { font-size: 8pt !important; font-weight: 700 !important; color: #000 !important; }
+            /* Colori specifici solo per negozi e consegne in stampa */
+            .sede-ostia { font-size: 8pt !important; font-weight: 800 !important; color: #1d4ed8 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .sede-palocco { font-size: 8pt !important; font-weight: 800 !important; color: #dc2626 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .sede-consegna { font-size: 8pt !important; font-weight: 800 !important; color: #16a34a !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
 </head>
