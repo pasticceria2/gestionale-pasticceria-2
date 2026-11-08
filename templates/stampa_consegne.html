@@ -6,139 +6,212 @@
     <title>Consegne del {{ data_it | formato_data }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @page { size: A4 portrait; margin: 15mm; }
         * { box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-            margin: 0;
-            padding: 20px;
+            background-color: #f8fafc;
             color: #1e293b;
-            font-size: 10pt;
-            line-height: 1.4;
+            margin: 0;
+            padding: 24px;
         }
 
-        .page-header {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 60%, #15803d 100%);
-            color: white;
-            padding: 20px 28px;
-            border-radius: 18px;
-            margin-bottom: 24px;
-            box-shadow:
-                inset 0 1.5px 1px rgba(255,255,255,0.3),
-                0 6px 0 #166534,
-                0 12px 24px -4px rgba(34,197,94,0.35);
+        .no-print {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
-        .page-header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: 0.02em;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-        .page-header .data-badge {
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.25);
-            border-radius: 10px;
-            padding: 6px 14px;
+        .btn {
+            padding: 10px 18px;
             font-size: 0.9rem;
             font-weight: 700;
-        }
-
-        .no-print { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .btn {
-            padding: 12px 22px;
-            border-radius: 12px;
-            border: none;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: white;
+            border-radius: 8px;
             cursor: pointer;
+            border: none;
+            transition: opacity 0.2s;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .btn:active { transform: translateY(4px); box-shadow: none !important; }
-        .btn-print {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #15803d, 0 6px 10px rgba(34,197,94,0.3);
+        .btn-print { background: #16a34a; color: white; }
+        .btn-back  { background: #64748b; color: white; }
+        .btn:hover { opacity: 0.88; }
+
+        .page-header {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .btn-print:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #15803d, 0 8px 15px rgba(34,197,94,0.4); }
-        .btn-back {
-            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #334155, 0 6px 10px rgba(100,116,139,0.3);
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
         }
-        .btn-back:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #334155, 0 8px 15px rgba(100,116,139,0.4); }
+        .page-header .data-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
 
         .table-wrap {
-            background: #ffffff;
-            border-radius: 16px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07);
             overflow: hidden;
-            box-shadow:
-                inset 0 2px 0 rgba(255,255,255,0.9),
-                inset 0 -3px 0 rgba(0,0,0,0.03),
-                0 4px 6px -1px rgba(15,23,42,0.06),
-                0 10px 15px -3px rgba(15,23,42,0.08);
+            border: 1px solid #e2e8f0;
         }
-        table { width: 100%; border-collapse: collapse; }
-        thead tr { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
-        thead th {
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead tr {
+            background: #1e293b;
             color: white;
-            padding: 14px 16px;
-            text-align: left;
-            font-size: 0.78rem;
-            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
         }
+        thead th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+        }
+
         tbody tr { border-bottom: 1px solid #f1f5f9; background: #ffffff; }
         tbody tr:last-child { border-bottom: none; }
         tbody tr.consegna-row { background: #ffffff; }
-        tbody td { padding: 13px 16px; vertical-align: top; }
+        tbody td { padding: 12px 16px; vertical-align: middle; }
 
-        .td-ora { font-weight: 800; font-size: 1rem; color: #10b981; white-space: nowrap; }
-        .td-cliente-nome { font-weight: 700; font-size: 0.95rem; }
-        .td-cliente-tel { font-size: 0.82rem; color: #64748b; margin-top: 2px; }
-        .td-prodotto-nome { font-weight: 700; font-size: 0.95rem; text-transform: uppercase; }
-        .td-prodotto-desc { font-size: 0.82rem; color: #475569; margin-top: 4px; white-space: pre-wrap; }
-        .td-qta { font-weight: 700; color: #0369a1; }
+        .td-ora { font-weight: 800; font-size: 0.95rem; color: #10b981; white-space: nowrap; }
+        .td-cliente-nome { font-weight: 700; font-size: 0.92rem; }
+        .td-cliente-tel { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
+        .td-prodotto-nome { font-weight: 700; font-size: 0.92rem; text-transform: uppercase; color: #0f172a; }
+        .td-qta { font-weight: 800; color: #0369a1; white-space: nowrap; }
         .td-indirizzo { font-weight: 700; font-size: 0.9rem; color: #15803d; }
 
+        .footer-row {
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: #94a3b8;
+        }
+
+        /* ===== STAMPA & VISUALIZZA STAMPA SUPER COMPATTA ===== */
         @media print {
+            @page { size: A4 portrait; margin: 8mm 10mm; }
             .no-print { display: none !important; }
-            body { padding: 0 !important; background: white !important; font-size: 9pt !important; }
-            .page-header {
-                background: #16a34a !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                border-radius: 8px !important;
+            body { padding: 0 !important; background: white !important; font-size: 8pt; color: #000 !important; }
+
+            /* Nascondi header pesante a schermo */
+            .page-header { display: none !important; }
+            .footer-row { font-size: 7pt; color: #555 !important; margin-top: 6px; }
+
+            /* Tabella a tutta larghezza */
+            .table-wrap {
+                display: block !important;
                 box-shadow: none !important;
+                border: none !important;
+                overflow: visible !important;
             }
-            .table-wrap { 
-                display: block !important; 
-                box-shadow: none !important; 
-                border: 1px solid #e2e8f0 !important; 
-                overflow: visible !important; 
+
+            /* Intestazione stampa pulita a riga singola in verde consegne */
+            .print-header {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: baseline;
+                border-bottom: 0.5mm solid #16a34a !important;
+                margin-bottom: 3mm !important;
+                padding-bottom: 1.5mm !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
-            table { 
-                display: table !important; 
-                width: 100% !important; 
+            .print-header-title {
+                font-size: 11pt !important;
+                font-weight: 800 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.04em !important;
+                color: #16a34a !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .print-header-date {
+                font-size: 9pt !important;
+                font-weight: 700 !important;
+                color: #000 !important;
+            }
+
+            table {
+                display: table !important;
+                width: 100% !important;
                 border-collapse: collapse !important;
+                page-break-inside: auto;
             }
             thead { display: table-header-group !important; }
             tbody { display: table-row-group !important; }
-            tr { display: table-row !important; page-break-inside: avoid !important; }
+
+            thead tr {
+                background: none !important;
+                border-bottom: 0.5mm solid #000 !important;
+            }
+            thead th {
+                color: #000 !important;
+                font-size: 7.5pt !important;
+                font-weight: 800 !important;
+                padding: 1.5mm 2mm !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.04em !important;
+                background: none !important;
+                border: none !important;
+            }
+
+            /* Ogni ordine diviso da una linea al massimo di 0.5mm */
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+                display: table-row !important;
+                border-bottom: 0.5mm solid #cbd5e1 !important;
+            }
+            tr:last-child { border-bottom: none !important; }
+
             td, th { display: table-cell !important; }
-            thead tr { background: #1e293b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            tbody td { padding: 6px 10px !important; }
+
+            /* Celle super compatte per far entrare piu ordini */
+            tbody td {
+                padding: 1.5mm 2mm !important;
+                vertical-align: middle !important;
+                font-size: 8pt !important;
+                line-height: 1.25 !important;
+                border: none !important;
+            }
+
+            .td-ora { font-weight: 800 !important; color: #000 !important; font-size: 8.5pt !important; white-space: nowrap; width: 10% !important; }
+            .td-nome { font-weight: 700 !important; font-size: 8pt !important; color: #000 !important; width: 22% !important; }
+            .td-cliente-nome { font-weight: 700 !important; font-size: 8pt !important; }
+            .td-prodotto { font-weight: 700 !important; font-size: 8pt !important; text-transform: uppercase; color: #000 !important; width: 32% !important; }
+            .td-prodotto-nome { font-weight: 700 !important; font-size: 8pt !important; text-transform: uppercase; color: #000 !important; }
+            .td-qta { font-weight: 800 !important; color: #000 !important; white-space: nowrap; width: 10% !important; }
+
+            /* Indirizzo e Consegna in verde con print-color-adjust */
+            .td-indirizzo {
+                font-size: 8pt !important;
+                font-weight: 700 !important;
+                color: #16a34a !important;
+                width: 26% !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
         }
     </style>
 </head>
@@ -166,39 +239,42 @@
         <span class="data-badge">{{ data_it | formato_data }}</span>
     </div>
 
+    <!-- INTESTAZIONE SOLO STAMPA -->
+    <div class="print-header" style="display:none;">
+        <span class="print-header-title">Foglio Consegne</span>
+        <span class="print-header-date">{{ data_it | formato_data }}</span>
+    </div>
+
     <div class="table-wrap">
         <table>
             <thead>
                 <tr>
-                    <th class="col-ora" style="width:8%;">Orario</th>
-                    <th style="width:22%;">Cliente</th>
-                    <th style="width:32%;">Prodotto</th>
-                    <th style="width:10%;">Q.tà</th>
-                    <th style="width:28%;">Indirizzo e Note</th>
+                    <th style="width: 10%;">Orario</th>
+                    <th style="width: 22%;">Nome</th>
+                    <th style="width: 32%;">Tipo di Dolce</th>
+                    <th style="width: 10%;">Quantità</th>
+                    <th style="width: 26%;">Indirizzo</th>
                 </tr>
             </thead>
             <tbody>
                 {% for o in ordini %}
                 <tr class="consegna-row">
                     <td class="td-ora">{{ (o.orario | string | truncate(5, True, '')) if o.orario else '--:--' }}</td>
-                    <td>
+                    <td class="td-nome">
                         <div class="td-cliente-nome">{{ o.cliente }}</div>
-                        <div class="td-cliente-tel">{{ o.telefono }}</div>
+                        {% if o.telefono %}<div class="td-cliente-tel no-print">{{ o.telefono }}</div>{% endif %}
                     </td>
-                    <td>
+                    <td class="td-prodotto">
                         <div class="td-prodotto-nome">
                             {% if o.categoria == 'Rinfresco' %}RINFRESCO COMPLETO{% else %}{{ o.tipo_dolce }}{% endif %}
                         </div>
-                        <div class="td-prodotto-desc">
-                            {{ o.descrizione.replace('LABORATORIO:', '').replace('|', '\nSALATO: ').strip() }}
-                        </div>
                     </td>
                     <td class="td-qta">
-                        {% if o.categoria != 'Rinfresco' %}
-                            {{ o.kg }} {{ o.unita_misura }}
+                        {% if o.categoria != 'Rinfresco' and o.kg %}
+                            {{ o.kg }}{% if o.unita_misura and o.unita_misura != 'None' %} {{ o.unita_misura }}{% endif %}
                         {% else %}--{% endif %}
                     </td>
-                    <td class="td-indirizzo">{{ o.indirizzo }}</td>
+                    <td class="td-indirizzo">{{ o.indirizzo if o.indirizzo else '-' }}</td>
                 </tr>
                 {% else %}
                 <tr>
@@ -209,6 +285,11 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+
+    <div class="footer-row no-print">
+        <div><strong>Totale consegne:</strong> {{ ordini|length }}</div>
+        <div>Stampato il: {{ data_it | formato_data }}</div>
     </div>
 
 </body>
