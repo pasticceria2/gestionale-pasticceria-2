@@ -3,133 +3,459 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista Produzione - {{ data_it | formato_data }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Produzione Torte - {{ data_it | formato_data }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; }
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --card-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 20px 35px -10px rgba(15, 23, 42, 0.18), 0 40px 70px -20px rgba(15, 23, 42, 0.12);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background: #f8fafc;
             margin: 0;
-            padding: 20px;
-            color: #1e293b;
+            padding: 24px 20px 50px;
+            color: #0f172a;
+            max-width: 1100px;
+            margin: 0 auto;
         }
 
-        .page-header {
-            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 60%, #0284c7 100%);
-            color: white;
-            padding: 20px 28px;
-            border-radius: 18px;
-            margin-bottom: 24px;
-            box-shadow:
-                inset 0 1.5px 1px rgba(255,255,255,0.4),
-                0 6px 0 #0284c7,
-                0 12px 24px -4px rgba(14,165,233,0.35);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .page-header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: 0.02em;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.25);
-        }
-        .page-header .data-badge {
-            background: rgba(255,255,255,0.22);
-            border: 1px solid rgba(255,255,255,0.35);
-            border-radius: 10px;
-            padding: 6px 14px;
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
-
+        /* ---- BARRA COMANDI 3D ---- */
         .no-print {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 22px;
             flex-wrap: wrap;
         }
-        .btn {
-            padding: 12px 22px;
-            border-radius: 12px;
+
+        .btn-3d {
+            padding: 13px 24px;
+            border-radius: 14px;
             border: none;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.92rem;
             color: white;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .btn:active { transform: translateY(4px); box-shadow: none !important; }
-        .btn-print {
-            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #0284c7, 0 6px 10px rgba(14,165,233,0.3);
-        }
-        .btn-print:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #0284c7, 0 8px 15px rgba(14,165,233,0.4); }
-        .btn-back {
-            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 4px 0 #334155, 0 6px 10px rgba(100,116,139,0.3);
-        }
-        .btn-back:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 6px 0 #334155, 0 8px 15px rgba(100,116,139,0.4); }
 
+        .btn-print {
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.4),
+                inset 0 -2px 0 rgba(0,0,0,0.2),
+                0 4px 0 #0369a1,
+                0 8px 16px rgba(2,132,199,0.35);
+        }
+        .btn-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,0.5),
+                inset 0 -2px 0 rgba(0,0,0,0.2),
+                0 6px 0 #0369a1,
+                0 12px 20px rgba(2,132,199,0.45);
+            filter: brightness(1.05);
+        }
+        .btn-print:active { 
+            transform: translateY(3px); 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 1px 0 #0369a1; 
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+            color: #1e293b;
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,1),
+                inset 0 -2px 0 rgba(0,0,0,0.1),
+                0 4px 0 #94a3b8,
+                0 8px 16px rgba(0,0,0,0.1);
+        }
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 0 1.5px 1px rgba(255,255,255,1),
+                inset 0 -2px 0 rgba(0,0,0,0.1),
+                0 6px 0 #94a3b8,
+                0 12px 20px rgba(0,0,0,0.15);
+            filter: brightness(1.02);
+        }
+        .btn-back:active { 
+            transform: translateY(3px); 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 0 #94a3b8; 
+        }
+
+        /* ---- BANNER DI TESTATA 3D ---- */
+        .page-header {
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 60%, #0284c7 100%);
+            color: white;
+            padding: 22px 28px;
+            border-radius: 22px;
+            margin-bottom: 24px;
+            box-shadow:
+                inset 0 1.5px 1px rgba(255,255,255,0.4),
+                inset 0 -2px 4px rgba(0,0,0,0.15),
+                0 6px 0 #0284c7,
+                0 16px 28px -4px rgba(14,165,233,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.65rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+        }
+
+        .page-header .data-badge {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* ---- TABELLA DESKTOP 3D ---- */
         .table-wrap {
             background: #ffffff;
-            border-radius: 16px;
+            border-radius: 22px;
             overflow: hidden;
-            box-shadow:
-                inset 0 2px 0 rgba(255,255,255,0.9),
-                inset 0 -3px 0 rgba(0,0,0,0.03),
-                0 4px 6px -1px rgba(15,23,42,0.06),
-                0 10px 15px -3px rgba(15,23,42,0.08);
+            box-shadow: var(--card-shadow), inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -3px 0 rgba(0,0,0,0.03);
+            border: 1px solid rgba(255,255,255,0.9);
         }
-        table { width: 100%; border-collapse: collapse; }
-        thead tr { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        thead tr {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
         thead th {
             color: white;
-            padding: 14px 16px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 16px 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             text-align: left;
-            font-size: 0.78rem;
+            border: none;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.15s ease;
+        }
+        tbody tr:hover { background: #f8fafc; }
+        tbody tr:last-child { border-bottom: none; }
+
+        tbody td {
+            padding: 16px 20px;
+            vertical-align: middle;
+        }
+
+        .td-ora-badge {
+            display: inline-block;
+            background: #f0f9ff;
+            color: #0284c7;
+            border: 1px solid #bae6fd;
+            border-radius: 10px;
+            padding: 5px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.05rem;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(2,132,199,0.1);
+        }
+
+        .td-prodotto {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            color: #0f172a;
+            line-height: 1.3;
+        }
+
+        .td-qta-badge {
+            display: inline-block;
+            background: #eff6ff;
+            color: #0369a1;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+        .td-cliente {
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .badge-neg-3d {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .neg-palocco {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 0 #991b1b;
+        }
+
+        .neg-ostia {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 0 #075985;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 22px;
+            box-shadow: var(--card-shadow);
+            color: #64748b;
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        /* ===== CARTE MOBILE 3D ===== */
+        .mobile-cards-container { display: none; }
+
+        .mobile-count {
+            background: linear-gradient(135deg, #38bdf8, #0284c7);
+            color: white;
+            border-radius: 14px;
+            padding: 12px 18px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 0 #0369a1, 0 8px 16px rgba(2,132,199,0.25);
+        }
+
+        .mobile-lab-card {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.07);
+            border: 1px solid #e2e8f0;
+        }
+
+        .mobile-card-header {
+            padding: 14px 18px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            background: #fafbfc;
+        }
+
+        .mobile-card-prodotto {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.18rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #0f172a;
+            line-height: 1.25;
+            flex: 1;
+        }
+
+        .mobile-card-ora {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #0284c7;
+            white-space: nowrap;
+            background: #f0f9ff;
+            padding: 5px 12px;
+            border-radius: 10px;
+            border: 1px solid #bae6fd;
+            box-shadow: 0 1px 3px rgba(2,132,199,0.1);
+        }
+
+        .mobile-card-body {
+            padding: 14px 18px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .mobile-card-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .mobile-card-label {
+            font-size: 0.68rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.07em;
+            color: #94a3b8;
         }
-        tbody tr { border-bottom: 1px solid #f1f5f9; transition: background 0.15s; }
-        tbody tr:last-child { border-bottom: none; }
-        tbody tr:hover { background: #f8fafc; }
-        tbody td { padding: 13px 16px; vertical-align: middle; }
 
-        .td-ora { font-weight: 800; font-size: 1.05rem; color: #0284c7; white-space: nowrap; }
-        .td-prodotto { font-weight: 700; font-size: 1rem; text-transform: uppercase; color: #0f172a; }
-        .td-qta { font-weight: 800; color: #0369a1; white-space: nowrap; }
-        .td-cliente { font-weight: 700; }
-        .neg-palocco { font-weight: 700; color: #ef4444; }
-        .neg-ostia { font-weight: 700; color: #1e3a8a; }
+        .mobile-card-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
 
-        .footer { margin-top: 16px; font-size: 0.8rem; color: #94a3b8; text-align: right; }
+        .mobile-card-qta {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.18rem;
+            font-weight: 800;
+            color: #0369a1;
+            background: #eff6ff;
+            border-radius: 8px;
+            padding: 4px 10px;
+            display: inline-block;
+            border: 1px solid #bfdbfe;
+        }
 
+        .mobile-badge-neg {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 9px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .mobile-badge-palocco {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 2px 0 #991b1b;
+        }
+        .mobile-badge-ostia {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: white;
+            box-shadow: 0 2px 0 #075985;
+        }
+        .mobile-badge-consegna {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 9px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            box-shadow: 0 2px 0 #15803d;
+            margin-left: 6px;
+        }
+
+        .mobile-card-note {
+            grid-column: 1 / -1;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-top: 4px;
+        }
+        .mobile-note-text {
+            font-size: 0.88rem;
+            color: #334155;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+
+        .footer {
+            margin-top: 18px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        @media screen and (max-width: 768px) {
+            body { padding: 12px 12px 40px; }
+            .table-wrap { display: none; }
+            .mobile-cards-container { display: block; }
+            .page-header h1 { font-size: 1.25rem; }
+            .page-header { padding: 16px 20px; border-radius: 16px; }
+            .no-print { gap: 8px; }
+            .btn-3d { padding: 11px 18px; font-size: 0.85rem; }
+        }
+
+        /* ===== STAMPA A4 ===== */
         @media print {
             .no-print { display: none !important; }
-            body { padding: 0 !important; background: white !important; font-size: 9pt !important; }
+            .mobile-cards-container { display: none !important; }
+            body {
+                padding: 0 !important;
+                background: white !important;
+                font-size: 9pt !important;
+                color: #000 !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
             .page-header {
                 background: #0ea5e9 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
                 border-radius: 8px !important;
                 box-shadow: none !important;
+                padding: 12px 18px !important;
             }
             .table-wrap { 
                 display: block !important; 
                 box-shadow: none !important; 
                 border: 1px solid #e2e8f0 !important; 
-                overflow: visible !important; 
+                overflow: visible !important;
+                border-radius: 0 !important;
+                background: transparent !important;
             }
             table { 
                 display: table !important; 
@@ -140,8 +466,47 @@
             tbody { display: table-row-group !important; }
             tr { display: table-row !important; page-break-inside: avoid !important; }
             td, th { display: table-cell !important; }
-            thead tr { background: #1e293b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            tbody td { padding: 6px 10px !important; }
+            thead tr {
+                background: #1e293b !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            thead th {
+                color: #fff !important;
+                padding: 6px 10px !important;
+                font-size: 8pt !important;
+            }
+            tbody td {
+                padding: 6px 10px !important;
+                font-size: 8.5pt !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+            }
+            .td-ora-badge {
+                background: none !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                color: #0284c7 !important;
+                font-size: 9pt !important;
+            }
+            .td-qta-badge {
+                background: none !important;
+                border: none !important;
+                padding: 0 !important;
+                color: #000 !important;
+                font-size: 8.5pt !important;
+            }
+            .badge-neg-3d {
+                padding: 2px 6px !important;
+                font-size: 7.5pt !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .footer {
+                font-size: 7.5pt !important;
+                color: #666 !important;
+                margin-top: 8px !important;
+            }
         }
     </style>
 </head>
@@ -160,8 +525,8 @@
     </script>
 
     <div class="no-print">
-        <a href="javascript:window.print()" class="btn btn-print">STAMPA LISTA PRODUZIONE</a>
-        <button onclick="tornaIndietro('/giorno/{{ data_it }}')" class="btn btn-back">TORNA INDIETRO</button>
+        <button onclick="window.print()" class="btn-3d btn-print">STAMPA LISTA PRODUZIONE</button>
+        <button onclick="tornaIndietro('{{ url_for("gestione_giorno", data=data_it) }}')" class="btn-3d btn-back">TORNA INDIETRO</button>
     </div>
 
     <div class="page-header">
@@ -169,6 +534,8 @@
         <span class="data-badge">{{ data_it | formato_data }}</span>
     </div>
 
+    {% if ordini %}
+    <!-- VISTA TABELLA DESKTOP -->
     <div class="table-wrap">
         <table>
             <thead>
@@ -183,31 +550,94 @@
             <tbody>
                 {% for o in ordini %}
                 <tr>
-                    <td class="td-ora">{{ o.orario }}</td>
+                    <td class="td-ora">
+                        <span class="td-ora-badge">{{ (o.orario | string | truncate(5, True, '')) if o.orario else '--:--' }}</span>
+                    </td>
                     <td>
-                        <span class="{% if o.negozio|lower == 'palocco' %}neg-palocco{% else %}neg-ostia{% endif %}">
+                        <span class="badge-neg-3d {% if o.negozio|lower == 'palocco' %}neg-palocco{% else %}neg-ostia{% endif %}">
                             {{ o.negozio|replace('Negozio', '')|trim }}
                         </span>
-                    </td>
-                    <td class="td-prodotto">{{ o.tipo_dolce }}</td>
-                    <td class="td-qta">
-                        {% if o.kg %}
-                            {{ o.kg }}{% if o.unita_misura and o.unita_misura != 'None' %} {{ o.unita_misura }}{% endif %}
+                        {% if o.modalita == 'Consegna' %}
+                        <span style="font-size: 0.78rem; font-weight: 700; color: #16a34a; margin-left: 4px;">🚚 Consegna</span>
                         {% endif %}
                     </td>
-                    <td class="td-cliente">{{ o.cliente }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="5" style="text-align:center; padding: 30px; color: #64748b;">
-                        Nessuna torta in produzione per oggi.
+                    <td class="td-prodotto">
+                        <div>{{ o.tipo_dolce }}</div>
+                        {% if o.farcitura %}<div style="font-size: 0.82rem; color: #64748b; font-weight: 600; text-transform: none;">Farcitura: {{ o.farcitura }}</div>{% endif %}
                     </td>
+                    <td class="td-qta">
+                        {% if o.kg %}
+                            <span class="td-qta-badge">{{ o.kg }}{% if o.unita_misura and o.unita_misura != 'None' %} {{ o.unita_misura }}{% endif %}</span>
+                        {% else %}—{% endif %}
+                    </td>
+                    <td class="td-cliente">{{ o.cliente if o.cliente else '—' }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <div class="footer">Stampato il: {{ now }}</div>
+    <!-- VISTA MOBILE 3D CARDS -->
+    <div class="mobile-cards-container">
+        <div class="mobile-count">
+            <span>🎂 PRODUZIONE TORTE</span>
+            <span>{{ ordini|length }} in lista</span>
+        </div>
+        {% for o in ordini %}
+        <div class="mobile-lab-card">
+            <div class="mobile-card-header">
+                <span class="mobile-card-prodotto">{{ o.tipo_dolce }}</span>
+                <span class="mobile-card-ora">🕒 {{ (o.orario | string | truncate(5, True, '')) if o.orario else '--:--' }}</span>
+            </div>
+            <div class="mobile-card-body">
+                <div class="mobile-card-field">
+                    <span class="mobile-card-label">👤 Cliente</span>
+                    <span class="mobile-card-value">{{ o.cliente if o.cliente else '—' }}</span>
+                    {% if o.telefono %}
+                    <a href="tel:{{ o.telefono }}" style="text-decoration: none; color: #0284c7; font-size: 0.82rem; font-weight: 700; margin-top: 2px;">📞 {{ o.telefono }}</a>
+                    {% endif %}
+                </div>
+                <div class="mobile-card-field">
+                    <span class="mobile-card-label">📦 Quantità</span>
+                    <div>
+                        {% if o.kg %}
+                            <span class="mobile-card-qta">{{ o.kg }}{% if o.unita_misura and o.unita_misura != 'None' %} {{ o.unita_misura }}{% endif %}</span>
+                        {% else %}
+                            <span class="mobile-card-value">—</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mobile-card-field" style="grid-column: 1 / -1;">
+                    <span class="mobile-card-label" style="display:block; margin-bottom: 4px;">📍 Ritiro / Destinazione</span>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span class="mobile-badge-neg {% if o.negozio|lower == 'palocco' %}mobile-badge-palocco{% else %}mobile-badge-ostia{% endif %}">
+                            {{ o.negozio|replace('Negozio', '')|trim }}
+                        </span>
+                        {% if o.modalita == 'Consegna' %}
+                        <span class="mobile-badge-consegna">🚚 Consegna</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if o.farcitura or (o.descrizione and o.descrizione.strip()) %}
+                <div class="mobile-card-note">
+                    <span class="mobile-card-label">📝 Note / Dettagli</span>
+                    <div class="mobile-note-text">
+                        {% if o.farcitura %}<div><strong>Farcitura:</strong> {{ o.farcitura }}</div>{% endif %}
+                        {% if o.descrizione and o.descrizione != o.farcitura %}<div>{{ o.descrizione }}</div>{% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="footer no-print">Generato il: {{ now }}</div>
+    {% else %}
+    <div class="empty-state">
+        🎂 Nessuna torta in produzione registrata per questa data.
+    </div>
+    {% endif %}
+
 </body>
 </html>
