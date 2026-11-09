@@ -10,8 +10,8 @@
         .ticket-container { width: 210mm; min-height: 148.5mm; background: white; margin: 0 auto; padding: 5mm 15mm; box-sizing: border-box; position: relative; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.05), inset 0 2px 0 rgba(255, 255, 255, 0.9), inset 0 -3px 0 rgba(0,0,0,0.02); border: 1px solid rgba(255,255,255,0.9); }
         .header { text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 5px; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; }
         .logo-img { max-height: 35mm; max-width: 45mm; margin-bottom: 2px; object-fit: contain; }
-        .shop-row { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 2px; }
-        .shop-sub { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        .shop-row { width: 100%; margin-top: 8px; }
+        .shop-sub { display: block; width: 100%; text-align: center; font-size: 1.3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; padding: 7px 14px; border-radius: 5px; box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         .modalita-badge { font-size: 0.9rem; font-weight: 800; padding: 2px 10px; }
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
         .info-box { padding: 6px 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.04); }
@@ -73,7 +73,7 @@
 <div class="ticket-container">
     <div class="header">
         <div class="shop-row">
-           <div class="shop-sub" style="color: {% if o.modalita|lower == 'consegna' %}#16a34a{% elif o.negozio|lower in ['palocco', 'secondo negozio'] %}#ef4444{% else %}#1d4ed8{% endif %}; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+           <div class="shop-sub" style="color: {% if o.modalita|lower == 'consegna' %}#16a34a{% elif o.negozio|lower in ['palocco', 'secondo negozio'] %}#ef4444{% else %}#1d4ed8{% endif %}; border: 1.5px solid {% if o.modalita|lower == 'consegna' %}#16a34a{% elif o.negozio|lower in ['palocco', 'secondo negozio'] %}#ef4444{% else %}#1d4ed8{% endif %}; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
                 {% if o.modalita|lower == 'consegna' %}
                     CONSEGNA
                 {% elif o.negozio|lower in ['palocco', 'secondo negozio'] %}
