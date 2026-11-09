@@ -250,6 +250,12 @@
             box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 0 #075985;
         }
 
+        .neg-consegna {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 0 #15803d;
+        }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -497,8 +503,30 @@
                 font-size: 8.5pt !important;
             }
             .badge-neg-3d {
-                padding: 2px 6px !important;
-                font-size: 7.5pt !important;
+                padding: 0 !important;
+                font-size: 8pt !important;
+                font-weight: 800 !important;
+                background: none !important;
+                box-shadow: none !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .neg-palocco {
+                color: #dc2626 !important;
+                background: none !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .neg-ostia {
+                color: #1d4ed8 !important;
+                background: none !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .neg-consegna {
+                color: #16a34a !important;
+                background: none !important;
+                font-weight: 800 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -554,11 +582,12 @@
                         <span class="td-ora-badge">{{ (o.orario | string | truncate(5, True, '')) if o.orario else '--:--' }}</span>
                     </td>
                     <td>
+                        {% if o.modalita == 'Consegna' %}
+                        <span class="badge-neg-3d neg-consegna">Consegna</span>
+                        {% else %}
                         <span class="badge-neg-3d {% if o.negozio|lower == 'palocco' %}neg-palocco{% else %}neg-ostia{% endif %}">
                             {{ o.negozio|replace('Negozio', '')|trim }}
                         </span>
-                        {% if o.modalita == 'Consegna' %}
-                        <span style="font-size: 0.78rem; font-weight: 700; color: #16a34a; margin-left: 4px;">🚚 Consegna</span>
                         {% endif %}
                     </td>
                     <td class="td-prodotto">
@@ -609,11 +638,12 @@
                 <div class="mobile-card-field" style="grid-column: 1 / -1;">
                     <span class="mobile-card-label" style="display:block; margin-bottom: 4px;">📍 Ritiro / Destinazione</span>
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        {% if o.modalita == 'Consegna' %}
+                        <span class="mobile-badge-consegna">Consegna</span>
+                        {% else %}
                         <span class="mobile-badge-neg {% if o.negozio|lower == 'palocco' %}mobile-badge-palocco{% else %}mobile-badge-ostia{% endif %}">
                             {{ o.negozio|replace('Negozio', '')|trim }}
                         </span>
-                        {% if o.modalita == 'Consegna' %}
-                        <span class="mobile-badge-consegna">🚚 Consegna</span>
                         {% endif %}
                     </div>
                 </div>
