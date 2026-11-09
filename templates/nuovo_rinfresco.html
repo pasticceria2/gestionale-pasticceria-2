@@ -722,7 +722,114 @@
         }
         .client-suggestion-new:hover { background: #bbf7d0; }
         .client-input-wrap { position: relative; }
-    </style>
+    
+        /* ===== POPUP 3D PROMEMORIA LIMITE ORDINI PER LO STESSO ORARIO ===== */
+        .popup-3d-wrapper {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999999;
+            width: 90%;
+            max-width: 460px;
+            pointer-events: none;
+            animation: popupDropIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes popupDropIn {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -30px) scale(0.92);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, 0) scale(1);
+            }
+        }
+
+        .popup-3d-box {
+            position: relative;
+            pointer-events: auto;
+            background: linear-gradient(145deg, #ffffff 0%, #fffbeb 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 18px;
+            padding: 18px 48px 18px 22px;
+            box-shadow: 
+                inset 0 2px 0 rgba(255, 255, 255, 1),
+                inset 0 -3px 0 rgba(0, 0, 0, 0.05),
+                0 6px 0 #b45309,
+                0 14px 28px rgba(180, 83, 9, 0.28);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            text-align: left;
+        }
+
+        .popup-3d-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #475569;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                inset 0 1px 1px #ffffff,
+                0 2px 0 #94a3b8,
+                0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.15s ease;
+        }
+
+        .popup-3d-close:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 
+                inset 0 1px 1px rgba(255,255,255,0.4),
+                0 2px 0 #991b1b,
+                0 4px 8px rgba(220, 38, 38, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .popup-3d-close:active {
+            transform: translateY(2px);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .popup-3d-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 3px 10px;
+            border-radius: 7px;
+            box-shadow: 
+                inset 0 1px 1px rgba(255,255,255,0.4),
+                0 2px 0 #b45309;
+        }
+
+        .popup-3d-msg {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: #92400e;
+            line-height: 1.35;
+            margin: 0;
+        }
+
+</style>
 </head>
 <body>
 
@@ -1140,6 +1247,87 @@
     });
 
 </script>
+
+
+    <!-- POPUP 3D LIMITE ORDINI PER LO STESSO ORARIO -->
+    <div id="popup-limite-orario" class="popup-3d-wrapper" style="display: none;">
+        <div class="popup-3d-box">
+            <button type="button" class="popup-3d-close" onclick="chiudiPopupLimite()" aria-label="Chiudi avviso" title="Chiudi">✕</button>
+            <div class="popup-3d-badge">AVVISO</div>
+            <div class="popup-3d-msg">Hai preso più di 5 ordini per lo stesso orario.</div>
+        </div>
+    </div>
+
+    <script>
+        // Controllo ordini per lo stesso orario (promemoria visivo 3D non bloccante)
+        let popupGiaChiusoPer = '';
+
+        function verificaLimiteOrdiniOrario() {
+            const dataInput = document.querySelector('input[name="data_consegna"]');
+            const orarioInput = document.querySelector('input[name="orario"]');
+            if (!dataInput || !orarioInput) return;
+
+            const dataVal = dataInput.value.trim();
+            const orarioVal = orarioInput.value.trim();
+
+            if (!dataVal || !orarioVal) {
+                chiudiPopupLimite(false);
+                return;
+            }
+
+            const chiave = dataVal + '_' + orarioVal.substring(0, 5);
+            if (popupGiaChiusoPer === chiave) {
+                return;
+            }
+
+            const escludiId = window.ORDINE_ID_ATTUALE || '';
+
+            fetch('/api/conteggio_ordini_orario?data=' + encodeURIComponent(dataVal) + '&orario=' + encodeURIComponent(orarioVal) + '&escludi_id=' + encodeURIComponent(escludiId))
+                .then(res => res.json())
+                .then(res => {
+                    if (res && res.superato) {
+                        const el = document.getElementById('popup-limite-orario');
+                        if (el) el.style.display = 'block';
+                    } else {
+                        chiudiPopupLimite(false);
+                    }
+                })
+                .catch(err => {
+                    console.error('Errore verifica limite ordini:', err);
+                });
+        }
+
+        function chiudiPopupLimite(memorizzaChiusura = true) {
+            const el = document.getElementById('popup-limite-orario');
+            if (el) el.style.display = 'none';
+            if (memorizzaChiusura) {
+                const dataInput = document.querySelector('input[name="data_consegna"]');
+                const orarioInput = document.querySelector('input[name="orario"]');
+                if (dataInput && orarioInput) {
+                    popupGiaChiusoPer = dataInput.value.trim() + '_' + orarioInput.value.trim().substring(0, 5);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dataInput = document.querySelector('input[name="data_consegna"]');
+            const orarioInput = document.querySelector('input[name="orario"]');
+
+            if (dataInput) {
+                dataInput.addEventListener('change', verificaLimiteOrdiniOrario);
+            }
+            if (orarioInput) {
+                orarioInput.addEventListener('change', verificaLimiteOrdiniOrario);
+                orarioInput.addEventListener('input', verificaLimiteOrdiniOrario);
+                orarioInput.addEventListener('blur', verificaLimiteOrdiniOrario);
+            }
+
+            // Verifica iniziale se campi precompilati
+            if (dataInput && orarioInput && dataInput.value && orarioInput.value) {
+                setTimeout(verificaLimiteOrdiniOrario, 300);
+            }
+        });
+    </script>
 
 </body>
 </html>

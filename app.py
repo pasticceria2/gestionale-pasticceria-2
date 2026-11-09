@@ -1517,6 +1517,46 @@ def aggiungi_ordine():
         return redirect(url_for('gestione_giorno', data=d.get('data_consegna')))
     except Exception as e: return f"Errore: {e}", 500
 
+@app.route('/api/conteggio_ordini_orario')
+def api_conteggio_ordini_orario():
+    data = request.args.get('data', '').strip()
+    orario = request.args.get('orario', '').strip()
+    escludi_id = request.args.get('escludi_id', '').strip()
+
+    if not data or not orario:
+        return jsonify({'count': 0, 'superato': False})
+
+    # Normalizza orario a HH:MM (primi 5 caratteri)
+    orario_5 = orario[:5]
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        sql = """
+            SELECT COUNT(*) AS total 
+            FROM ordini 
+            WHERE data_consegna = %s 
+              AND SUBSTRING(orario::text FROM 1 FOR 5) = %s
+        """
+        params = [data, orario_5]
+        if escludi_id and escludi_id.isdigit():
+            sql += " AND id != %s"
+            params.append(int(escludi_id))
+
+        cur.execute(sql, tuple(params))
+        res = cur.fetchone()
+        total = res['total'] if res else 0
+    except Exception as e:
+        total = 0
+    finally:
+        cur.close()
+        conn.close()
+
+    return jsonify({
+        'count': total,
+        'superato': total >= 5
+    })
+
 @app.route('/api/cerca_cliente')
 def api_cerca_cliente():
     q = request.args.get('q', '').strip()
