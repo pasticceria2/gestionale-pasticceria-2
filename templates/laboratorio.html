@@ -479,7 +479,7 @@
             tbody td {
                 padding: 6px 10px !important;
                 font-size: 8.5pt !important;
-                border-bottom: 1px solid #e2e8f0 !important;
+                border-bottom: 0.5mm solid #cbd5e1 !important;
             }
             .td-ora-badge {
                 background: none !important;
@@ -563,7 +563,6 @@
                     </td>
                     <td class="td-prodotto">
                         <div>{{ o.tipo_dolce }}</div>
-                        {% if o.farcitura %}<div style="font-size: 0.82rem; color: #64748b; font-weight: 600; text-transform: none;">Farcitura: {{ o.farcitura }}</div>{% endif %}
                     </td>
                     <td class="td-qta">
                         {% if o.kg %}
@@ -618,15 +617,7 @@
                         {% endif %}
                     </div>
                 </div>
-                {% if o.farcitura or (o.descrizione and o.descrizione.strip()) %}
-                <div class="mobile-card-note">
-                    <span class="mobile-card-label">📝 Note / Dettagli</span>
-                    <div class="mobile-note-text">
-                        {% if o.farcitura %}<div><strong>Farcitura:</strong> {{ o.farcitura }}</div>{% endif %}
-                        {% if o.descrizione and o.descrizione != o.farcitura %}<div>{{ o.descrizione }}</div>{% endif %}
-                    </div>
-                </div>
-                {% endif %}
+
             </div>
         </div>
         {% endfor %}
